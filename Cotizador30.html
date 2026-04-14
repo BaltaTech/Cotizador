@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Grupo Aire Acondicionado AYCE | Sistema Profesional de Cotización HVAC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(145deg, #eef2f5 0%, #d9e0e8 100%);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding: 24px;
+        }
+        .app-container { max-width: 1400px; margin: 0 auto; }
+        
+        .header-premium {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 20px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .logo-img { height: 70px; width: auto; margin-right: 20px; }
+        .logo h1 { font-size: 1.6rem; font-weight: 800; background: linear-gradient(135deg, #B22234, #1E3A5F); -webkit-background-clip: text; background-clip: text; color: transparent; margin: 0; }
+        .company-address { background: #f8fafc; padding: 12px 20px; border-radius: 20px; font-size: 12px; color: #2c3e66; border-left: 5px solid #B22234; margin-top: 8px; display: flex; flex-wrap: wrap; gap: 20px; width: 100%; margin-top: 15px;}
+        
+        .nav-menu { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+        .nav-btn {
+            background: white; border: none; padding: 12px 28px; border-radius: 60px;
+            font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .nav-btn.active { background: linear-gradient(135deg, #B22234, #1E3A5F); color: white; }
+        
+        .card-premium {
+            background: white; border-radius: 32px; overflow: hidden;
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.2); margin-bottom: 28px;
+            transition: transform 0.3s ease;
+        }
+        .card-premium:hover { transform: translateY(-2px); }
+        .card-header { background: linear-gradient(105deg, #1E3A5F 0%, #0F2A44 100%); padding: 20px 28px; color: white; border-bottom: 3px solid #B22234; }
+        .card-header h2 { font-size: 1.3rem; display: flex; align-items: center; gap: 12px; }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 24px; }
+        .field { display: flex; flex-direction: column; gap: 6px; }
+        .field label { font-weight: 800; font-size: 0.7rem; text-transform: uppercase; color: #B22234; letter-spacing: 1px; }
+        input, select { padding: 12px 16px; border-radius: 20px; border: 2px solid #e2e8f0; font-family: 'Inter', sans-serif; font-weight: 500; transition: all 0.3s ease; }
+        input:focus, select:focus { outline: none; border-color: #B22234; box-shadow: 0 0 0 3px rgba(178,34,52,0.1); }
+        
+        .seccion-cotizacion { background: #f8fafc; border-radius: 24px; padding: 20px; margin-bottom: 24px; }
+        .seccion-titulo { font-size: 1.1rem; font-weight: 800; color: #1E3A5F; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; border-left: 4px solid #B22234; padding-left: 12px; }
+        
+        .table-wrapper { overflow-x: auto; margin: 16px 0; border-radius: 20px; border: 1px solid #edf2f7; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; background: #f1f5f9; font-weight: 800; color: #1E3A5F; font-size: 0.75rem; }
+        td { padding: 10px 12px; border-top: 1px solid #e9eef3; vertical-align: middle; font-size: 0.85rem; }
+        
+        .totals-panel { background: linear-gradient(115deg, #f8fafc, #ffffff); border-radius: 28px; padding: 24px; margin-top: 24px; }
+        .total-amount { font-size: 2rem; font-weight: 800; color: #B22234; }
+        
+        .btn-primary { background: linear-gradient(95deg, #B22234, #8B1A2B); color: white; border: none; padding: 12px 28px; border-radius: 60px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 22px rgba(178,34,52,0.35); }
+        .btn-secondary { background: white; border: 2px solid #B22234; color: #B22234; padding: 10px 24px; border-radius: 60px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-secondary:hover { background: #B22234; color: white; transform: translateY(-2px); }
+        
+        .badge-marca { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; }
+        .badge-trane { background: #1E3A5F; color: white; }
+        .badge-carrier { background: #0284c7; color: white; }
+        .badge-hisense { background: #c2410c; color: white; }
+        .badge-york { background: #2c7a4b; color: white; }
+        .badge-duventus { background: #6b21a5; color: white; }
+        .badge-rheem { background: #d97706; color: white; }
+        
+        .toast { position: fixed; bottom: 30px; right: 30px; background: #1E293B; color: white; padding: 12px 24px; border-radius: 80px; z-index: 2100; animation: fadeInUp 0.25s ease; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 3000; }
+        .modal-content { background: white; border-radius: 40px; padding: 28px; width: 850px; max-width: 92%; max-height: 85vh; overflow-y: auto; }
+        
+        .regla-card { background: #fef9f5; border-radius: 20px; padding: 18px; margin-bottom: 20px; border-left: 5px solid #B22234; }
+        .sugerencia { background: #e6f7ff; border-radius: 16px; padding: 14px; margin-top: 12px; font-size: 0.85rem; }
+        
+        .categoria-servicios { margin-bottom: 24px; }
+        .categoria-titulo { background: #1E3A5F; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; margin-bottom: 12px; }
+        .servicio-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        .servicio-info { flex: 1; }
+        .servicio-nombre { font-weight: 600; font-size: 0.85rem; }
+        .servicio-desc { font-size: 0.7rem; color: #666; }
+        .servicio-precio { font-weight: 700; color: #B22234; margin: 0 15px; font-size: 0.85rem; }
+        
+        .tab-catalogo { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; flex-wrap: wrap; }
+        .tab-catalogo-btn { background: none; border: none; padding: 10px 20px; font-weight: 600; cursor: pointer; color: #666; font-size: 0.85rem; transition: all 0.3s ease; }
+        .tab-catalogo-btn:hover { color: #B22234; }
+        .tab-catalogo-btn.active { color: #B22234; border-bottom: 3px solid #B22234; }
+        
+        .tipo-cambio-panel { background: #e8f0fe; border-radius: 16px; padding: 10px 15px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .tipo-cambio-panel span { font-weight: 700; color: #1E3A5F; }
+        .btn-small { padding: 6px 12px; font-size: 0.75rem; }
+        
+        .precio-trane-calc { background: #1E3A5F10; border-radius: 12px; padding: 12px; margin-top: 10px; font-size: 0.75rem; border: 1px dashed #1E3A5F; }
+        .edit-precio-btn { background: #f0f0f0; border: 1px solid #ddd; border-radius: 8px; padding: 2px 8px; font-size: 0.7rem; cursor: pointer; margin-left: 5px; }
+        .edit-precio-btn:hover { background: #e0e0e0; }
+        
+        .calc-card { background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); border-radius: 24px; padding: 24px; margin-bottom: 24px; border: 1px solid #e2e8f0; }
+        .calc-resultado { background: linear-gradient(135deg, #1E3A5F, #0F2A44); border-radius: 20px; padding: 20px; color: white; text-align: center; }
+        .calc-resultado h3 { font-size: 2rem; margin: 10px 0; }
+        .calc-resultado p { font-size: 0.85rem; opacity: 0.9; }
+        .factor-badge { display: inline-block; background: #B22234; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin: 5px; }
+        
+        .tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+        .tip-card { background: linear-gradient(135deg, #fff9f0, #fff5e6); border-radius: 20px; padding: 20px; border-left: 4px solid #B22234; transition: all 0.3s ease; }
+        .tip-card:hover { transform: translateX(5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .tip-card i { font-size: 2rem; color: #B22234; margin-bottom: 12px; }
+        .tip-card h4 { color: #1E3A5F; margin-bottom: 10px; font-size: 1.1rem; }
+        .tip-card p { font-size: 0.85rem; color: #4a5568; line-height: 1.5; }
+        
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: white; padding: 0; margin: 0; }
+            .card-premium { box-shadow: none; margin: 0; border-radius: 0; }
+            .header-premium { box-shadow: none; }
+            table { page-break-inside: avoid; }
+            tr { page-break-inside: avoid; page-break-after: avoid; }
+            thead { display: table-header-group; }
+            .totals-panel { break-inside: avoid; }
+            td, th { font-size: 9pt !important; padding: 6px 8px !important; }
+            .total-amount { font-size: 14pt !important; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="header-premium no-print">
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <img src="file:///C:/Users/Airey/Desktop/logo.png" alt="Logo AYCE" class="logo-img" onerror="this.style.display='none'">
+            <div class="logo"><h1><i class="fas fa-snowflake" style="color:#B22234;"></i> GRUPO AIRE ACONDICIONADO AYCE</h1><p>Ingeniería Térmica · Distribución Autorizada TRANE · HISENSE · YORK</p></div>
+        </div>
+        <div class="company-address">
+            <span><i class="fas fa-map-pin"></i> Periférico Adolfo Lopez Mateos No. 4293 Int P3-300, Jardines en la Montaña, Tlalpan, CDMX 14210</span>
+            <span><i class="fas fa-phone"></i> 5541668383</span>
+            <span><i class="fas fa-envelope"></i> direccion@aireacondicionadoayw.com.mx</span>
+            <span><i class="fas fa-user-tie"></i> Vendedor: <input type="text" id="vendedorNombre" value="Alexis Vázquez" style="border:none; background:transparent; font-weight:600; width:130px;"></span>
+        </div>
+    </div>
+
+    <div class="nav-menu no-print">
+        <button class="nav-btn active" data-module="cotizador"><i class="fas fa-calculator"></i> Cotizador</button>
+        <button class="nav-btn" data-module="catalogo"><i class="fas fa-boxes"></i> Catálogo HVAC</button>
+        <button class="nav-btn" data-module="calculadora"><i class="fas fa-thermometer-half"></i> Carga Térmica</button>
+        <button class="nav-btn" data-module="reglas"><i class="fas fa-balance-scale"></i> Reglas + Tecnologías</button>
+        <button class="nav-btn" data-module="tips"><i class="fas fa-lightbulb"></i> Tips Ventas</button>
+        <button class="nav-btn" data-module="historial"><i class="fas fa-history"></i> Historial</button>
+    </div>
+
+    <!-- COTIZADOR PRINCIPAL -->
+    <div id="cotizadorModule">
+        <div class="card-premium">
+            <div class="card-header no-print"><h2><i class="fas fa-file-invoice-dollar"></i> Cotización Ejecutiva</h2></div>
+            <div class="card-body">
+                <div class="form-grid no-print">
+                    <div class="field"><label>Cliente / Empresa</label><input type="text" id="clienteName" value="Constructora del Pacífico"></div>
+                    <div class="field"><label>Área (m²)</label><input type="number" id="areaM2" value="120"><div style="font-size:0.7rem;">⚡ Capacidad sugerida: <strong id="capSugerida">7.5</strong> TR</div></div>
+                    <div class="field"><label>Condiciones de Pago</label><input type="text" id="condicionesPago" value="80% anticipo + 20% contra entrega"></div>
+                </div>
+
+                <div class="tipo-cambio-panel no-print">
+                    <span><i class="fas fa-dollar-sign"></i> Tipo de cambio USD/MXN hoy: <strong id="tipoCambioDisplay">Cargando...</strong></span>
+                    <button id="actualizarTCBtn" class="btn-secondary btn-small"><i class="fas fa-sync-alt"></i> Actualizar TC</button>
+                    <button id="toggleCurrencyBtn" class="btn-secondary btn-small"><i class="fas fa-exchange-alt"></i> Mostrar Equipos en USD/MXN</button>
+                </div>
+
+                <div class="seccion-cotizacion">
+                    <div class="seccion-titulo"><i class="fas fa-microchip"></i> EQUIPOS PRINCIPALES</div>
+                    <div class="table-wrapper">
+                        <table style="min-width: 1050px;">
+                            <thead>
+                                <tr><th>Marca</th><th>Modelo</th><th>Capacidad</th><th>Descripción</th><th>Cant</th><th>Precio Venta Unitario</th><th>Subtotal</th><th></th></tr>
+                            </thead>
+                            <tbody id="equiposBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="no-print" style="display: flex; gap: 12px; margin-top: 12px;">
+                        <button id="agregarEquipoBtn" class="btn-secondary" style="padding:8px 20px;"><i class="fas fa-plus"></i> Agregar Equipo desde Catálogo</button>
+                    </div>
+                </div>
+
+                <div class="seccion-cotizacion">
+                    <div class="seccion-titulo"><i class="fas fa-tools"></i> INSTALACIÓN Y ACCESORIOS</div>
+                    <div class="table-wrapper">
+                        <table style="min-width: 750px;">
+                            <thead><tr><th>Concepto</th><th>Descripción</th><th>Cant</th><th>Costo Unitario</th><th>Subtotal</th><th></th></tr></thead>
+                            <tbody id="instalacionBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="no-print" style="display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap;">
+                        <button id="agregarServicioPredefinidoBtn" class="btn-primary" style="padding:8px 20px;"><i class="fas fa-list"></i> 📋 Agregar Servicio Predefinido</button>
+                        <button id="agregarInstalacionBtn" class="btn-secondary" style="padding:8px 20px;"><i class="fas fa-plus"></i> Agregar Personalizado</button>
+                    </div>
+                </div>
+
+                <div class="totals-panel">
+                    <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+                        <div>
+                            <div><strong>💰 TOTAL EQUIPOS:</strong> <span id="totalEquiposVenta">$0.00</span></div>
+                            <div><strong>🔧 TOTAL INSTALACIÓN:</strong> <span id="totalInstalacion">$0.00</span></div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div><strong>SUBTOTAL (sin IVA):</strong> <span id="subtotalGeneral" style="font-size:1.2rem;">$0.00</span></div>
+                            <div><strong>IVA (16%):</strong> <span id="ivaMonto">$0.00</span></div>
+                            <div class="total-amount" id="totalFinalDisplay">$0.00 MXN</div>
+                        </div>
+                    </div>
+                    <div id="autorizacionAlert" style="background:#ffebee; border-radius:18px; padding:10px; margin-top:12px; display:none; color:#B71C1C; font-weight:700;"><i class="fas fa-exclamation-triangle"></i> MONTO > $500,000 MXN → REQUIERE AUTORIZACIÓN DE DIRECCIÓN</div>
+                </div>
+
+                <div class="no-print" style="display: flex; gap: 18px; justify-content: flex-end; margin-top: 28px;">
+                    <button id="exportPdfBtn" class="btn-primary"><i class="fas fa-file-pdf"></i> Generar Cotización PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CATÁLOGO DE EQUIPOS -->
+    <div id="catalogoModule" style="display:none;">
+        <div class="card-premium">
+            <div class="card-header"><h2><i class="fas fa-warehouse"></i> Catálogo de Equipos HVAC <button id="agregarEquipoCatalogoBtn" class="btn-warning" style="margin-left:15px; background:#ffc107; border:none; padding:6px 15px; border-radius:20px;"><i class="fas fa-plus"></i> Agregar Nuevo Equipo</button></h2></div>
+            <div class="card-body">
+                <div class="tab-catalogo">
+                    <button class="tab-catalogo-btn active" data-tab="trane">🇺🇸 TRANE</button>
+                    <button class="tab-catalogo-btn" data-tab="hisense">🇯🇵 HISENSE</button>
+                    <button class="tab-catalogo-btn" data-tab="york">🇺🇸 YORK</button>
+                    <button class="tab-catalogo-btn" data-tab="carrier">🇺🇸 CARRIER</button>
+                    <button class="tab-catalogo-btn" data-tab="duventus">🇲🇽 DUVENTUS</button>
+                    <button class="tab-catalogo-btn" data-tab="rheem">🇺🇸 RHEEM</button>
+                </div>
+                <div id="tabTrane" class="tab-content">
+                    <input type="text" id="searchTrane" placeholder="Buscar por modelo, capacidad..." style="width:100%; padding:12px; border-radius:60px; margin-bottom:20px;">
+                    <div class="table-wrapper"><table style="min-width: 900px;"><thead><tr><th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th><th>Costo Base (USD)</th><th>Precio Venta (MXN)</th><th></th></tr></thead><tbody id="catalogoTraneBody"></tbody></table></div>
+                </div>
+                <div id="tabHisense" class="tab-content" style="display:none;">
+                    <input type="text" id="searchHisense" placeholder="Buscar por modelo, capacidad..." style="width:100%; padding:12px; border-radius:60px; margin-bottom:20px;">
+                    <div class="table-wrapper"><table style="min-width: 900px;"><thead><tr><th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th><th>Precio Venta (MXN)</th><th></th></tr></thead><tbody id="catalogoHisenseBody"></tbody></table></div>
+                </div>
+                <div id="tabYork" class="tab-content" style="display:none;">
+                    <input type="text" id="searchYork" placeholder="Buscar por modelo, capacidad..." style="width:100%; padding:12px; border-radius:60px; margin-bottom:20px;">
+                    <div class="table-wrapper"><table style="min-width: 900px;"><thead><tr><th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th><th>Precio Venta (MXN)</th><th></th></tr></thead><tbody id="catalogoYorkBody"></tbody></table></div>
+                </div>
+                <div id="tabCarrier" class="tab-content" style="display:none;">
+                    <div class="table-wrapper"><table style="min-width: 900px;"><thead><tr><th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th><th>Precio Venta (MXN)</th><th></th></tr></thead><tbody id="catalogoCarrierBody"></tbody></table></div>
+                </div>
+                <div id="tabDuventus" class="tab-content" style="display:none;">
+                    <div class="table-wrapper"><table style="min-width: 900px;"><thead><tr><th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th><th>Precio Venta (MXN)</th><th></th></tr></thead><tbody id="catalogoDuventusBody"></tbody></table></div>
+                </div>
+                <div id="tabRheem" class="tab-content" style="display:none;">
+                    <div class="table-wrapper"><table style="min-width: 900px;"><thead><tr><th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th><th>Precio Venta (MXN)</th><th></th></tr></thead><tbody id="catalogoRheemBody"></tbody></table></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CALCULADORA DE CARGA TÉRMICA SIMPLIFICADA -->
+    <div id="calculadoraModule" style="display:none;">
+        <div class="card-premium">
+            <div class="card-header"><h2><i class="fas fa-thermometer-half"></i> Calculadora de Carga Térmica Profesional</h2></div>
+            <div class="card-body">
+                <div class="calc-card">
+                    <div class="form-grid">
+                        <div class="field"><label><i class="fas fa-arrows-alt"></i> Metros Cuadrados (m²)</label><input type="number" id="calcArea" value="100" step="10"></div>
+                        <div class="field"><label><i class="fas fa-building"></i> Tipo de Espacio</label>
+                            <select id="calcTipo">
+                                <option value="residencial">Residencial (Casa / Departamento)</option>
+                                <option value="oficina">Oficina / Espacio Comercial Ligero</option>
+                                <option value="comercial">Comercial (Tiendas / Negocios)</option>
+                                <option value="restaurante">Restaurante / Cocina</option>
+                                <option value="industrial">Industrial / Bodega</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
+                        <button id="calcularCargaBtn" class="btn-primary"><i class="fas fa-calculator"></i> Calcular Carga Térmica</button>
+                        <button id="aplicarCotizacionBtn" class="btn-secondary"><i class="fas fa-file-invoice"></i> Aplicar a Cotización</button>
+                    </div>
+                </div>
+
+                <div id="resultadoCarga" class="calc-resultado">
+                    <p><i class="fas fa-snowflake"></i> CARGA TÉRMICA CALCULADA</p>
+                    <h3 id="capacidadRecomendada">--.--</h3>
+                    <p id="detalleCarga">Ingrese los metros cuadrados y el tipo de espacio.</p>
+                    <div id="factoresDetalle" style="margin-top: 10px;"></div>
+                </div>
+
+                <div class="sugerencia" style="margin-top: 20px;">
+                    <i class="fas fa-info-circle"></i> <strong>Nota técnica:</strong> Este cálculo profesional estima los BTU necesarios según el tipo de espacio. 1 Tonelada de Refrigeración (TR) = 12,000 BTU/h.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="reglasModule" style="display:none; padding: 40px; background: #ffffff; min-height: 100vh; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+        <div style="max-width: 1000px; margin: auto;">
+            <header style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 1px solid #eef2f6; padding-bottom: 20px;">
+                <div>
+                    <h1 style="color: #1e293b; font-size: 28px; font-weight: 300; margin: 0; letter-spacing: -0.5px;">Estrategia de <span style="font-weight: 700;">Precios</span></h1>
+                    <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Parámetros comerciales para Grupo AYCE México</p>
+                </div>
+                <div style="background: #f8fafc; padding: 12px 20px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: right;">
+                    <span style="font-size: 10px; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Market FX Rate</span>
+                    <div style="color: #0f172a; font-size: 18px; font-weight: 600; margin-top: 2px;">$ <span id="tipoCambioDisplayRegla" style="color: #2563eb;">--.--</span> <small style="font-weight: 400; color: #64748b;">MXN</small></div>
+                </div>
+            </header>
+
+            <div style="margin-bottom: 50px; background: #f0f9ff; border-radius: 24px; padding: 25px; border: 1px solid #bae6fd;">
+                <h2 style="color: #0369a1; font-size: 20px; margin-bottom: 15px;"><i class="fas fa-microchip"></i> Guía de Tecnologías para Ventas</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                    <div>
+                        <h3 style="color: #1e293b;">¿Qué es el EER?</h3>
+                        <p style="font-size: 14px; line-height: 1.5;">El <strong>EER (Energy Efficiency Ratio)</strong> mide la eficiencia energética de un equipo de aire acondicionado. A mayor EER, más frío por cada watt consumido. <br><br>
+                        <span class="factor-badge" style="background:#0284c7;">EER > 10 = Alta eficiencia</span>
+                        <span class="factor-badge" style="background:#ca8a04;">EER 8-10 = Estándar</span>
+                        <span class="factor-badge" style="background:#b91c1c;">EER < 8 = Baja eficiencia</span>
+                        </p>
+                        <div class="sugerencia" style="margin-top: 10px;">
+                            <i class="fas fa-chart-line"></i> <strong>Argumento de Venta:</strong> "Un equipo con EER alto reduce su recibo de luz hasta un 40% comparado con uno estándar."
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="color: #1e293b;">Comparativa de Tecnologías</h3>
+                        <ul style="font-size: 14px; list-style: none; padding: 0;">
+                            <li style="margin-bottom: 12px;"><i class="fas fa-tachometer-alt" style="color:#B22234; width: 25px;"></i> <strong>INVERTER:</strong> Compresor de velocidad variable. Ahorro energético, temperatura estable y silencioso.</li>
+                            <li style="margin-bottom: 12px;"><i class="fas fa-power-off" style="color:#B22234; width: 25px;"></i> <strong>ON/OFF (Tradicional):</strong> Enciende y apaga al 100%. Mayor consumo eléctrico y picos de corriente.</li>
+                            <li style="margin-bottom: 12px;"><i class="fas fa-wind" style="color:#B22234; width: 25px;"></i> <strong>Refrigerante R32:</strong> Menor impacto ambiental (GWP bajo) y mayor eficiencia que R410A.</li>
+                            <li style="margin-bottom: 12px;"><i class="fas fa-charging-station" style="color:#B22234; width: 25px;"></i> <strong>SEER (Estacional):</strong> Para climas cálidos, es mejor métrica que EER. Busque SEER > 18 en Inverter.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
+                <section>
+                    <h3 style="font-size: 12px; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px;">Cuenta Corporativa Premium</h3>
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                        <div style="display: flex; align-items: center; margin-bottom: 25px;">
+                            <div style="width: 40px; height: 40px; background: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                <i class="fas fa-industry" style="color: #1e293b;"></i>
+                            </div>
+                            <div>
+                                <strong style="display: block; color: #1e293b; font-size: 16px;">TRANE Global</strong>
+                                <span style="color: #64748b; font-size: 12px;">Cálculo por factor de importación</span>
+                            </div>
+                        </div>
+                        <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin-bottom: 25px; border-left: 4px solid #2563eb;">
+                            <span style="display: block; font-size: 10px; color: #94a3b8; font-weight: 700; margin-bottom: 10px; text-transform: uppercase;">Algoritmo Maestro:</span>
+                            <div style="font-family: 'Consolas', monospace; font-size: 18px; color: #1e293b;">
+                                (Base<sub>USD</sub> × <span style="color: #2563eb;">TC</span> × 1.15) × <span style="color: #2563eb;">1.20</span> <span style="font-size: 12px;">(Margen 20%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 style="font-size: 12px; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px;">Márgenes de Distribución</h3>
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+                        <div style="padding: 15px 25px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 14px; color: #475569;">Todas las Marcas (TRANE, Carrier, York, Hisense, Rheem, Duventus)</span>
+                            <strong style="color: #1e293b; font-size: 16px;">20%</strong>
+                        </div>
+                        <div style="padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; background: #fff1f2;">
+                            <span style="font-size: 14px; color: #be123c; font-weight: 600;">Servicios Técnicos</span>
+                            <strong style="color: #be123c; font-size: 16px;">0% <small style="font-weight: 400; opacity: 0.7;">NETO</small></strong>
+                        </div>
+                    </div>
+                    <div style="margin-top: 30px;">
+                        <div style="background: #fdf2f2; border-radius: 8px; padding: 15px; display: flex; align-items: center; border: 1px solid #fecaca;">
+                            <i class="fas fa-exclamation-triangle" style="color: #dc2626; margin-right: 15px;"></i>
+                            <p style="margin: 0; font-size: 13px; color: #991b1b;">
+                                Proyectos superiores a <strong>$500,000 MXN</strong> requieren validación obligatoria de la Gerencia de Aplicaciones.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <footer style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #eef2f6; display: flex; gap: 30px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700;">CAPACIDAD</span>
+                    <span style="font-size: 13px; color: #64748b;">m² / 16 = TR Sugerida</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700;">GARANTÍA</span>
+                    <span style="font-size: 13px; color: #64748b;">1 Año Póliza / 5 Años Compresor</span>
+                </div>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- TIPS PARA VENDEDORES -->
+    <div id="tipsModule" style="display:none;">
+        <div class="card-premium">
+            <div class="card-header"><h2><i class="fas fa-lightbulb"></i> Tips Profesionales para Vendedores</h2></div>
+            <div class="card-body">
+                <div class="tips-grid">
+                    <div class="tip-card"><i class="fas fa-phone-alt"></i><h4>📞 Primer Contacto</h4><p>• Escuche activamente las necesidades del cliente<br>• Pregunte por el área, uso y horario del espacio<br>• Identifique si es para oficina, casa o comercio<br>• Ofrezca confianza desde el primer minuto</p></div>
+                    <div class="tip-card"><i class="fas fa-chart-line"></i><h4>📊 Calificación del Cliente</h4><p>• Determine presupuesto desde el inicio<br>• Pregunte si ya tuvo cotizaciones previas<br>• Identifique si la decisión es solo suya o requiere aprobación<br>• Establezca expectativas realistas de tiempo y costo</p></div>
+                    <div class="tip-card"><i class="fas fa-calculator"></i><h4>⚡ Argumentos de Venta</h4><p>• Ahorro energético (inverter vs tradicional)<br>• Garantía extendida y respaldo técnico<br>• Eficiencia y durabilidad de la marca<br>• Financiamiento y facilidades de pago</p></div>
+                    <div class="tip-card"><i class="fas fa-handshake"></i><h4>🤝 Manejo de Objeciones</h4><p>• "Está caro" → Compare ahorro a largo plazo<br>• "Lo compro después" → Ofrezca seguimiento cordial<br>• "Ya tengo presupuesto" → Destaque diferencias clave<br>• Mantenga siempre actitud positiva y profesional</p></div>
+                    <div class="tip-card"><i class="fas fa-tasks"></i><h4>✅ Cierre de Ventas</h4><p>• Use frases como "¿Lo apartamos con el 30%?"<br>• Ofrezca instalación inmediata como beneficio<br>• Muestre casos de éxito y referencias<br>• Genere urgencia con promociones por tiempo limitado</p></div>
+                    <div class="tip-card"><i class="fas fa-chalkboard-teacher"></i><h4>🎓 Post-Venta</h4><p>• Agradezca la compra formalmente<br>• Programe mantenimiento preventivo<br>• Pida recomendación a familiares/amigos<br>• Mantenga contacto para futuras necesidades</p></div>
+                    <div class="tip-card"><i class="fas fa-chart-pie"></i><h4>📈 Estrategias de Éxito</h4><p>• Conozca perfectamente los productos<br>• Prepare cotizaciones rápidas y claras<br>• Siempre tenga alternativas (económica, media, premium)<br>• Capacítese continuamente en nuevas tecnologías</p></div>
+                    <div class="tip-card"><i class="fas fa-smile"></i><h4>💡 Frases Clave para Vender</h4><p>• "Esta inversión se paga sola con el ahorro energético"<br>• "Es la mejor relación calidad-precio del mercado"<br>• "Lo respaldamos con garantía y servicio técnico"<br>• "Sus clientes/empleados estarán más cómodos"</p></div>
+                </div>
+                <div class="sugerencia" style="margin-top: 20px; text-align: center;">
+                    <i class="fas fa-star"></i> <strong>Recuerde:</strong> Un cliente satisfecho es la mejor publicidad. La confianza y el seguimiento marcan la diferencia.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="historialModule" style="display:none;"><div class="card-premium"><div class="card-header"><h2>Historial de Cotizaciones</h2></div><div class="card-body"><div class="table-wrapper">8 decades(thead><tr><th>Cliente</th><th>Fecha</th><th>Total MXN</th></thead><tbody id="historialBody"></tbody></table></div></div></div></div>
+</div>
+
+<!-- MODALES -->
+<div id="modalServicio" style="display:none;" class="modal-overlay no-print">
+    <div class="modal-content">
+        <h3 style="color:#B22234; margin-bottom:20px;"><i class="fas fa-tools"></i> Seleccionar Servicio Predefinido</h3>
+        <div id="categoriasServicios"></div>
+        <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:20px;">
+            <button id="closeModalServicioBtn" class="btn-secondary">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalNuevoEquipo" style="display:none;" class="modal-overlay no-print">
+    <div class="modal-content">
+        <h3 style="color:#B22234; margin-bottom:20px;"><i class="fas fa-plus-circle"></i> Agregar Nuevo Equipo al Catálogo</h3>
+        <div class="form-grid">
+            <div class="field"><label>Marca</label><select id="nuevoEquipoMarca"><option value="TRANE">TRANE</option><option value="HISENSE">HISENSE</option><option value="YORK">YORK</option><option value="CARRIER">CARRIER</option><option value="DUVENTUS">DUVENTUS</option><option value="RHEEM">RHEEM</option></select></div>
+            <div class="field"><label>Modelo</label><input type="text" id="nuevoEquipoModelo" placeholder="Ej: 4MCW1512A9000AA"></div>
+            <div class="field"><label>Tipo</label><input type="text" id="nuevoEquipoTipo" placeholder="Ej: EVAPORADOR, MINISPLIT"></div>
+            <div class="field"><label>Capacidad</label><input type="text" id="nuevoEquipoCapacidad" placeholder="Ej: 1.0 TR"></div>
+            <div class="field"><label>Tensión</label><input type="text" id="nuevoEquipoTension" placeholder="Ej: 220V"></div>
+            <div class="field"><label>Tecnología</label><input type="text" id="nuevoEquipoTecnologia" placeholder="Ej: INVERTER R410A"></div>
+            <div class="field"><label>Precio Base</label><input type="number" id="nuevoEquipoPrecioBase" placeholder="Precio en USD (TRANE/YORK) o MXN"></div>
+        </div>
+        <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:20px;">
+            <button id="guardarNuevoEquipoBtn" class="btn-primary">Guardar Equipo</button>
+            <button id="cancelarNuevoEquipoBtn" class="btn-secondary">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let tipoCambioActual = 20.50;
+    let cargaCalculadaTR = 0;
+    let cargaCalculadaBTU = 0;
+    let mostrarEnUSD = false; // Nueva variable para toggle de moneda
+    
+    async function obtenerTipoCambio() {
+        try {
+            const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            const data = await response.json();
+            if (data && data.rates && data.rates.MXN) {
+                tipoCambioActual = data.rates.MXN;
+                document.getElementById('tipoCambioDisplay').innerHTML = `$${tipoCambioActual.toFixed(2)} MXN`;
+                document.getElementById('tipoCambioDisplayRegla').innerHTML = `$${tipoCambioActual.toFixed(2)} MXN`;
+                showToast(`Tipo de cambio actualizado: $${tipoCambioActual.toFixed(2)} MXN por USD`);
+                renderCatalogoTrane();
+                renderCatalogoYork();
+                renderEquipos(); // Refrescar equipos con nuevo TC si se muestra en MXN
+                return tipoCambioActual;
+            }
+        } catch (error) {
+            tipoCambioActual = 20.50;
+            document.getElementById('tipoCambioDisplay').innerHTML = `$${tipoCambioActual.toFixed(2)} MXN (default)`;
+        }
+        return tipoCambioActual;
+    }
+    
+    function calcularPrecioVentaTrane(costoBaseUSD) {
+        let enMXN = costoBaseUSD * tipoCambioActual;
+        let conFactor = enMXN * 1.15; // Factor logístico
+        let precioVenta = conFactor * 1.20; // Margen 20%
+        return precioVenta;
+    }
+    
+    function calcularPrecioVentaNormal(costoBase, utilidadPorcentaje = 20) {
+        return costoBase * (1 + utilidadPorcentaje / 100);
+    }
+    
+    // Función de Carga Térmica Simplificada
+    function calcularCargaTermica() {
+        let area = parseFloat(document.getElementById('calcArea').value) || 0;
+        let tipo = document.getElementById('calcTipo').value;
+        
+        let btuBase = 0;
+        let tipoNombre = "";
+        switch(tipo) {
+            case 'residencial': btuBase = 110; tipoNombre = "Residencial"; break;
+            case 'oficina': btuBase = 130; tipoNombre = "Oficina / Comercial Ligero"; break;
+            case 'comercial': btuBase = 150; tipoNombre = "Comercial (Tiendas)"; break;
+            case 'restaurante': btuBase = 180; tipoNombre = "Restaurante / Cocina"; break;
+            case 'industrial': btuBase = 100; tipoNombre = "Industrial / Bodega"; break;
+            default: btuBase = 120; tipoNombre = "General";
+        }
+        
+        let btuTotal = area * btuBase;
+        let trTotal = btuTotal / 12000;
+        
+        if(tipo === 'restaurante') trTotal *= 1.15;
+        if(tipo === 'comercial') trTotal *= 1.05;
+        
+        cargaCalculadaBTU = btuTotal;
+        cargaCalculadaTR = trTotal;
+        
+        document.getElementById('capacidadRecomendada').innerHTML = `${trTotal.toFixed(2)} TR (${Math.round(btuTotal).toLocaleString()} BTU/h)`;
+        
+        let factoresHtml = `
+            <span class="factor-badge">📐 Área: ${area}m²</span>
+            <span class="factor-badge">🏢 Tipo: ${tipoNombre}</span>
+            <span class="factor-badge">⚡ Factor Base: ${btuBase} BTU/m²</span>
+        `;
+        document.getElementById('factoresDetalle').innerHTML = factoresHtml;
+        document.getElementById('detalleCarga').innerHTML = `Recomendación profesional para ${tipoNombre}.`;
+        
+        document.getElementById('areaM2').value = area;
+        document.getElementById('capSugerida').innerHTML = trTotal.toFixed(2);
+        
+        showToast(`Carga térmica calculada: ${trTotal.toFixed(2)} TR`);
+        return trTotal;
+    }
+    
+    function aplicarACotizacion() {
+        if (cargaCalculadaTR > 0) {
+            document.getElementById('areaM2').value = document.getElementById('calcArea').value;
+            document.getElementById('capSugerida').innerHTML = cargaCalculadaTR.toFixed(2);
+            setActiveModule('cotizador');
+            showToast(`Carga térmica de ${cargaCalculadaTR.toFixed(2)} TR aplicada a la cotización`);
+        } else {
+            showToast("Primero calcule la carga térmica");
+        }
+    }
+    
+    // Toggle de moneda para equipos en cotizador
+    function toggleCurrency() {
+        mostrarEnUSD = !mostrarEnUSD;
+        renderEquipos();
+        showToast(mostrarEnUSD ? "Mostrando precios en USD" : "Mostrando precios en MXN");
+    }
+    
+    // CATÁLOGOS (mismos datos)
+    let catalogoTrane = [
+        { modelo: "4MCW1512A9000AA", tipo: "EVAPORADOR", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 3850 },
+        { modelo: "4TTK1512A9L00AA", tipo: "CONDENSADORA", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 5200 },
+        { modelo: "4MCW1512A1000AA", tipo: "EVAPORADOR", capacidad: "1.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 3850 },
+        { modelo: "4TTK1512A1L00AA", tipo: "CONDENSADORA", capacidad: "1.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 5200 },
+        { modelo: "4MCW1518A1000AA", tipo: "EVAPORADOR", capacidad: "1.5 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 4950 },
+        { modelo: "4TTK1518A1L00AA", tipo: "CONDENSADORA", capacidad: "1.5 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 6850 },
+        { modelo: "4MCW1524A1000AA", tipo: "EVAPORADOR", capacidad: "2.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 6200 },
+        { modelo: "4TTK1524A1L00AA", tipo: "CONDENSADORA", capacidad: "2.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 8900 },
+        { modelo: "4MCW1530A1000AA", tipo: "EVAPORADOR", capacidad: "2.5 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 7400 },
+        { modelo: "4TTK1530A1L00AA", tipo: "CONDENSADORA", capacidad: "2.5 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 10900 },
+        { modelo: "4MCW1536A1000AA", tipo: "EVAPORADOR", capacidad: "3.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 9500 },
+        { modelo: "4TTK1536A1L00AA", tipo: "CONDENSADORA", capacidad: "3.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 13900 },
+        { modelo: "4MWW1512A9000AA", tipo: "EVAPORADOR", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 4100 },
+        { modelo: "4TWK1512A9L00AA", tipo: "CONDENSADORA", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 5650 },
+        { modelo: "4MWW1512A1000AA", tipo: "EVAPORADOR", capacidad: "1.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 4100 },
+        { modelo: "4TWK1512A1L00AA", tipo: "CONDENSADORA", capacidad: "1.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 5650 },
+        { modelo: "4MWW1518A1000AA", tipo: "EVAPORADOR", capacidad: "1.5 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 5400 },
+        { modelo: "4TWK1518A1L00AA", tipo: "CONDENSADORA", capacidad: "1.5 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 7300 },
+        { modelo: "4MWW1524A1000AA", tipo: "EVAPORADOR", capacidad: "2.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 6800 },
+        { modelo: "4TWK1524A1L00AA", tipo: "CONDENSADORA", capacidad: "2.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 9400 },
+        { modelo: "4MWW1530A1000AA", tipo: "EVAPORADOR", capacidad: "2.5 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 8200 },
+        { modelo: "4TWK1530A1L00AA", tipo: "CONDENSADORA", capacidad: "2.5 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 11800 },
+        { modelo: "4MWW1536A1000AA", tipo: "EVAPORADOR", capacidad: "3.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 10500 },
+        { modelo: "4TWK1536A1L00AA", tipo: "CONDENSADORA", capacidad: "3.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 15200 },
+        { modelo: "4MXW1612E1000AA", tipo: "EVAPORADOR INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 7900 },
+        { modelo: "4TXK1612E1P00AA", tipo: "CONDENSADORA INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 9200 },
+        { modelo: "4MXW1618E1000AA", tipo: "EVAPORADOR INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 10500 },
+        { modelo: "4TXK1618E1P00AA", tipo: "CONDENSADORA INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 12800 },
+        { modelo: "4MXW1624E1000AA", tipo: "EVAPORADOR INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 13500 },
+        { modelo: "4TXK1624E1P00AA", tipo: "CONDENSADORA INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 16800 },
+        { modelo: "4MXW2336CF000AA", tipo: "EVAPORADOR INVERTER", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 18500 },
+        { modelo: "4TXK2336CFP00AA", tipo: "CONDENSADORA INVERTER", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 22500 },
+        { modelo: "4TXK6512G1000AA", tipo: "CONDENSADORA INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 8900 },
+        { modelo: "4TXK6518G1000AA", tipo: "CONDENSADORA INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 12500 },
+        { modelo: "4TXK6524G1000AA", tipo: "CONDENSADORA INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 16800 },
+        { modelo: "4TXK6536G1000AA", tipo: "CONDENSADORA INVERTER", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 22500 },
+        { modelo: "4TXK6548G1000AA", tipo: "CONDENSADORA INVERTER", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 28500 },
+        { modelo: "4TXK6560G1000AA", tipo: "CONDENSADORA INVERTER", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 34500 },
+        { modelo: "4MXD6512G1000AA", tipo: "FAN & COIL", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 5600 },
+        { modelo: "4MXD6518G1000AA", tipo: "FAN & COIL", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 7800 },
+        { modelo: "4MXD6524G1000AA", tipo: "FAN & COIL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 10500 },
+        { modelo: "4MXD6536G1000AA", tipo: "FAN & COIL", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 14500 },
+        { modelo: "4MXD6548G1000AA", tipo: "FAN & COIL", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 18900 },
+        { modelo: "4MXD6560G1000BA", tipo: "FAN & COIL", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 23500 },
+        { modelo: "4MXC6518G1000AA", tipo: "CASSETTE", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 8900 },
+        { modelo: "4MXC6524G1000AA", tipo: "CASSETTE", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 12500 },
+        { modelo: "4MXC6536G1000AA", tipo: "CASSETTE", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 16800 },
+        { modelo: "4MXC6548G1000AA", tipo: "CASSETTE", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 22500 },
+        { modelo: "4MXC6560G1000AA", tipo: "CASSETTE", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 28900 },
+        { modelo: "4MXX6518G1000AA", tipo: "PISO TECHO", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 8900 },
+        { modelo: "4MXX6524G1000AA", tipo: "PISO TECHO", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 11800 },
+        { modelo: "4MXX6536G1000AA", tipo: "PISO TECHO", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 15800 },
+        { modelo: "4MXX6548G1000AA", tipo: "PISO TECHO", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 20500 },
+        { modelo: "4MXX6560G1000AA", tipo: "PISO TECHO", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 25900 },
+        { modelo: "TWE18043BAAP01H", tipo: "MANEJADORA", capacidad: "15 TR", tension: "220V", tecnologia: "COMERCIAL R410A", costoUSD: 45500 },
+        { modelo: "TTA18043DAAE02P", tipo: "CONDENSADORA", capacidad: "15 TR", tension: "220V", tecnologia: "COMERCIAL R410A", costoUSD: 68900 }
+    ];
+
+    let catalogoHisense = [
+        { modelo: "AC121CF", tipo: "MINISPLIT", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 4000 },
+        { modelo: "AC122CF", tipo: "MINISPLIT", capacidad: "1.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 4008 },
+        { modelo: "AC182CF", tipo: "MINISPLIT", capacidad: "1.5 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 6724 },
+        { modelo: "AC242CF", tipo: "MINISPLIT", capacidad: "2.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 8319 },
+        { modelo: "AH121CF", tipo: "MINISPLIT", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR FRIO CALOR R410A", precioBase: 4302 },
+        { modelo: "AH122CF", tipo: "MINISPLIT", capacidad: "1.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", precioBase: 4302 },
+        { modelo: "AH182CF", tipo: "MINISPLIT", capacidad: "1.5 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", precioBase: 6983 },
+        { modelo: "AH242CF", tipo: "MINISPLIT", capacidad: "2.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", precioBase: 8441 },
+        { modelo: "AT121CBW", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 4957 },
+        { modelo: "AT122CBW", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 4767 },
+        { modelo: "AT182CBW", tipo: "MINISPLIT INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 6800 },
+        { modelo: "AT242CBW", tipo: "MINISPLIT INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 9741 },
+        { modelo: "AT122CBW01", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 4699 },
+        { modelo: "AT182CBW01", tipo: "MINISPLIT INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 6800 },
+        { modelo: "AT242CBW01", tipo: "MINISPLIT INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 9741 },
+        { modelo: "ART121KA", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 4699 },
+        { modelo: "ART122KA", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 4699 },
+        { modelo: "ART242KA", tipo: "MINISPLIT INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 9741 },
+        { modelo: "ART121KAW", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 4699 },
+        { modelo: "ART122KAW", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 4699 },
+        { modelo: "ART182KAW", tipo: "MINISPLIT INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 6800 },
+        { modelo: "ART242KAW", tipo: "MINISPLIT INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 9741 },
+        { modelo: "ART362HBW", tipo: "MINISPLIT INVERTER", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 14897 },
+        { modelo: "ARU121KA", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 4957 },
+        { modelo: "ARU122KA", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 4957 },
+        { modelo: "ARU121KAW", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 4957 },
+        { modelo: "ARU122KAW", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 4957 },
+        { modelo: "ARU182KAW", tipo: "MINISPLIT INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 7800 },
+        { modelo: "ARU242KAW", tipo: "MINISPLIT INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 9655 },
+        { modelo: "ARU362HBW", tipo: "MINISPLIT INVERTER", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 18431 },
+        { modelo: "AP12CWN2", tipo: "PORTATIL", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 5086 },
+        { modelo: "AUV-36UWKC", tipo: "PISO TECHO", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 22427 },
+        { modelo: "AUV-48UWNC", tipo: "PISO TECHO", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 28552 },
+        { modelo: "AUV-60UWNC", tipo: "PISO TECHO", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 32181 },
+        { modelo: "AUC24UR5S", tipo: "CASSETTE", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 18500 },
+        { modelo: "AUC-48UR5S", tipo: "CASSETTE", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 28900 },
+        { modelo: "AUC-36UWKK", tipo: "CASSETTE", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 22612 },
+        { modelo: "AUC-60UWNK", tipo: "CASSETTE", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 30707 },
+        { modelo: "AUD-24UWJLL", tipo: "FAN & COIL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 18534 },
+        { modelo: "AUD-36UX4SEHS", tipo: "FAN & COIL", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 23871 },
+        { modelo: "AUD-48UX5SH", tipo: "FAN & COIL", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 32784 },
+        { modelo: "AUD-60UWEH", tipo: "FAN & COIL", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 33806 }
+    ];
+
+    let catalogoYork = [
+        { modelo: "KYHFE12ZJMAXAOX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410", precioUSD: 284.20 },
+        { modelo: "KYHFE12ZXMAXAOX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "110V", tecnologia: "ON/OFF SOLO FRIO R410", precioUSD: 306.24 },
+        { modelo: "KYHFE18ZJMAXAOX", tipo: "HIGHWALL", capacidad: "1.5 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410", precioUSD: 435.00 },
+        { modelo: "KYHFE24ZJMAXAOX", tipo: "HIGHWALL", capacidad: "2.0 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410", precioUSD: 569.56 },
+        { modelo: "KYHJF12ZJ6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 342.20 },
+        { modelo: "KYHJF12ZX6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 377.00 },
+        { modelo: "KYHJF18ZJ6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 489.52 },
+        { modelo: "KYHJF24ZJ6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 646.12 },
+        { modelo: "KYHKF12ZJ6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioUSD: 365.40 },
+        { modelo: "KYHKF12ZX6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER FRIO CALOR R32", precioUSD: 396.72 },
+        { modelo: "KYHKF18ZJ6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioUSD: 532.44 },
+        { modelo: "KYHKF24ZJ6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioUSD: 699.48 },
+        { modelo: "KYHKF36ZJMGXHO", tipo: "HIGHWALL INVERTER", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioUSD: 1200.60 },
+        { modelo: "KYKJF18BZTMCMO", tipo: "CASSETTE", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 1272.52 },
+        { modelo: "KYKJF24BZTCMCO", tipo: "CASSETTE", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 1396.64 },
+        { modelo: "KYKJF36BZTCMCO", tipo: "CASSETTE", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 1772.48 },
+        { modelo: "KYKJF48BZTCMCO", tipo: "CASSETTE", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 2202.84 },
+        { modelo: "KYEJF18BZTCMCO", tipo: "FAN & COIL", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 1220.32 },
+        { modelo: "KYEJF24BZTCMCO", tipo: "FAN & COIL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 1322.40 },
+        { modelo: "KYFJ36BZTCMCO", tipo: "PISO TECHO", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 1798.00 },
+        { modelo: "KYFJ48BZTCMCO", tipo: "PISO TECHO", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 2183.12 }
+    ];
+
+    let catalogoCarrier = [
+        { modelo: "53PXQ123D", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 8900 },
+        { modelo: "53PXQ243D", tipo: "MINISPLIT INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 14900 }
+    ];
+
+    let catalogoDuventus = [
+        { modelo: "IVR9M120F002", tipo: "EVAPORADORA", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 3200 },
+        { modelo: "OVR9M120F002", tipo: "CONDENSADORA", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 4600 }
+    ];
+
+    let catalogoRheem = [
+        { modelo: "RTAI-18C2", tipo: "MINISPLIT INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 7800 }
+    ];
+
+    // Servicios predefinidos (mismos)
+    const preciosMiniSplit = [
+        { concepto: "Instalación Mecánica", descripcion: "Tubería cobre, aislamiento, drenaje (4m)", costoUnitario: 3350 },
+        { concepto: "Instalación Eléctrica", descripcion: "Cableado, protecciones (4m)", costoUnitario: 3350 },
+        { concepto: "Casa a 110V con Clavija", descripcion: "Protección y conexión", costoUnitario: 1080 },
+        { concepto: "220V Sin centro de carga, sin Pastilla", descripcion: "Instalación eléctrica 220V", costoUnitario: 2268 },
+        { concepto: "Mantenimiento", descripcion: "Servicio básico", costoUnitario: 1080 },
+        { concepto: "Diagnóstico", descripcion: "Revisión y evaluación", costoUnitario: 1080 },
+        { concepto: "Base Metálica, Piso y Mensula", descripcion: "Soporte estructural", costoUnitario: 1080 },
+        { concepto: "Bomba Condensado Mini 110V", descripcion: "Bomba de elevación", costoUnitario: 3672 },
+        { concepto: "Bomba Condensado Mini 220V", descripcion: "Bomba de elevación", costoUnitario: 3348 },
+        { concepto: "Mantenimiento Portail", descripcion: "Servicio especializado", costoUnitario: 1400 },
+        { concepto: "Exceden Tubería", descripcion: "Metro adicional tubería", costoUnitario: 490 },
+        { concepto: "Bomba Condensado USAPUMP", descripcion: "Bomba de condensado universal", costoUnitario: 1850 },
+        { concepto: "Extractor SOLER PALAU CFP300", descripcion: "Ventilación 300 CFM 127V", costoUnitario: 3200 },
+        { concepto: "Extractor SOLER PALAU TD-350/125", descripcion: "Ventilador tubular 127V", costoUnitario: 4200 }
+    ];
+
+    const preciosPisoTecho = [
+        { concepto: "Instalación Mecánica", descripcion: "Tubería cobre, aislamiento (4m)", costoUnitario: 5724 },
+        { concepto: "Instalación Eléctrica", descripcion: "Cableado y protecciones (4m)", costoUnitario: 3348 },
+        { concepto: "Mantenimiento", descripcion: "Servicio completo", costoUnitario: 1620 },
+        { concepto: "Diagnóstico", descripcion: "Revisión técnica", costoUnitario: 1620 },
+        { concepto: "Base Metálica, Piso y Mensula", descripcion: "Soporte estructural", costoUnitario: 1620 },
+        { concepto: "Bomba Condensado", descripcion: "Bomba de elevación", costoUnitario: 4320 }
+    ];
+
+    const preciosOtros = [
+        { concepto: "Pastilla", descripcion: "Interruptor termomagnético", costoUnitario: 650 },
+        { concepto: "Centro de Carga", descripcion: "Panel eléctrico", costoUnitario: 1026 },
+        { concepto: "Desmontaje", descripcion: "Retiro de equipo existente", costoUnitario: 1620 },
+        { concepto: "Pleno Fan and Coil", descripcion: "Caja de distribución", costoUnitario: 4320 },
+        { concepto: "Registro Tablaroca 10x10", descripcion: "Registro de acceso", costoUnitario: 650 },
+        { concepto: "Paso de Losa", descripcion: "Perforación losa concreta", costoUnitario: 432 },
+        { concepto: "Recarga de gas R22", descripcion: "Carga de refrigerante", costoUnitario: 3564 },
+        { concepto: "Recarga de gas R410", descripcion: "Carga de refrigerante", costoUnitario: 2484 },
+        { concepto: "Mantenimiento con Sanitizante MiniSplit", descripcion: "Limpieza profunda", costoUnitario: 1900 },
+        { concepto: "Mantenimiento con Sanitizante U-MATCH", descripcion: "Limpieza profunda", costoUnitario: 2380 },
+        { concepto: "Lavado y Vacío de Sistema", descripcion: "Limpieza de líneas", costoUnitario: 2380 },
+        { concepto: "Reparación de Fuga", descripcion: "Detección y reparación", costoUnitario: 2380 },
+        { concepto: "Instalación Mecánica TVR", descripcion: "Por tonelada de refrigeración", costoUnitario: 2380 }
+    ];
+
+    let instalaciones = [];
+    let equipos = [];
+    let nextId = 100;
+    let historial = [];
+    
+    window.editarPrecioEquipo = function(marca, index) {
+        let nuevoPrecio = prompt("Ingrese el nuevo precio:");
+        if (nuevoPrecio !== null && !isNaN(parseFloat(nuevoPrecio))) {
+            let precioNum = parseFloat(nuevoPrecio);
+            if (marca === "TRANE") catalogoTrane[index].costoUSD = precioNum;
+            else if (marca === "YORK") catalogoYork[index].precioUSD = precioNum;
+            else if (marca === "HISENSE") catalogoHisense[index].precioBase = precioNum;
+            else if (marca === "CARRIER") catalogoCarrier[index].precioBase = precioNum;
+            else if (marca === "DUVENTUS") catalogoDuventus[index].precioBase = precioNum;
+            else if (marca === "RHEEM") catalogoRheem[index].precioBase = precioNum;
+            renderCatalogoTrane(); renderCatalogoHisense(); renderCatalogoYork(); 
+            renderCatalogoCarrier(); renderCatalogoDuventus(); renderCatalogoRheem();
+            showToast(`Precio actualizado`);
+        }
+    };
+    
+    function agregarNuevoEquipo() {
+        let marca = document.getElementById('nuevoEquipoMarca').value;
+        let modelo = document.getElementById('nuevoEquipoModelo').value;
+        let tipo = document.getElementById('nuevoEquipoTipo').value;
+        let capacidad = document.getElementById('nuevoEquipoCapacidad').value;
+        let tension = document.getElementById('nuevoEquipoTension').value;
+        let tecnologia = document.getElementById('nuevoEquipoTecnologia').value;
+        let precioBase = parseFloat(document.getElementById('nuevoEquipoPrecioBase').value);
+        if (!modelo || !precioBase) { showToast("Complete campos obligatorios"); return; }
+        if (marca === "TRANE") catalogoTrane.push({ modelo, tipo, capacidad, tension, tecnologia, costoUSD: precioBase });
+        else if (marca === "YORK") catalogoYork.push({ modelo, tipo, capacidad, tension, tecnologia, precioUSD: precioBase });
+        else if (marca === "HISENSE") catalogoHisense.push({ modelo, tipo, capacidad, tension, tecnologia, precioBase });
+        else if (marca === "CARRIER") catalogoCarrier.push({ modelo, tipo, capacidad, tension, tecnologia, precioBase });
+        else if (marca === "DUVENTUS") catalogoDuventus.push({ modelo, tipo, capacidad, tension, tecnologia, precioBase });
+        else if (marca === "RHEEM") catalogoRheem.push({ modelo, tipo, capacidad, tension, tecnologia, precioBase });
+        document.getElementById('modalNuevoEquipo').style.display = 'none';
+        showToast(`Equipo ${modelo} agregado`);
+        renderCatalogoTrane(); renderCatalogoHisense(); renderCatalogoYork(); 
+        renderCatalogoCarrier(); renderCatalogoDuventus(); renderCatalogoRheem();
+    }
+    
+    function renderEquipos() {
+        let tbody = document.getElementById('equiposBody');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        equipos.forEach((eq, idx) => {
+            let subtotal = eq.cantidad * eq.precioVenta;
+            let marcaClass = `badge-${eq.marca.toLowerCase()}`;
+            let precioDisplay = eq.precioVenta;
+            let monedaSimbolo = "MXN";
+            if(mostrarEnUSD && eq.precioVentaUSD) {
+                precioDisplay = eq.precioVentaUSD;
+                monedaSimbolo = "USD";
+            } else if(mostrarEnUSD && !eq.precioVentaUSD) {
+                // Si no tiene USD guardado, calcularlo
+                let usdValue = eq.precioVenta / tipoCambioActual;
+                precioDisplay = usdValue;
+                monedaSimbolo = "USD";
+            } else {
+                monedaSimbolo = "MXN";
+            }
+            
+            tbody.innerHTML += `<tr>
+                <td><span class="badge-marca ${marcaClass}">${eq.marca}</span></td>
+                <td>${eq.modelo}</td>
+                <td>${eq.capacidad}</td>
+                <td><input type="text" class="editDescripcion" data-idx="${idx}" value="${eq.descripcion || ''}" style="width:180px;" placeholder="Descripción del equipo"></td>
+                <td><input type="number" class="editCantidad" data-idx="${idx}" value="${eq.cantidad}" style="width:60px;"></td>
+                <td><input type="text" class="editPrecioVenta" data-idx="${idx}" value="${precioDisplay.toFixed(2)}" style="width:100px;"> <span style="font-size:0.7rem;">${monedaSimbolo}</span></td>
+                <td class="subtotalEq">$${subtotal.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</td>
+                <td><button class="deleteEquipo" data-idx="${idx}" style="background:none; border:none; color:#B22234;"><i class="fas fa-trash"></i></button></td>
+            </tr>`;
+        });
+        document.querySelectorAll('.editDescripcion').forEach(i => i.addEventListener('change', (e) => { equipos[e.target.dataset.idx].descripcion = e.target.value; renderAll(); }));
+        document.querySelectorAll('.editCantidad').forEach(i => i.addEventListener('change', (e) => { equipos[e.target.dataset.idx].cantidad = parseFloat(e.target.value) || 1; renderAll(); }));
+        document.querySelectorAll('.editPrecioVenta').forEach(i => i.addEventListener('change', (e) => { 
+            let val = parseFloat(e.target.value) || 0;
+            let idx = e.target.dataset.idx;
+            if(mostrarEnUSD) {
+                equipos[idx].precioVentaUSD = val;
+                equipos[idx].precioVenta = val * tipoCambioActual;
+            } else {
+                equipos[idx].precioVenta = val;
+                equipos[idx].precioVentaUSD = val / tipoCambioActual;
+            }
+            renderAll(); 
+        }));
+        document.querySelectorAll('.deleteEquipo').forEach(b => b.addEventListener('click', (e) => { let idx = parseInt(b.dataset.idx); equipos.splice(idx, 1); renderAll(); }));
+    }
+    
+    function renderInstalaciones() {
+        let tbody = document.getElementById('instalacionBody');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        instalaciones.forEach((inst, idx) => {
+            let subtotal = inst.cantidad * inst.costoUnitario;
+            tbody.innerHTML += `<tr>
+                <td><input class="editInstConcepto" data-idx="${idx}" value="${inst.concepto}" style="width:160px;"></td>
+                <td><input class="editInstDesc" data-idx="${idx}" value="${inst.descripcion}" style="width:180px;"></td>
+                <td><input type="number" class="editInstCant" data-idx="${idx}" value="${inst.cantidad}" style="width:60px;"></td>
+                <td><input type="text" class="editInstCosto" data-idx="${idx}" value="${inst.costoUnitario.toFixed(2)}" style="width:90px;"> MXN</td>
+                <td class="subtotalInst">$${subtotal.toFixed(2)}</td>
+                <td><button class="deleteInst" data-idx="${idx}" style="background:none; border:none; color:#B22234;"><i class="fas fa-trash"></i></button></td>
+            </tr>`;
+        });
+        document.querySelectorAll('.editInstCant').forEach(i => i.addEventListener('change', (e) => { instalaciones[e.target.dataset.idx].cantidad = parseFloat(e.target.value) || 1; renderAll(); }));
+        document.querySelectorAll('.editInstCosto').forEach(i => i.addEventListener('change', (e) => { instalaciones[e.target.dataset.idx].costoUnitario = parseFloat(e.target.value) || 0; renderAll(); }));
+        document.querySelectorAll('.deleteInst').forEach(b => b.addEventListener('click', (e) => { let idx = parseInt(b.dataset.idx); instalaciones.splice(idx, 1); renderAll(); }));
+    }
+    
+    function calcularTotales() {
+        let totalEquiposVenta = equipos.reduce((acc, e) => acc + (e.cantidad * e.precioVenta), 0);
+        let costoInstalacion = instalaciones.reduce((acc, i) => acc + (i.cantidad * i.costoUnitario), 0);
+        let subtotal = totalEquiposVenta + costoInstalacion;
+        let iva = subtotal * 0.16;
+        let totalFinal = subtotal + iva;
+        document.getElementById('totalEquiposVenta').innerHTML = `$${totalEquiposVenta.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+        document.getElementById('totalInstalacion').innerHTML = `$${costoInstalacion.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+        document.getElementById('subtotalGeneral').innerHTML = `$${subtotal.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+        document.getElementById('ivaMonto').innerHTML = `$${iva.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+        document.getElementById('totalFinalDisplay').innerHTML = `$${totalFinal.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
+        document.getElementById('autorizacionAlert').style.display = totalFinal > 500000 ? 'block' : 'none';
+        return { subtotal, iva, totalFinal };
+    }
+    
+    function renderAll() { renderEquipos(); renderInstalaciones(); calcularTotales(); }
+    
+    function renderCatalogoTrane() {
+        let search = document.getElementById('searchTrane')?.value.toLowerCase() || '';
+        let filtered = catalogoTrane.filter(e => e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search));
+        let tbody = document.getElementById('catalogoTraneBody');
+        if(tbody) tbody.innerHTML = filtered.map((e, idx) => {
+            let precioVenta = calcularPrecioVentaTrane(e.costoUSD);
+            return `<tr>
+                <td><strong>${e.modelo}</strong></td><td>${e.tipo}</td><td>${e.capacidad}</td><td>${e.tension}</td>
+                <td style="font-size:0.75rem;">${e.tecnologia}</td><td>$${e.costoUSD.toFixed(2)} USD <button class="edit-precio-btn" onclick="editarPrecioEquipo('TRANE',${idx})">✏️</button></td>
+                <td><strong>$${precioVenta.toFixed(2)}</strong> MXN</td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('TRANE','${e.modelo}','${e.capacidad}',${precioVenta})">+ Cotizar</button></td>
+            </tr>`;
+        }).join('');
+    }
+    
+    function renderCatalogoHisense() {
+        let search = document.getElementById('searchHisense')?.value.toLowerCase() || '';
+        let filtered = catalogoHisense.filter(e => e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search));
+        let tbody = document.getElementById('catalogoHisenseBody');
+        if(tbody) tbody.innerHTML = filtered.map((e, idx) => {
+            let precioVenta = calcularPrecioVentaNormal(e.precioBase, 20);
+            return `<tr>
+                <td><strong>${e.modelo}</strong></td><td>${e.tipo}</td><td>${e.capacidad}</td><td>${e.tension}</td>
+                <td style="font-size:0.75rem;">${e.tecnologia}</td><td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('HISENSE',${idx})">✏️</button></td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('HISENSE','${e.modelo}','${e.capacidad}',${precioVenta})">+ Cotizar</button></td>
+            </tr>`;
+        }).join('');
+    }
+    
+    function renderCatalogoYork() {
+        let search = document.getElementById('searchYork')?.value.toLowerCase() || '';
+        let filtered = catalogoYork.filter(e => e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search));
+        let tbody = document.getElementById('catalogoYorkBody');
+        if(tbody) tbody.innerHTML = filtered.map((e, idx) => {
+            let precioMXN = e.precioUSD * tipoCambioActual;
+            let precioVenta = calcularPrecioVentaNormal(precioMXN, 20);
+            return `<tr>
+                <td><strong>${e.modelo}</strong></td><td>${e.tipo}</td><td>${e.capacidad}</td><td>${e.tension}</td>
+                <td style="font-size:0.75rem;">${e.tecnologia}</td><td><strong>$${precioVenta.toFixed(2)}</strong> MXN <button class="edit-precio-btn" onclick="editarPrecioEquipo('YORK',${idx})">✏️</button></td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('YORK','${e.modelo}','${e.capacidad}',${precioVenta})">+ Cotizar</button></td>
+            </tr>`;
+        }).join('');
+    }
+    
+    function renderCatalogoCarrier() {
+        let tbody = document.getElementById('catalogoCarrierBody');
+        if(tbody) tbody.innerHTML = catalogoCarrier.map((e, idx) => {
+            let precioVenta = calcularPrecioVentaNormal(e.precioBase, 20);
+            return `<tr>
+                <td><strong>${e.modelo}</strong></td><td>${e.tipo}</td><td>${e.capacidad}</td><td>${e.tension}</td>
+                <td style="font-size:0.75rem;">${e.tecnologia}</td><td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('CARRIER',${idx})">✏️</button></td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('CARRIER','${e.modelo}','${e.capacidad}',${precioVenta})">+ Cotizar</button></td>
+            </tr>`;
+        }).join('');
+    }
+    
+    function renderCatalogoDuventus() {
+        let tbody = document.getElementById('catalogoDuventusBody');
+        if(tbody) tbody.innerHTML = catalogoDuventus.map((e, idx) => {
+            let precioVenta = calcularPrecioVentaNormal(e.precioBase, 20);
+            return `<tr>
+                <td><strong>${e.modelo}</strong></td><td>${e.tipo}</td><td>${e.capacidad}</td><td>${e.tension}</td>
+                <td style="font-size:0.75rem;">${e.tecnologia}</td><td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('DUVENTUS',${idx})">✏️</button></td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('DUVENTUS','${e.modelo}','${e.capacidad}',${precioVenta})">+ Cotizar</button></td>
+            </tr>`;
+        }).join('');
+    }
+    
+    function renderCatalogoRheem() {
+        let tbody = document.getElementById('catalogoRheemBody');
+        if(tbody) tbody.innerHTML = catalogoRheem.map((e, idx) => {
+            let precioVenta = calcularPrecioVentaNormal(e.precioBase, 20);
+            return `<tr>
+                <td><strong>${e.modelo}</strong></td><td>${e.tipo}</td><td>${e.capacidad}</td><td>${e.tension}</td>
+                <td style="font-size:0.75rem;">${e.tecnologia}</td><td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('RHEEM',${idx})">✏️</button></td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('RHEEM','${e.modelo}','${e.capacidad}',${precioVenta})">+ Cotizar</button></td>
+            </tr>`;
+        }).join('');
+    }
+    
+    window.agregarEquipoDirecto = function(marca, modelo, capacidad, precioVenta) {
+        let precioVentaUSD = precioVenta / tipoCambioActual;
+        equipos.push({ id: nextId++, marca, modelo, capacidad, cantidad: 1, precioVenta, precioVentaUSD, descripcion: `Equipo ${marca} ${modelo} ${capacidad}` });
+        renderAll();
+        setActiveModule('cotizador');
+        showToast(`✓ ${marca} ${modelo} agregado - $${precioVenta.toFixed(2)} MXN`);
+    };
+    
+    function agregarServicioPredefinido(servicio) {
+        let cantidad = prompt("Ingrese la cantidad:", "1");
+        if (cantidad !== null && !isNaN(parseFloat(cantidad))) {
+            instalaciones.push({ id: nextId++, concepto: servicio.concepto, descripcion: servicio.descripcion, cantidad: parseFloat(cantidad), costoUnitario: servicio.costoUnitario });
+            renderAll();
+            showToast(`✓ ${servicio.concepto} agregado`);
+            document.getElementById('modalServicio').style.display = 'none';
+        }
+    }
+    
+    function cargarListasServicios() {
+        const container = document.getElementById('categoriasServicios');
+        container.innerHTML = `<div class="categoria-servicios"><div class="categoria-titulo">📦 MiniSplit</div><div id="listaMiniSplit"></div></div>
+            <div class="categoria-servicios"><div class="categoria-titulo">🏢 Piso Techo / Fan & Coil</div><div id="listaPisoTecho"></div></div>
+            <div class="categoria-servicios"><div class="categoria-titulo">🔧 Otros Servicios</div><div id="listaOtros"></div></div>`;
+        document.getElementById('listaMiniSplit').innerHTML = preciosMiniSplit.map(s => `<div class="servicio-item"><div class="servicio-info"><div class="servicio-nombre">${s.concepto}</div><div class="servicio-desc">${s.descripcion}</div></div><div class="servicio-precio">$${s.costoUnitario.toFixed(2)}</div><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarServicioPredefinido({concepto:'${s.concepto}', descripcion:'${s.descripcion}', costoUnitario:${s.costoUnitario}})">+ Agregar</button></div>`).join('');
+        document.getElementById('listaPisoTecho').innerHTML = preciosPisoTecho.map(s => `<div class="servicio-item"><div class="servicio-info"><div class="servicio-nombre">${s.concepto}</div><div class="servicio-desc">${s.descripcion}</div></div><div class="servicio-precio">$${s.costoUnitario.toFixed(2)}</div><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarServicioPredefinido({concepto:'${s.concepto}', descripcion:'${s.descripcion}', costoUnitario:${s.costoUnitario}})">+ Agregar</button></div>`).join('');
+        document.getElementById('listaOtros').innerHTML = preciosOtros.map(s => `<div class="servicio-item"><div class="servicio-info"><div class="servicio-nombre">${s.concepto}</div><div class="servicio-desc">${s.descripcion}</div></div><div class="servicio-precio">$${s.costoUnitario.toFixed(2)}</div><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarServicioPredefinido({concepto:'${s.concepto}', descripcion:'${s.descripcion}', costoUnitario:${s.costoUnitario}})">+ Agregar</button></div>`).join('');
+    }
+    
+    function exportToPDF() {
+        let cliente = document.getElementById('clienteName').value;
+        let vendedor = document.getElementById('vendedorNombre').value;
+        let condiciones = document.getElementById('condicionesPago').value;
+        let fecha = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+        let { subtotal, iva, totalFinal } = calcularTotales();
+
+        historial.unshift({ cliente, fecha, total: totalFinal.toFixed(2) });
+        let historialBody = document.getElementById('historialBody');
+        if(historialBody) historialBody.innerHTML = historial.slice(0,10).map(h => `<tr><td>${h.cliente}</td><td>${h.fecha}</td><td>$${h.total}</td>`).join('');
+
+        let win = window.open('', '_blank');
+        win.document.write(`
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Propuesta_Técnica_Grupo_AYCE_${cliente.replace(/\s+/g, '_')}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --ayce-red: #B22234; --ayce-dark: #1e293b; --text-main: #334155; --text-light: #64748b; --bg-light: #f8fafc; --border: #e2e8f0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { font-family: 'Inter', sans-serif; color: var(--text-main); background: #fff; font-size: 11px; line-height: 1.4; padding: 40px; }
+        .invoice-container { max-width: 900px; margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--ayce-dark); padding-bottom: 25px; margin-bottom: 35px; }
+        .logo-block { display: flex; align-items: center; gap: 18px; }
+        .vector-emblem { width: 70px; height: 70px; background: #ffffff; border: 2px solid var(--ayce-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(178,34,52,0.1); }
+        .vector-emblem svg { width: 45px; height: 45px; fill: var(--ayce-red); }
+        .company-name h1 { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: var(--ayce-dark); letter-spacing: -0.5px; margin: 0; }
+        .company-name p { font-size: 10px; color: var(--ayce-red); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 3px; }
+        .meta-block { text-align: right; }
+        .doc-type { font-family: 'Montserrat', sans-serif; color: var(--ayce-dark); font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .folio-info { font-size: 11px; color: var(--text-light); }
+        .folio-info strong { color: var(--ayce-red); font-size: 13px; }
+        .data-panel { display: grid; grid-template-columns: 1.6fr 1.3fr; gap: 25px; background: var(--bg-light); padding: 20px 25px; border-radius: 10px; margin-bottom: 35px; border: 1px solid var(--border); }
+        .data-card h4 { font-size: 9px; color: var(--text-light); font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 5px;}
+        .data-card p { font-size: 13px; font-weight: 600; color: var(--ayce-dark); }
+        .condiciones-text { color: var(--ayce-red) !important; font-weight: 700 !important; }
+        .seccion-title { font-size: 11px; font-weight: 700; color: var(--ayce-dark); text-transform: uppercase; letter-spacing: 1px; border-left: 3px solid var(--ayce-red); padding-left: 10px; margin-bottom: 12px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; table-layout: fixed; border: 1px solid var(--border); }
+        th { background: #f1f5f9; padding: 12px; font-size: 10px; text-transform: uppercase; color: var(--text-main); font-weight: 700; text-align: left; border-bottom: 2px solid var(--border); }
+        td { padding: 12px; font-size: 11px; border-bottom: 1px solid var(--border); color: var(--text-main); vertical-align: top; }
+        .row-alt td { background: #fafbfc; }
+        .col-qty { width: 70px; text-align: center; font-weight: 700; }
+        .col-price { width: 130px; text-align: right; }
+        .col-total { width: 140px; text-align: right; font-weight: 700; color: var(--ayce-red); background: #fff8f8; }
+        .col-desc { width: auto; font-weight: 500;}
+        .summary-container { display: flex; justify-content: flex-end; margin-top: 10px; margin-bottom: 45px; }
+        .summary-box { width: 320px; border: 2px solid var(--ayce-dark); border-radius: 8px; overflow: hidden; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .summary-row { display: flex; justify-content: space-between; padding: 10px 15px; font-size: 13px; border-bottom: 1px solid var(--border); }
+        .summary-row:last-child { border-bottom: none; }
+        .total-final-row { background: var(--ayce-dark); color: white; font-size: 20px; font-weight: 800; padding: 15px; display: flex; justify-content: space-between; }
+        .total-final-row span:last-child { font-size: 20px; color: white;}
+        .conditions-panel { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #fff8f8; border: 1px solid #fee2e2; padding: 20px; border-radius: 8px; font-size: 10px; color: #7f1d1d; line-height: 1.5; }
+        .conditions-panel strong { color: var(--ayce-red); }
+        .footer { margin-top: 50px; text-align: center; font-size: 9px; color: var(--text-light); border-top: 1px solid var(--border); padding-top: 20px; }
+        @media print { body { padding: 0; background: white; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;} .invoice-container { max-width: 100%; width: 100%; border: none;} .summary-box { box-shadow: none; border: 2px solid var(--ayce-dark) !important;} .total-final-row { background: var(--ayce-dark) !important; color: white !important;} }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="ayc-brand-header">
+    <div class="ayc-top-bar"></div>
+    
+    <div class="ayc-main-content">
+        <div class="ayc-logo-section">
+            <div class="ayc-emblem-container">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="ayc-svg-icon">
+                    <defs>
+                        <linearGradient id="bladeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00b5a6;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#007a7a;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <g transform="translate(50,50)">
+                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(0)" rx="1" />
+                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(30)" rx="1" />
+                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(60)" rx="1" />
+                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(90)" rx="1" />
+                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(120)" rx="1" />
+                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(150)" rx="1" />
+                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(180)" rx="1" />
+                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(210)" rx="1" />
+                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(240)" rx="1" />
+                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(270)" rx="1" />
+                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(300)" rx="1" />
+                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(330)" rx="1" />
+                        <circle cx="0" cy="0" r="11" fill="#00b5a6" />
+                    </g>
+                </svg>
+            </div>
+            <div class="ayc-text-stack">
+                <span class="ayc-brand-title">Grupo <strong>AYCE</strong> México</span>
+                <span class="ayc-brand-subtitle">Ingeniería Térmica & Soluciones HVAC Corporativas</span>
+            </div>
+        </div>
+
+        <div class="ayc-meta-section">
+            <h2 class="ayc-doc-label">Propuesta Técnica - Comercial</h2>
+            <div class="ayc-date-badge">
+                <span class="ayc-date-text">Emisión: <strong>13 de abril de 2026</strong></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="ayc-bottom-divider"></div>
+</div>
+
+<style>
+    :root {
+        --ayce-primary: #00b5a6;
+        --ayce-secondary: #007a7a;
+        --ayce-accent: #b91c1c;
+        --ayce-dark: #1e293b;
+        --ayce-light-gray: #f8fafc;
+    }
+
+    .ayc-brand-header {
+        background: #ffffff;
+        padding: 0;
+        margin-bottom: 40px;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Barra superior de acento */
+    .ayc-top-bar {
+        height: 6px;
+        background: linear-gradient(90deg, var(--ayce-primary), var(--ayce-secondary));
+        width: 100%;
+    }
+
+    .ayc-main-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 35px 50px;
+    }
+
+    /* Estilo del Logo e Identidad */
+    .ayc-logo-section {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+    }
+
+    .ayc-emblem-container {
+        width: 70px;
+        height: 70px;
+        position: relative;
+    }
+
+    .ayc-svg-icon {
+        width: 100%;
+        height: 100%;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));
+    }
+
+    .ayc-text-stack {
+        display: flex;
+        flex-direction: column;
+        border-left: 1px solid #e2e8f0;
+        padding-left: 25px;
+    }
+
+    .ayc-brand-title {
+        font-size: 26px;
+        color: var(--ayce-dark);
+        letter-spacing: -0.5px;
+        line-height: 1;
+    }
+
+    .ayc-brand-title strong {
+        color: var(--ayce-primary);
+        font-weight: 800;
+    }
+
+    .ayc-brand-subtitle {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #64748b;
+        margin-top: 8px;
+        font-weight: 500;
+    }
+
+    /* Estilo de la sección de Propuesta */
+    .ayc-meta-section {
+        text-align: right;
+    }
+
+    .ayc-doc-label {
+        font-size: 18px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--ayce-dark);
+        margin: 0;
+        letter-spacing: 0.5px;
+    }
+
+    .ayc-date-badge {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 6px 16px;
+        background-color: var(--ayce-light-gray);
+        border-radius: 4px;
+        border-right: 3px solid var(--ayce-accent);
+    }
+
+    .ayc-date-text {
+        font-size: 13px;
+        color: #475569;
+    }
+
+    .ayc-date-text strong {
+        color: var(--ayce-accent);
+    }
+
+    /* Línea divisoria inferior */
+    .ayc-bottom-divider {
+        height: 1px;
+        background: #e2e8f0;
+        margin: 0 50px;
+    }
+</style>
+        <div class="data-panel">
+            <div class="data-card"><h4>CLIENTE / RAZÓN SOCIAL</h4><p>${cliente}</p></div>
+            <div class="data-card" style="text-align: right;"><h4>INGENIERO RESPONSABLE</h4><p>${vendedor}</p></div>
+            <div class="data-card"><h4>CONDICIONES DE PAGO</h4><p class="condiciones-text">${condiciones}</p></div>
+            <div class="data-card" style="text-align: right;"><h4>VALIDEZ DE LA OFERTA</h4><p>15 Días Naturales</p></div>
+        </div>
+        <div class="seccion-title">Suministro de Equipamiento HVAC de Alta Eficiencia</div>
+        <table><thead><tr><th class="col-desc">Descripción Técnica del Sistema</th><th class="col-qty">Cant.</th><th class="col-price">P. Unitario</th><th class="col-total">Subtotal</th></tr></thead>
+            <tbody>${equipos.map((eq, index) => `<tr class="${index % 2 === 0 ? '' : 'row-alt'}"><td class="col-desc"><strong>${eq.marca.toUpperCase()}</strong> - ${eq.modelo}<br><small style="color:var(--text-light); font-size:9px">${eq.descripcion || 'Suministro de equipo principal certificado'}</small></td><td class="col-qty">${eq.cantidad}</td><td class="col-price">$${eq.precioVenta.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td><td class="col-total">$${(eq.cantidad * eq.precioVenta).toLocaleString('es-MX', {minimumFractionDigits: 2})}</td></tr>`).join('')}</tbody>
+        </table>
+        <div class="seccion-title">Servicios Especializados de Instalación & Puesta en Marcha</div>
+        <table><thead><tr><th class="col-desc">Concepto</th><th class="col-qty">Cant.</th><th class="col-price">Costo Unitario</th><th class="col-total">Subtotal</th></tr></thead>
+            <tbody>${instalaciones.map((i, index) => `<tr class="${index % 2 === 0 ? '' : 'row-alt'}"><td class="col-desc">${i.concepto}<br><small style="color:var(--text-light); font-size:9px">${i.descripcion}</small></td><td class="col-qty">${i.cantidad}</td><td class="col-price">$${i.costoUnitario.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td><td class="col-total">$${(i.cantidad * i.costoUnitario).toLocaleString('es-MX', {minimumFractionDigits: 2})}</td></tr>`).join('')}</tbody>
+        </table>
+        <div class="summary-container"><div class="summary-box"><div class="summary-row"><span>Subtotal Neto</span><strong>$${subtotal.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong></div><div class="summary-row"><span>I.V.A. Trasladado (16%)</span><strong>$${iva.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong></div><div class="total-final-row"><span>Inversión Total</span><span>$${totalFinal.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</span></div></div></div>
+        <div class="seccion-title">Dictamen Legal & Normativo</div>
+        <div class="conditions-panel"><p><strong>Logística:</strong> Horario de entrega de Lunes a Viernes de 8:30 a 6:30 pm. Programación en 3 a 5 días hábiles post-validación de depósito.</p><p><strong>Devoluciones:</strong> No se aceptan devoluciones de mercancía ni reembolsos monetarios. Cargo excepcional del 20% sobre valor neto autorizado.</p><p><strong>Finanzas:</strong> Favor de enviar comprobante de pago para habilitar programación del servicio. No se maneja ningún tipo de crédito comercial.</p><p><strong>Garantía:</strong> Un (01) año en partes eléctricas y componentes generales. Cinco (05) años en compresor principal (sujeto a plan de mantenimiento corporativo).</p></div>
+        <footer class="footer"><p>Grupo AYCE México | Periférico Adolfo López Mateos No. 4293 Int P3-300, Tlalpan, CDMX 14210 | www.grupoayce.com.mx</p><p style="margin-top:5px; font-weight:700; text-transform:uppercase; color:var(--ayce-dark); letter-spacing:0.5px">Asesoría de Ingeniería para un Rendimiento Superior</p></footer>
+    </div>
+    <script>window.onload = function() { setTimeout(function() { window.print(); setTimeout(function() { window.close(); }, 500); }, 300); };<\/script>
+</body>
+</html>`);
+        win.document.close();
+        showToast("Propuesta Técnica Gerencial Generada");
+    }
+    
+    function showToast(msg) { let t = document.createElement('div'); t.className = 'toast'; t.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+    
+    function setActiveModule(m) {
+        ['cotizadorModule', 'catalogoModule', 'calculadoraModule', 'reglasModule', 'tipsModule', 'historialModule'].forEach(mod => { let el = document.getElementById(mod); if(el) el.style.display = 'none'; });
+        document.getElementById(`${m}Module`).style.display = 'block';
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector(`.nav-btn[data-module="${m}"]`).classList.add('active');
+        if(m === 'catalogo') { renderCatalogoTrane(); renderCatalogoHisense(); renderCatalogoYork(); renderCatalogoCarrier(); renderCatalogoDuventus(); renderCatalogoRheem(); }
+    }
+    
+    document.getElementById('agregarEquipoBtn')?.addEventListener('click', () => { setActiveModule('catalogo'); showToast("Use el Catálogo HVAC"); });
+    document.getElementById('agregarServicioPredefinidoBtn')?.addEventListener('click', () => { cargarListasServicios(); document.getElementById('modalServicio').style.display = 'flex'; });
+    document.getElementById('agregarInstalacionBtn')?.addEventListener('click', () => { let c = prompt("Concepto:"); if(c){ let costo = parseFloat(prompt("Costo:")); instalaciones.push({ id: nextId++, concepto: c, descripcion: "Personalizado", cantidad: 1, costoUnitario: isNaN(costo)?0:costo }); renderAll(); } });
+    document.getElementById('actualizarTCBtn')?.addEventListener('click', async () => { await obtenerTipoCambio(); renderCatalogoTrane(); renderCatalogoYork(); renderEquipos(); });
+    document.getElementById('toggleCurrencyBtn')?.addEventListener('click', toggleCurrency);
+    document.getElementById('closeModalServicioBtn')?.addEventListener('click', () => document.getElementById('modalServicio').style.display = 'none');
+    document.getElementById('exportPdfBtn')?.addEventListener('click', exportToPDF);
+    document.getElementById('areaM2')?.addEventListener('input', () => { let sug = (parseFloat(document.getElementById('areaM2').value) / 16).toFixed(2); document.getElementById('capSugerida').innerText = sug; });
+    document.getElementById('agregarEquipoCatalogoBtn')?.addEventListener('click', () => document.getElementById('modalNuevoEquipo').style.display = 'flex');
+    document.getElementById('guardarNuevoEquipoBtn')?.addEventListener('click', agregarNuevoEquipo);
+    document.getElementById('cancelarNuevoEquipoBtn')?.addEventListener('click', () => document.getElementById('modalNuevoEquipo').style.display = 'none');
+    document.getElementById('calcularCargaBtn')?.addEventListener('click', calcularCargaTermica);
+    document.getElementById('aplicarCotizacionBtn')?.addEventListener('click', aplicarACotizacion);
+    document.getElementById('searchTrane')?.addEventListener('input', () => renderCatalogoTrane());
+    document.getElementById('searchHisense')?.addEventListener('input', () => renderCatalogoHisense());
+    document.getElementById('searchYork')?.addEventListener('input', () => renderCatalogoYork());
+    
+    document.querySelectorAll('.tab-catalogo-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.tab-catalogo-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('tabTrane').style.display = this.dataset.tab === 'trane' ? 'block' : 'none';
+            document.getElementById('tabHisense').style.display = this.dataset.tab === 'hisense' ? 'block' : 'none';
+            document.getElementById('tabYork').style.display = this.dataset.tab === 'york' ? 'block' : 'none';
+            document.getElementById('tabCarrier').style.display = this.dataset.tab === 'carrier' ? 'block' : 'none';
+            document.getElementById('tabDuventus').style.display = this.dataset.tab === 'duventus' ? 'block' : 'none';
+            document.getElementById('tabRheem').style.display = this.dataset.tab === 'rheem' ? 'block' : 'none';
+            if(this.dataset.tab === 'trane') renderCatalogoTrane();
+            else if(this.dataset.tab === 'hisense') renderCatalogoHisense();
+            else if(this.dataset.tab === 'york') renderCatalogoYork();
+            else if(this.dataset.tab === 'carrier') renderCatalogoCarrier();
+            else if(this.dataset.tab === 'duventus') renderCatalogoDuventus();
+            else if(this.dataset.tab === 'rheem') renderCatalogoRheem();
+        });
+    });
+    
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => setActiveModule(btn.dataset.module)));
+    window.agregarServicioPredefinido = agregarServicioPredefinido;
+    
+    equipos = []; instalaciones = []; renderAll(); setActiveModule('cotizador'); obtenerTipoCambio();
+</script>
+</body>
+</html>
