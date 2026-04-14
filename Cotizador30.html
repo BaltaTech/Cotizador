@@ -424,20 +424,339 @@
         </div>
     </div>
 
-    <div id="historialModule" style="display:none;"><div class="card-premium"><div class="card-header"><h2>Historial de Cotizaciones</h2></div><div class="card-body"><div class="table-wrapper">8 decades(thead><tr><th>Cliente</th><th>Fecha</th><th>Total MXN</th></thead><tbody id="historialBody"></tbody></table></div></div></div></div>
-</div>
+<div id="historialModule" style="display:none;">
+    <div class="card-premium">
+        <div class="card-header">
+            <h2><i class="fas fa-database"></i> CRM - Gestión Comercial</h2>
+        </div>
+        <div class="card-body">
 
-<!-- MODALES -->
-<div id="modalServicio" style="display:none;" class="modal-overlay no-print">
-    <div class="modal-content">
-        <h3 style="color:#B22234; margin-bottom:20px;"><i class="fas fa-tools"></i> Seleccionar Servicio Predefinido</h3>
-        <div id="categoriasServicios"></div>
-        <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:20px;">
-            <button id="closeModalServicioBtn" class="btn-secondary">Cerrar</button>
+            <!-- Tabs internos para CRM -->
+            <div class="tab-catalogo" style="margin-bottom: 20px;">
+                <button class="crm-tab-btn active" data-crm="historial">📋 Historial Cotizaciones</button>
+                <button class="crm-tab-btn" data-crm="seguimientos">⏰ Seguimientos</button>
+                <button class="crm-tab-btn" data-crm="leads">🎯 Leads / Prospectos</button>
+            </div>
+
+            <!-- ========= SECCIÓN HISTORIAL DE COTIZACIONES ========= -->
+            <div id="crmHistorial" class="crm-tab-content" style="display: block;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="color: #1E3A5F;"><i class="fas fa-file-invoice"></i> Cotizaciones Registradas</h3>
+                    <button id="exportarHistorialExcelBtn" class="btn-primary" style="padding: 8px 16px;"><i class="fas fa-file-excel"></i> Exportar Historial a Excel</button>
+                </div>
+                <div class="table-wrapper">
+                    <table style="min-width: 1000px;">
+                        <thead>
+                            <tr><th>Nombre Cliente</th><th>ID Cliente</th><th>Medio de Contacto</th><th>Importe</th><th>Moneda</th><th>Descripción Equipo</th><th>Categoría</th><th>Ejecutivo</th><th>Fecha</th><th></th></tr>
+                        </thead>
+                        <tbody id="historialBody"></tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 20px; background: #f0f9ff; padding: 15px; border-radius: 16px;">
+                    <h4><i class="fas fa-plus-circle"></i> Registrar Nueva Cotización</h4>
+                    <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px,1fr));">
+                        <input type="text" id="newHistNombre" placeholder="Nombre Cliente">
+                        <input type="text" id="newHistIdCliente" placeholder="ID Cliente">
+                        <select id="newHistMedio"><option value="Teléfono">📞 Teléfono</option><option value="WhatsApp">💬 WhatsApp</option><option value="Correo">✉️ Correo</option><option value="Referencia">🤝 Referencia</option><option value="Red Social">📱 Red Social</option><option value="Visita">🏢 Visita</option></select>
+                        <input type="number" id="newHistImporte" placeholder="Importe">
+                        <select id="newHistMoneda"><option value="MXN">MXN</option><option value="USD">USD</option></select>
+                        <input type="text" id="newHistDescEquipo" placeholder="Descripción del equipo">
+                        <select id="newHistCategoria"><option value="Nuevo">🆕 Nuevo</option><option value="Pasado">📅 Pasado</option><option value="Potencial">⭐ Potencial</option></select>
+                        <input type="text" id="newHistEjecutivo" placeholder="Nombre ejecutivo">
+                    </div>
+                    <button id="agregarHistorialBtn" class="btn-primary" style="margin-top: 10px;"><i class="fas fa-save"></i> Guardar Cotización</button>
+                </div>
+            </div>
+
+            <!-- ========= SECCIÓN SEGUIMIENTOS ========= -->
+            <div id="crmSeguimientos" class="crm-tab-content" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="color: #1E3A5F;"><i class="fas fa-clock"></i> Seguimientos Pendientes y Realizados</h3>
+                    <button id="exportarSeguimientosExcelBtn" class="btn-primary" style="padding: 8px 16px;"><i class="fas fa-file-excel"></i> Exportar Seguimientos a Excel</button>
+                </div>
+                <div class="table-wrapper">
+                    <table style="min-width: 900px;">
+                        <thead>
+                            <tr><th>Nombre Cliente</th><th>ID Cliente</th><th>Medio</th><th>Importe</th><th>Moneda</th><th>Descripción Equipo</th><th>Fecha Seguimiento</th><th>Estado</th><th>Ejecutivo</th><th></th></tr>
+                        </thead>
+                        <tbody id="seguimientosBody"></tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 20px; background: #fef9e6; padding: 15px; border-radius: 16px;">
+                    <h4><i class="fas fa-calendar-plus"></i> Agregar Seguimiento</h4>
+                    <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(170px,1fr));">
+                        <input type="text" id="newSegNombre" placeholder="Nombre Cliente">
+                        <input type="text" id="newSegIdCliente" placeholder="ID Cliente">
+                        <select id="newSegMedio"><option value="Teléfono">📞 Teléfono</option><option value="WhatsApp">💬 WhatsApp</option><option value="Correo">✉️ Correo</option><option value="Visita">🏢 Visita</option></select>
+                        <input type="number" id="newSegImporte" placeholder="Importe">
+                        <select id="newSegMoneda"><option value="MXN">MXN</option><option value="USD">USD</option></select>
+                        <input type="text" id="newSegDescEquipo" placeholder="Descripción equipo">
+                        <input type="date" id="newSegFecha">
+                        <select id="newSegEstado"><option value="Pendiente">⏳ Pendiente</option><option value="Contactado">📞 Contactado</option><option value="Cotizado">📄 Cotizado</option><option value="Cerrado">✅ Cerrado</option><option value="Perdido">❌ Perdido</option></select>
+                        <input type="text" id="newSegEjecutivo" placeholder="Ejecutivo">
+                    </div>
+                    <button id="agregarSeguimientoBtn" class="btn-primary" style="margin-top: 10px;"><i class="fas fa-plus-circle"></i> Agregar Seguimiento</button>
+                </div>
+            </div>
+
+            <!-- ========= SECCIÓN LEADS ========= -->
+            <div id="crmLeads" class="crm-tab-content" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <h3 style="color: #1E3A5F;"><i class="fas fa-users"></i> Leads / Prospectos</h3>
+                    <button id="exportarLeadsExcelBtn" class="btn-primary" style="padding: 8px 16px;"><i class="fas fa-file-excel"></i> Exportar Leads a Excel</button>
+                </div>
+                <div class="table-wrapper">
+                    <table style="min-width: 1000px;">
+                        <thead>
+                            <tr><th>Teléfono</th><th>Correo</th><th>Contacto Directo</th><th>Empresa</th><th>Categoría</th><th>Ejecutivo</th><th>Fecha Registro</th><th></th></tr>
+                        </thead>
+                        <tbody id="leadsBody"></tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 20px; background: #e8f5e9; padding: 15px; border-radius: 16px;">
+                    <h4><i class="fas fa-user-plus"></i> Registrar Nuevo Lead</h4>
+                    <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(170px,1fr));">
+                        <input type="tel" id="newLeadTelefono" placeholder="Teléfono">
+                        <input type="email" id="newLeadCorreo" placeholder="Correo electrónico">
+                        <input type="text" id="newLeadContacto" placeholder="Nombre contacto directo">
+                        <input type="text" id="newLeadEmpresa" placeholder="Nombre de la empresa">
+                        <select id="newLeadCategoria"><option value="Frío">❄️ Frío</option><option value="Caliente">🔥 Caliente</option><option value="Calificado">⭐ Calificado</option><option value="Oportunidad">💰 Oportunidad</option></select>
+                        <input type="text" id="newLeadEjecutivo" placeholder="Nombre ejecutivo">
+                    </div>
+                    <button id="agregarLeadBtn" class="btn-primary" style="margin-top: 10px;"><i class="fas fa-save"></i> Guardar Lead</button>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
+<style>
+    .crm-tab-btn {
+        background: #f1f5f9;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 40px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .crm-tab-btn.active {
+        background: linear-gradient(135deg, #B22234, #1E3A5F);
+        color: white;
+    }
+    .crm-tab-btn:hover {
+        transform: translateY(-2px);
+    }
+</style>
+
+<script>
+    // ==================== CRM DATA ARRAYS ====================
+    let historialCotizaciones = JSON.parse(localStorage.getItem('crm_historial') || '[]');
+    let seguimientosList = JSON.parse(localStorage.getItem('crm_seguimientos') || '[]');
+    let leadsList = JSON.parse(localStorage.getItem('crm_leads') || '[]');
+
+    // ========== FUNCIONES DE RENDERIZADO ==========
+    function renderHistorial() {
+        let tbody = document.getElementById('historialBody');
+        if (!tbody) return;
+        tbody.innerHTML = historialCotizaciones.map((item, idx) => `
+            <tr>
+                <td>${escapeHtml(item.nombre)}</td>
+                <td>${escapeHtml(item.idCliente)}</td>
+                <td>${escapeHtml(item.medio)}</td>
+                <td>${Number(item.importe).toLocaleString('es-MX')}</td>
+                <td>${item.moneda}</td>
+                <td>${escapeHtml(item.descEquipo)}</td>
+                <td>${escapeHtml(item.categoria)}</td>
+                <td>${escapeHtml(item.ejecutivo)}</td>
+                <td>${item.fecha}</td>
+                <td><button class="deleteHistorialBtn" data-idx="${idx}" style="background:#B22234; color:white; border:none; border-radius:20px; padding:4px 10px;"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `).join('');
+        document.querySelectorAll('.deleteHistorialBtn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let idx = parseInt(btn.dataset.idx);
+                historialCotizaciones.splice(idx, 1);
+                localStorage.setItem('crm_historial', JSON.stringify(historialCotizaciones));
+                renderHistorial();
+                showToast("Cotización eliminada");
+            });
+        });
+    }
+
+    function renderSeguimientos() {
+        let tbody = document.getElementById('seguimientosBody');
+        if (!tbody) return;
+        tbody.innerHTML = seguimientosList.map((item, idx) => `
+            <tr>
+                <td>${escapeHtml(item.nombre)}</td>
+                <td>${escapeHtml(item.idCliente)}</td>
+                <td>${escapeHtml(item.medio)}</td>
+                <td>${Number(item.importe).toLocaleString('es-MX')}</td>
+                <td>${item.moneda}</td>
+                <td>${escapeHtml(item.descEquipo)}</td>
+                <td>${item.fecha}</td>
+                <td><span style="background:${item.estado === 'Cerrado' ? '#2e7d32' : (item.estado === 'Perdido' ? '#c62828' : '#ed6c02')}; color:white; padding:4px 12px; border-radius:20px; font-size:0.7rem;">${item.estado}</span></td>
+                <td>${escapeHtml(item.ejecutivo)}</td>
+                <td><button class="deleteSeguimientoBtn" data-idx="${idx}" style="background:#B22234; color:white; border:none; border-radius:20px; padding:4px 10px;"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `).join('');
+        document.querySelectorAll('.deleteSeguimientoBtn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let idx = parseInt(btn.dataset.idx);
+                seguimientosList.splice(idx, 1);
+                localStorage.setItem('crm_seguimientos', JSON.stringify(seguimientosList));
+                renderSeguimientos();
+                showToast("Seguimiento eliminado");
+            });
+        });
+    }
+
+    function renderLeads() {
+        let tbody = document.getElementById('leadsBody');
+        if (!tbody) return;
+        tbody.innerHTML = leadsList.map((item, idx) => `
+            <tr>
+                <td>${escapeHtml(item.telefono)}</td>
+                <td>${escapeHtml(item.correo)}</td>
+                <td>${escapeHtml(item.contacto)}</td>
+                <td>${escapeHtml(item.empresa)}</td>
+                <td>${escapeHtml(item.categoria)}</td>
+                <td>${escapeHtml(item.ejecutivo)}</td>
+                <td>${item.fecha}</td>
+                <td><button class="deleteLeadBtn" data-idx="${idx}" style="background:#B22234; color:white; border:none; border-radius:20px; padding:4px 10px;"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `).join('');
+        document.querySelectorAll('.deleteLeadBtn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let idx = parseInt(btn.dataset.idx);
+                leadsList.splice(idx, 1);
+                localStorage.setItem('crm_leads', JSON.stringify(leadsList));
+                renderLeads();
+                showToast("Lead eliminado");
+            });
+        });
+    }
+
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m) { if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m;}); }
+
+    // ========== AGREGAR REGISTROS ==========
+    document.getElementById('agregarHistorialBtn')?.addEventListener('click', () => {
+        let nuevo = {
+            nombre: document.getElementById('newHistNombre').value || 'Sin nombre',
+            idCliente: document.getElementById('newHistIdCliente').value || 'N/A',
+            medio: document.getElementById('newHistMedio').value,
+            importe: parseFloat(document.getElementById('newHistImporte').value) || 0,
+            moneda: document.getElementById('newHistMoneda').value,
+            descEquipo: document.getElementById('newHistDescEquipo').value || 'No especificado',
+            categoria: document.getElementById('newHistCategoria').value,
+            ejecutivo: document.getElementById('newHistEjecutivo').value || 'No asignado',
+            fecha: new Date().toLocaleDateString('es-MX')
+        };
+        historialCotizaciones.unshift(nuevo);
+        localStorage.setItem('crm_historial', JSON.stringify(historialCotizaciones));
+        renderHistorial();
+        showToast("Cotización registrada");
+        document.getElementById('newHistNombre').value = '';
+        document.getElementById('newHistIdCliente').value = '';
+        document.getElementById('newHistImporte').value = '';
+        document.getElementById('newHistDescEquipo').value = '';
+        document.getElementById('newHistEjecutivo').value = '';
+    });
+
+    document.getElementById('agregarSeguimientoBtn')?.addEventListener('click', () => {
+        let nuevo = {
+            nombre: document.getElementById('newSegNombre').value || 'Sin nombre',
+            idCliente: document.getElementById('newSegIdCliente').value || 'N/A',
+            medio: document.getElementById('newSegMedio').value,
+            importe: parseFloat(document.getElementById('newSegImporte').value) || 0,
+            moneda: document.getElementById('newSegMoneda').value,
+            descEquipo: document.getElementById('newSegDescEquipo').value || 'No especificado',
+            fecha: document.getElementById('newSegFecha').value || new Date().toISOString().split('T')[0],
+            estado: document.getElementById('newSegEstado').value,
+            ejecutivo: document.getElementById('newSegEjecutivo').value || 'No asignado'
+        };
+        seguimientosList.unshift(nuevo);
+        localStorage.setItem('crm_seguimientos', JSON.stringify(seguimientosList));
+        renderSeguimientos();
+        showToast("Seguimiento agregado");
+        document.getElementById('newSegNombre').value = '';
+        document.getElementById('newSegIdCliente').value = '';
+        document.getElementById('newSegImporte').value = '';
+        document.getElementById('newSegDescEquipo').value = '';
+        document.getElementById('newSegEjecutivo').value = '';
+    });
+
+    document.getElementById('agregarLeadBtn')?.addEventListener('click', () => {
+        let nuevo = {
+            telefono: document.getElementById('newLeadTelefono').value || 'No especificado',
+            correo: document.getElementById('newLeadCorreo').value || 'No especificado',
+            contacto: document.getElementById('newLeadContacto').value || 'Sin contacto',
+            empresa: document.getElementById('newLeadEmpresa').value || 'No especificada',
+            categoria: document.getElementById('newLeadCategoria').value,
+            ejecutivo: document.getElementById('newLeadEjecutivo').value || 'No asignado',
+            fecha: new Date().toLocaleDateString('es-MX')
+        };
+        leadsList.unshift(nuevo);
+        localStorage.setItem('crm_leads', JSON.stringify(leadsList));
+        renderLeads();
+        showToast("Lead registrado");
+        document.getElementById('newLeadTelefono').value = '';
+        document.getElementById('newLeadCorreo').value = '';
+        document.getElementById('newLeadContacto').value = '';
+        document.getElementById('newLeadEmpresa').value = '';
+        document.getElementById('newLeadEjecutivo').value = '';
+    });
+
+    // ========== EXPORTAR A EXCEL ==========
+    function exportToExcel(data, filename, columns) {
+        let csvRows = [columns.join(',')];
+        for (let row of data) {
+            let values = columns.map(col => {
+                let val = row[col] !== undefined ? row[col] : '';
+                return `"${String(val).replace(/"/g, '""')}"`;
+            });
+            csvRows.push(values.join(','));
+        }
+        let blob = new Blob(["\uFEFF" + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        let link = document.createElement('a');
+        let url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', `${filename}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        showToast(`Exportado: ${filename}`);
+    }
+
+    document.getElementById('exportarHistorialExcelBtn')?.addEventListener('click', () => {
+        exportToExcel(historialCotizaciones, 'Historial_Cotizaciones_AYCE', ['nombre', 'idCliente', 'medio', 'importe', 'moneda', 'descEquipo', 'categoria', 'ejecutivo', 'fecha']);
+    });
+    document.getElementById('exportarSeguimientosExcelBtn')?.addEventListener('click', () => {
+        exportToExcel(seguimientosList, 'Seguimientos_AYCE', ['nombre', 'idCliente', 'medio', 'importe', 'moneda', 'descEquipo', 'fecha', 'estado', 'ejecutivo']);
+    });
+    document.getElementById('exportarLeadsExcelBtn')?.addEventListener('click', () => {
+        exportToExcel(leadsList, 'Leads_AYCE', ['telefono', 'correo', 'contacto', 'empresa', 'categoria', 'ejecutivo', 'fecha']);
+    });
+
+    // ========== TABS INTERNOS CRM ==========
+    document.querySelectorAll('.crm-tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.crm-tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('crmHistorial').style.display = this.dataset.crm === 'historial' ? 'block' : 'none';
+            document.getElementById('crmSeguimientos').style.display = this.dataset.crm === 'seguimientos' ? 'block' : 'none';
+            document.getElementById('crmLeads').style.display = this.dataset.crm === 'leads' ? 'block' : 'none';
+        });
+    });
+
+    // Cargar datos al iniciar
+    renderHistorial();
+    renderSeguimientos();
+    renderLeads();
+</script>
 <div id="modalNuevoEquipo" style="display:none;" class="modal-overlay no-print">
     <div class="modal-content">
         <h3 style="color:#B22234; margin-bottom:20px;"><i class="fas fa-plus-circle"></i> Agregar Nuevo Equipo al Catálogo</h3>
