@@ -1338,6 +1338,20 @@
     <style>
         :root { --ayce-red: #B22234; --ayce-dark: #1e293b; --text-main: #334155; --text-light: #64748b; --bg-light: #f8fafc; --border: #e2e8f0; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+ /* ⭐ NUEVO: Elimina encabezados y pies de página automáticos ⭐ */
+        @page {
+            margin: 0;
+        }
+        @media print {
+            @page {
+                margin: 0;
+            }
+            body {
+                margin: 1.5cm;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
         body { font-family: 'Inter', sans-serif; color: var(--text-main); background: #fff; font-size: 11px; line-height: 1.4; padding: 40px; }
         .invoice-container { max-width: 900px; margin: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--ayce-dark); padding-bottom: 25px; margin-bottom: 35px; }
