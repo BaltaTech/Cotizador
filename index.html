@@ -830,52 +830,88 @@
         return precioVenta;
     }
     
-    function calcularPrecioVentaNormal(costoBase, utilidadPorcentaje = 20) {
+    function calcularPrecioVentaNormal(costoBase, utilidadPorcentaje = 0) {
         return costoBase * (1 + utilidadPorcentaje / 100);
     }
     
     // Función de Carga Térmica Simplificada
-    function calcularCargaTermica() {
-        let area = parseFloat(document.getElementById('calcArea').value) || 0;
-        let tipo = document.getElementById('calcTipo').value;
-        
-        let btuBase = 0;
-        let tipoNombre = "";
-        switch(tipo) {
-            case 'residencial': btuBase = 110; tipoNombre = "Residencial"; break;
-            case 'oficina': btuBase = 130; tipoNombre = "Oficina / Comercial Ligero"; break;
-            case 'comercial': btuBase = 150; tipoNombre = "Comercial (Tiendas)"; break;
-            case 'restaurante': btuBase = 180; tipoNombre = "Restaurante / Cocina"; break;
-            case 'industrial': btuBase = 100; tipoNombre = "Industrial / Bodega"; break;
-            default: btuBase = 120; tipoNombre = "General";
-        }
-        
-        let btuTotal = area * btuBase;
-        let trTotal = btuTotal / 12000;
-        
-        if(tipo === 'restaurante') trTotal *= 1.15;
-        if(tipo === 'comercial') trTotal *= 1.05;
-        
-        cargaCalculadaBTU = btuTotal;
-        cargaCalculadaTR = trTotal;
-        
-        document.getElementById('capacidadRecomendada').innerHTML = `${trTotal.toFixed(2)} TR (${Math.round(btuTotal).toLocaleString()} BTU/h)`;
-        
-        let factoresHtml = `
-            <span class="factor-badge">📐 Área: ${area}m²</span>
-            <span class="factor-badge">🏢 Tipo: ${tipoNombre}</span>
-            <span class="factor-badge">⚡ Factor Base: ${btuBase} BTU/m²</span>
-        `;
-        document.getElementById('factoresDetalle').innerHTML = factoresHtml;
-        document.getElementById('detalleCarga').innerHTML = `Recomendación profesional para ${tipoNombre}.`;
-        
-        document.getElementById('areaM2').value = area;
-        document.getElementById('capSugerida').innerHTML = trTotal.toFixed(2);
-        
-        showToast(`Carga térmica calculada: ${trTotal.toFixed(2)} TR`);
-        return trTotal;
+ function calcularCargaTermica() {
+    let area = parseFloat(document.getElementById('calcArea').value) || 0;
+    let tipo = document.getElementById('calcTipo').value;
+    
+    // REGLA CORRECTA: 16 m² = 1 Tonelada de Refrigeración
+    let trBase = area / 16;
+    let tipoNombre = "";
+    let factorAjuste = 1.0;
+    
+    switch(tipo) {
+        case 'residencial': 
+            tipoNombre = "Residencial"; 
+            factorAjuste = 1.0;
+            break;
+        case 'oficina': 
+            tipoNombre = "Oficina / Comercial Ligero"; 
+            factorAjuste = 1.1;
+            break;
+        case 'comercial': 
+            tipoNombre = "Comercial (Tiendas)"; 
+            factorAjuste = 1.2;
+            break;
+        case 'restaurante': 
+            tipoNombre = "Restaurante / Cocina"; 
+            factorAjuste = 1.35;
+            break;
+        case 'industrial': 
+            tipoNombre = "Industrial / Bodega"; 
+            factorAjuste = 0.9;
+            break;
+        default: 
+            tipoNombre = "General";
+            factorAjuste = 1.0;
     }
     
+    let trTotal = trBase * factorAjuste;
+    let btuTotal = trTotal * 12000;
+    
+    // Redondear a 1 decimal
+    trTotal = Math.round(trTotal * 10) / 10;
+    btuTotal = Math.round(btuTotal);
+    
+    // Guardar variables globales
+    cargaCalculadaBTU = btuTotal;
+    cargaCalculadaTR = trTotal;
+    
+    // Mostrar resultado
+    let capacidadRecomendada = document.getElementById('capacidadRecomendada');
+    if (capacidadRecomendada) {
+        capacidadRecomendada.innerHTML = `${trTotal.toFixed(1)} TR (${btuTotal.toLocaleString()} BTU/h)`;
+    }
+    
+    let factoresDetalle = document.getElementById('factoresDetalle');
+    if (factoresDetalle) {
+        factoresDetalle.innerHTML = `
+            <span class="factor-badge">📐 Área: ${area} m²</span>
+            <span class="factor-badge">🏢 Tipo: ${tipoNombre}</span>
+            <span class="factor-badge">⚡ Regla: 16 m² = 1 TR</span>
+            <span class="factor-badge">📊 Factor: ${factorAjuste}x</span>
+            <span class="factor-badge">❄️ Total: ${trTotal.toFixed(1)} TR</span>
+        `;
+    }
+    
+    let detalleCarga = document.getElementById('detalleCarga');
+    if (detalleCarga) {
+        detalleCarga.innerHTML = `Recomendación profesional para ${tipoNombre}: ${trTotal.toFixed(1)} TR (${btuTotal.toLocaleString()} BTU/h)`;
+    }
+    
+    // Actualizar campo de área en la cotización
+    let areaM2 = document.getElementById('areaM2');
+    let capSugerida = document.getElementById('capSugerida');
+    if (areaM2) areaM2.value = area;
+    if (capSugerida) capSugerida.innerHTML = trTotal.toFixed(2);
+    
+    showToast(`✅ Carga térmica: ${trTotal.toFixed(1)} TR (${btuTotal.toLocaleString()} BTU/h)`);
+    return trTotal;
+}
     function aplicarACotizacion() {
         if (cargaCalculadaTR > 0) {
             document.getElementById('areaM2').value = document.getElementById('calcArea').value;
@@ -888,11 +924,11 @@
     }
     
     // Toggle de moneda para equipos en cotizador
-    function toggleCurrency() {
-        mostrarEnUSD = !mostrarEnUSD;
-        renderEquipos();
-        showToast(mostrarEnUSD ? "Mostrando precios en USD" : "Mostrando precios en MXN");
-    }
+ function toggleCurrency() {
+    mostrarEnUSD = !mostrarEnUSD;
+    renderAll();  // Esto refresca equipos y totales
+    showToast(mostrarEnUSD ? "Mostrando todo en USD" : "Mostrando todo en MXN");
+}
     
     // CATÁLOGOS (mismos datos)
     let catalogoTrane = [
@@ -955,7 +991,7 @@
     ];
 
     let catalogoHisense = [
-        { modelo: "AC121CF", tipo: "MINISPLIT", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 4000 },
+        { modelo: "AC121CF", tipo: "MINISPLIT", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 4640 },
         { modelo: "AC122CF", tipo: "MINISPLIT", capacidad: "1.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 4008 },
         { modelo: "AC182CF", tipo: "MINISPLIT", capacidad: "1.5 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 6724 },
         { modelo: "AC242CF", tipo: "MINISPLIT", capacidad: "2.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 8319 },
@@ -999,29 +1035,59 @@
         { modelo: "AUD-60UWEH", tipo: "FAN & COIL", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 33806 }
     ];
 
-    let catalogoYork = [
-        { modelo: "KYHFE12ZJMAXAOX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410", precioUSD: 284.20 },
-        { modelo: "KYHFE12ZXMAXAOX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "110V", tecnologia: "ON/OFF SOLO FRIO R410", precioUSD: 306.24 },
-        { modelo: "KYHFE18ZJMAXAOX", tipo: "HIGHWALL", capacidad: "1.5 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410", precioUSD: 435.00 },
-        { modelo: "KYHFE24ZJMAXAOX", tipo: "HIGHWALL", capacidad: "2.0 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410", precioUSD: 569.56 },
-        { modelo: "KYHJF12ZJ6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 342.20 },
-        { modelo: "KYHJF12ZX6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 377.00 },
-        { modelo: "KYHJF18ZJ6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 489.52 },
-        { modelo: "KYHJF24ZJ6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 646.12 },
-        { modelo: "KYHKF12ZJ6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioUSD: 365.40 },
-        { modelo: "KYHKF12ZX6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER FRIO CALOR R32", precioUSD: 396.72 },
-        { modelo: "KYHKF18ZJ6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioUSD: 532.44 },
-        { modelo: "KYHKF24ZJ6AXKO", tipo: "HIGHWALL INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioUSD: 699.48 },
-        { modelo: "KYHKF36ZJMGXHO", tipo: "HIGHWALL INVERTER", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioUSD: 1200.60 },
-        { modelo: "KYKJF18BZTMCMO", tipo: "CASSETTE", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 1272.52 },
-        { modelo: "KYKJF24BZTCMCO", tipo: "CASSETTE", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 1396.64 },
-        { modelo: "KYKJF36BZTCMCO", tipo: "CASSETTE", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 1772.48 },
-        { modelo: "KYKJF48BZTCMCO", tipo: "CASSETTE", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 2202.84 },
-        { modelo: "KYEJF18BZTCMCO", tipo: "FAN & COIL", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 1220.32 },
-        { modelo: "KYEJF24BZTCMCO", tipo: "FAN & COIL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 1322.40 },
-        { modelo: "KYFJ36BZTCMCO", tipo: "PISO TECHO", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 1798.00 },
-        { modelo: "KYFJ48BZTCMCO", tipo: "PISO TECHO", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioUSD: 2183.12 }
-    ];
+let catalogoYork = [
+    { modelo: "KYHFE12ZJMAXAORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410, JUEGO HIGHWALL YORK 1 TON ON/OFF SOLO FRIO 220/1/60 HASTA 11.3 SEER R410", precioUSD: 284.20 },
+    { modelo: "KYHFE12ZXMAXAORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "110V", tecnologia: "ON/OFF SOLO FRIO R410, JUEGO HIGHWALL YORK 1 TON ON/OFF SOLO FRIO 110/1/60 R410A", precioUSD: 306.24 },
+    { modelo: "KYHFE18ZJMAXAORX", tipo: "HIGHWALL", capacidad: "1.5 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410, JUEGO HIGHWALL YORK 1.5 TON ON/OFF SOLO FRIO 220/1/60 HASTA 11.4 SEER R410", precioUSD: 435.00 },
+    { modelo: "KYHFE24ZJMAXAORX", tipo: "HIGHWALL", capacidad: "2.0 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410, JUEGO HIGHWALL YORK 2 TON ON/OFF SOLO FRIO 220/1/60 HASTA 11.2 SEER R410", precioUSD: 569.56 },
+    { modelo: "KYHGE12ZJMAXAORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "220V", tecnologia: "ON/OFF FRIO CALOR R410, JUEGO HIGHWALL YORK 1 TON ON/OFF FRIO CALOR 220/1/60 HASTA 11.3 SEER R410", precioUSD: 319.00 },
+    { modelo: "KYHGE12ZXMAXAORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "110V", tecnologia: "ON/OFF FRIO CALOR R410, JUEGO HIGHWALL YORK 1 TON ON/OFF FRIO CALOR 110/1/60 HASTA 11.3 SEER R410", precioUSD: 327.12 },
+    { modelo: "KYHGE18ZJMAXAORX", tipo: "HIGHWALL", capacidad: "1.5 TR", tension: "220V", tecnologia: "ON/OFF FRIO CALOR R410, JUEGO HIGHWALL YORK 1.5 TON ON/OFF FRIO CALOR 220/1/60 HASTA 11.4 SEER R410", precioUSD: 511.56 },
+    { modelo: "KYHGE24ZJMAXAORX", tipo: "HIGHWALL", capacidad: "2.0 TR", tension: "220V", tecnologia: "ON/OFF FRIO CALOR R410, JUEGO HIGHWALL YORK 2 TON ON/OFF FRIO CALOR 220/1/60 HASTA 11.2 SEER R410", precioUSD: 656.56 },
+    { modelo: "KYHJF12ZJ6AXKORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO HIGHWALL YORK 1 TON INVERTER SOLO FRIO 220/1/60 HASTA 17.2 SEER R32 (OPCION WIFI)", precioUSD: 342.20 },
+    { modelo: "KYHJF12ZX6AXKORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO HIGHWALL YORK 1 TON INVERTER SOLO FRIO 110/1/60", precioUSD: 377.00 },
+    { modelo: "KYHJF18ZJ6AXKORX", tipo: "HIGHWALL", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO HIGHWALL YORK 1.5 TON INVERTER SOLO FRIO 220/1/60 HASTA 17.6 SEER R32 (OPCION WIFI)", precioUSD: 489.52 },
+    { modelo: "KYHJF24ZJ6AXKORX", tipo: "HIGHWALL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO HIGHWALL YORK 2 TON INVERTER SOLO FRIO 220/1/60 HASTA 17 SEER R32 (OPCION WIFI)", precioUSD: 646.12 },
+    { modelo: "KYHKF12ZJ6AXKORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO HIGHWALL YORK 1 TON INVERTER FRIO CALOR 220/1/60 HASTA 17.2 SEER R32 (OPCION WIFI)", precioUSD: 365.40 },
+    { modelo: "KYHKF12ZJ6AXTORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO HIGHWALL YORK 1 TON INVERTER FRIO CALOR 220/1/60 HASTA 17 SEER R32 (OPCION WIFI)", precioUSD: 370.06 },
+    { modelo: "KYHKF12ZX6AXKORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO HIGHWALL YORK 1 TON INVERTER FRIO CALOR 110/1/60 HASTA 20 SEER R32 (OPCION WIFI)", precioUSD: 396.72 },
+    { modelo: "KYHKF18ZJ6AXKORX", tipo: "HIGHWALL", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO HIGHWALL YORK 1.5 TON INVERTER FRIO CALOR 220/1/60 HASTA 17.6 SEER R32 (OPCION WIFI)", precioUSD: 532.44 },
+    { modelo: "KYHKF24ZJ6AXKORX", tipo: "HIGHWALL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO HIGHWALL YORK 2 TON INVERTER FRIO CALOR 220/1/60 HASTA 17 SEER R32 (OPCION WIFI)", precioUSD: 699.48 },
+    { modelo: "KYHKF36ZJMGXHORX", tipo: "HIGHWALL", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO HIGHWALL YORK 3 TON INVERTER FRIO CALOR 220/1/60 HASTA 17 SEER R32 (OPCION WIFI)", precioUSD: 1200.60 },
+    { modelo: "KYKJF18BZTMC-MORX", tipo: "CASSETTE", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO CASSETTE YORK 1.5 TON INVERTER SOLO FRIO 220/1/60 HASTA 19 SEER R32", precioUSD: 1272.52 },
+    { modelo: "KYKKE18BZTMC-MOR1", tipo: "CASSETTE", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A, JUEGO CASSETTE YORK 1.5 TON INVERTER FRIO CALOR 220/1/60 R410A", precioUSD: 1555.56 },
+    { modelo: "KYKKF18BZTMC-MORX", tipo: "CASSETTE", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO CASSETTE YORK 1.5 TON INVERTER FRIO CALOR 220/1/60 HASTA 19 SEER R32", precioUSD: 1401.28 },
+    { modelo: "KYKJE24BZTMC-MOR1", tipo: "CASSETTE", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A, JUEGO CASSETTE YORK 2 TON INVERTER SOLO FRIO 220/1/60 R410A", precioUSD: 1644.88 },
+    { modelo: "KYKJF24BZTMC-MORX", tipo: "CASSETTE", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO CASSETTE YORK 2 TON INVERTER SOLO FRIO 220/1/60 HASTA 19 SEER R32", precioUSD: 1396.64 },
+    { modelo: "KYKKF24BZTMC-MORX", tipo: "CASSETTE", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO CASSETTE YORK 2 TON INVERTER FRIO CALOR 220/1/60 HASTA 19 SEER R32", precioUSD: 1705.20 },
+    { modelo: "KYKJF36BZTMC-MORX", tipo: "CASSETTE", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO CASSETTE YORK 3 TON INVERTER SOLO FRIO 220/1/60 HASTA 16 SEER R32", precioUSD: 1772.48 },
+    { modelo: "KYKKF36BZTMC-MORX", tipo: "CASSETTE", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO CASSETTE YORK 3 TON INVERTER FRIO CALOR 220/1/60 HASTA 16 SEER R32", precioUSD: 1872.75 },
+    { modelo: "KYKJF48BZTMC-MORX", tipo: "CASSETTE", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO CASSETTE YORK 4 TON INVERTER SOLO FRIO 220/1/60 HASTA 16 SEER R32", precioUSD: 2202.84 },
+    { modelo: "KYKKF48BZTMC-MORX", tipo: "CASSETTE", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO CASSETTE YORK 4 TON INVERTER FRIO CALOR 220/1/60 HASTA 16 SEER R32", precioUSD: 2398.88 },
+    { modelo: "KYKJF55BZTMC-MORX", tipo: "CASSETTE", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO CASSETTE YORK 5 TON INVERTER SOLO FRIO 220/1/60 HASTA 15.5 SEER R32", precioUSD: 2531.12 },
+    { modelo: "KYKKF55BZTMC-MORX", tipo: "CASSETTE", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO CASSETTE YORK 5 TON INVERTER FRIO CALOR 220/1/60 HASTA 15.5 SEER R32", precioUSD: 2652.92 },
+    { modelo: "KYEJF18BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO FAN & COIL YORK 1.5 TON INVERTER SOLO FRIO 220/1/60 HASTA 19 SEER R32", precioUSD: 1220.32 },
+    { modelo: "KYEKF18BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO FAN & COIL YORK 1.5 TON INVERTER FRIO CALOR 220/1/60 HASTA 19 SEER R32", precioUSD: 1278.32 },
+    { modelo: "KYEJF24BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO FAN & COIL YORK 2 TON INVERTER SOLO FRIO 220/1/60 HASTA 19 SEER R32", precioUSD: 1322.40 },
+    { modelo: "KYEKF24BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO FAN & COIL YORK 2 TON INVERTER FRIO CALOR 220/1/60 HASTA 19 SEER R32", precioUSD: 1484.80 },
+    { modelo: "KYEJF36BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO FAN & COIL YORK 3 TON INVERTER SOLO FRIO 220/1/60 HASTA 15.5 SEER R32", precioUSD: 1734.20 },
+    { modelo: "KYEKF36BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO FAN & COIL YORK 3 TON INVERTER FRIO CALOR 220/1/60 HASTA 15.5 SEER R32", precioUSD: 1823.52 },
+    { modelo: "KYEJF48BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO FAN & COIL YORK 4 TON INVERTER SOLO FRIO 220/1/60 HASTA 15.5 SEER R32", precioUSD: 2248.08 },
+    { modelo: "KYEJE55BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A, JUEGO FAN & COIL YORK 5 TON INVERTER SOLO FRIO 220/1/60 R410A", precioUSD: 2955.88 },
+    { modelo: "KYEJF55BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO FAN & COIL YORK 5 TON INVERTER SOLO FRIO 220/1/60 HASTA 14.5 SEER R32", precioUSD: 2556.64 },
+    { modelo: "KYEKF55BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO FAN & COIL YORK 5 TON INVERTER FRIO CALOR 220/1/60 HASTA 14.5 SEER R32", precioUSD: 2633.20 },
+    { modelo: "KYFJF36BZTMC-MORX", tipo: "PISO TECHO", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO PISO TECHO YORK 3 TON INVERTER SOLO FRIO 220/1/60 HASTA 16 SEER R32", precioUSD: 1798.00 },
+    { modelo: "KYFKF36BZTMC-MORX", tipo: "PISO TECHO", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO PISO TECHO YORK 3 TON INVERTER FRIO CALOR 220/1/60 HASTA 16 SEER R32", precioUSD: 1900.08 },
+    { modelo: "KYFJF48BZTMC-MORX", tipo: "PISO TECHO", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO PISO TECHO YORK 4 TON INVERTER SOLO FRIO 220/1/60 HASTA 15 SEER R32", precioUSD: 2183.12 },
+    { modelo: "KYFKF48BZTMC-MORX", tipo: "PISO TECHO", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO PISO TECHO YORK 4 TON INVERTER FRIO CALOR 220/1/60 HASTA 15.5 SEER R32", precioUSD: 2299.12 },
+    { modelo: "KYFJF55BZTMC-MORX", tipo: "PISO TECHO", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO PISO TECHO YORK 5 TON INVERTER SOLO FRIO 220/1/60 HASTA 15 SEER R32", precioUSD: 2561.28 },
+    { modelo: "KYFKF55BZTMC-MORX", tipo: "PISO TECHO", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO PISO TECHO YORK 5 TON INVERTER FRIO CALOR 220/1/60 HASTA 15 SEER R32", precioUSD: 2587.96 },
+    { modelo: "YMFE36BNJMC-MOX", tipo: "PAQUETE", capacidad: "3.0 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410A, PAQUETE RESIDENCIAL YORK 3 TON SOLO FRIO 220/1/60 R410A", precioUSD: 1954.60 },
+    { modelo: "YMFE60BNJMCMS-X", tipo: "PAQUETE", capacidad: "5.0 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410A, PAQUETE RESIDENCIAL YORK 5 TON SOLO FRIO 220/1/60 HASTA 14 SEER DESC. HORIZ. R410", precioUSD: 2836.20 },
+    { modelo: "ZF240C00Y2A1AAA1A1", tipo: "PAQUETE COMERCIAL", capacidad: "20 TR", tension: "230V", tecnologia: "COMERCIAL R410A, PAQUETE COMERCIAL YORK 20 TON SOLO FRIO 208-230/3/60 R410A AL/CU DESC CONV", precioUSD: 13982.64 },
+    { modelo: "ZF240C00Y4A1AAA1A1", tipo: "PAQUETE COMERCIAL", capacidad: "20 TR", tension: "440V", tecnologia: "COMERCIAL R410A, PAQUETE COMERCIAL YORK 20 TON SOLO FRIO 440/3/60 R410A", precioUSD: 13690.32 },
+    { modelo: "ZF300C00Y2A1AAA1A2", tipo: "PAQUETE COMERCIAL", capacidad: "25 TR", tension: "230V", tecnologia: "COMERCIAL R410A, PAQUETE COMERCIAL YORK 25 TON SOLO FRIO 208-230/3/60 R410 AL/CU DESC CONV", precioUSD: 14953.56 }
+];
 
     let catalogoCarrier = [
         { modelo: "53PXQ123D", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 8900 },
@@ -1121,56 +1187,63 @@
         renderCatalogoTrane(); renderCatalogoHisense(); renderCatalogoYork(); 
         renderCatalogoCarrier(); renderCatalogoDuventus(); renderCatalogoRheem();
     }
+function renderEquipos() {
+    let tbody = document.getElementById('equiposBody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    equipos.forEach((eq, idx) => {
+        let subtotal = eq.cantidad * eq.precioVenta;
+        let marcaClass = `badge-${eq.marca.toLowerCase()}`;
+        let precioDisplay = eq.precioVenta;
+        let subtotalDisplay = subtotal;
+        let monedaSimbolo = "MXN";
+        
+        if(mostrarEnUSD) {
+            // Mostrar en USD
+            let precioUSD = eq.precioVentaUSD || (eq.precioVenta / tipoCambioActual);
+            let subtotalUSD = eq.cantidad * precioUSD;
+            precioDisplay = precioUSD;
+            subtotalDisplay = subtotalUSD;
+            monedaSimbolo = "USD";
+        } else {
+            // Mostrar en MXN
+            precioDisplay = eq.precioVenta;
+            subtotalDisplay = subtotal;
+            monedaSimbolo = "MXN";
+        }
+        
+        tbody.innerHTML += `<tr>
+            <td><span class="badge-marca ${marcaClass}">${eq.marca}</span></td>
+            <td>${eq.modelo}</td>
+            <td>${eq.capacidad}</td>
+            <td><input type="text" class="editDescripcion" data-idx="${idx}" value="${(eq.descripcion || '').replace(/"/g, '&quot;')}" style="width:280px;" placeholder="Descripción del equipo"></td>
+            <td><input type="number" class="editCantidad" data-idx="${idx}" value="${eq.cantidad}" style="width:60px;"></td>
+            <td><input type="text" class="editPrecioVenta" data-idx="${idx}" value="${precioDisplay.toFixed(2)}" style="width:100px;"> <span style="font-size:0.7rem;">${monedaSimbolo}</span></td>
+            <td class="subtotalEq">${monedaSimbolo === 'USD' ? '$' : '$$'}${subtotalDisplay.toLocaleString('es-MX', {minimumFractionDigits: 2})} ${monedaSimbolo}</td>
+            <td><button class="deleteEquipo" data-idx="${idx}" style="background:none; border:none; color:#B22234;"><i class="fas fa-trash"></i></button></td>
+        </tr>`;
+    });
     
-    function renderEquipos() {
-        let tbody = document.getElementById('equiposBody');
-        if(!tbody) return;
-        tbody.innerHTML = '';
-        equipos.forEach((eq, idx) => {
-            let subtotal = eq.cantidad * eq.precioVenta;
-            let marcaClass = `badge-${eq.marca.toLowerCase()}`;
-            let precioDisplay = eq.precioVenta;
-            let monedaSimbolo = "MXN";
-            if(mostrarEnUSD && eq.precioVentaUSD) {
-                precioDisplay = eq.precioVentaUSD;
-                monedaSimbolo = "USD";
-            } else if(mostrarEnUSD && !eq.precioVentaUSD) {
-                // Si no tiene USD guardado, calcularlo
-                let usdValue = eq.precioVenta / tipoCambioActual;
-                precioDisplay = usdValue;
-                monedaSimbolo = "USD";
-            } else {
-                monedaSimbolo = "MXN";
-            }
-            
-            tbody.innerHTML += `<tr>
-                <td><span class="badge-marca ${marcaClass}">${eq.marca}</span></td>
-                <td>${eq.modelo}</td>
-                <td>${eq.capacidad}</td>
-                <td><input type="text" class="editDescripcion" data-idx="${idx}" value="${eq.descripcion || ''}" style="width:180px;" placeholder="Descripción del equipo"></td>
-                <td><input type="number" class="editCantidad" data-idx="${idx}" value="${eq.cantidad}" style="width:60px;"></td>
-                <td><input type="text" class="editPrecioVenta" data-idx="${idx}" value="${precioDisplay.toFixed(2)}" style="width:100px;"> <span style="font-size:0.7rem;">${monedaSimbolo}</span></td>
-                <td class="subtotalEq">$${subtotal.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</td>
-                <td><button class="deleteEquipo" data-idx="${idx}" style="background:none; border:none; color:#B22234;"><i class="fas fa-trash"></i></button></td>
-            </tr>`;
-        });
-        document.querySelectorAll('.editDescripcion').forEach(i => i.addEventListener('change', (e) => { equipos[e.target.dataset.idx].descripcion = e.target.value; renderAll(); }));
-        document.querySelectorAll('.editCantidad').forEach(i => i.addEventListener('change', (e) => { equipos[e.target.dataset.idx].cantidad = parseFloat(e.target.value) || 1; renderAll(); }));
-        document.querySelectorAll('.editPrecioVenta').forEach(i => i.addEventListener('change', (e) => { 
-            let val = parseFloat(e.target.value) || 0;
-            let idx = e.target.dataset.idx;
-            if(mostrarEnUSD) {
-                equipos[idx].precioVentaUSD = val;
-                equipos[idx].precioVenta = val * tipoCambioActual;
-            } else {
-                equipos[idx].precioVenta = val;
-                equipos[idx].precioVentaUSD = val / tipoCambioActual;
-            }
-            renderAll(); 
-        }));
-        document.querySelectorAll('.deleteEquipo').forEach(b => b.addEventListener('click', (e) => { let idx = parseInt(b.dataset.idx); equipos.splice(idx, 1); renderAll(); }));
-    }
-    
+    // Event listeners
+    document.querySelectorAll('.editDescripcion').forEach(i => i.addEventListener('change', (e) => { equipos[e.target.dataset.idx].descripcion = e.target.value; renderAll(); }));
+    document.querySelectorAll('.editCantidad').forEach(i => i.addEventListener('change', (e) => { 
+        equipos[e.target.dataset.idx].cantidad = parseFloat(e.target.value) || 1; 
+        renderAll(); 
+    }));
+    document.querySelectorAll('.editPrecioVenta').forEach(i => i.addEventListener('change', (e) => { 
+        let val = parseFloat(e.target.value) || 0;
+        let idx = e.target.dataset.idx;
+        if(mostrarEnUSD) {
+            equipos[idx].precioVentaUSD = val;
+            equipos[idx].precioVenta = val * tipoCambioActual;
+        } else {
+            equipos[idx].precioVenta = val;
+            equipos[idx].precioVentaUSD = val / tipoCambioActual;
+        }
+        renderAll(); 
+    }));
+    document.querySelectorAll('.deleteEquipo').forEach(b => b.addEventListener('click', (e) => { let idx = parseInt(b.dataset.idx); equipos.splice(idx, 1); renderAll(); }));
+}  
     function renderInstalaciones() {
         let tbody = document.getElementById('instalacionBody');
         if(!tbody) return;
@@ -1191,110 +1264,165 @@
         document.querySelectorAll('.deleteInst').forEach(b => b.addEventListener('click', (e) => { let idx = parseInt(b.dataset.idx); instalaciones.splice(idx, 1); renderAll(); }));
     }
     
-    function calcularTotales() {
-        let totalEquiposVenta = equipos.reduce((acc, e) => acc + (e.cantidad * e.precioVenta), 0);
-        let costoInstalacion = instalaciones.reduce((acc, i) => acc + (i.cantidad * i.costoUnitario), 0);
-        let subtotal = totalEquiposVenta + costoInstalacion;
-        let iva = subtotal * 0.16;
-        let totalFinal = subtotal + iva;
-        document.getElementById('totalEquiposVenta').innerHTML = `$${totalEquiposVenta.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
-        document.getElementById('totalInstalacion').innerHTML = `$${costoInstalacion.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
-        document.getElementById('subtotalGeneral').innerHTML = `$${subtotal.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
-        document.getElementById('ivaMonto').innerHTML = `$${iva.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
-        document.getElementById('totalFinalDisplay').innerHTML = `$${totalFinal.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
-        document.getElementById('autorizacionAlert').style.display = totalFinal > 500000 ? 'block' : 'none';
-        return { subtotal, iva, totalFinal };
+  function calcularTotales() {
+    let totalEquiposVenta = equipos.reduce((acc, e) => acc + (e.cantidad * e.precioVenta), 0);
+    let costoInstalacion = instalaciones.reduce((acc, i) => acc + (i.cantidad * i.costoUnitario), 0);
+    let subtotalMXN = totalEquiposVenta + costoInstalacion;
+    let ivaMXN = subtotalMXN * 0.16;
+    let totalFinalMXN = subtotalMXN + ivaMXN;
+    
+    // Calcular en USD si es necesario
+    let subtotalUSD = subtotalMXN / tipoCambioActual;
+    let ivaUSD = subtotalUSD * 0.16;
+    let totalFinalUSD = subtotalUSD + ivaUSD;
+    
+    // Mostrar según la moneda seleccionada
+    if(mostrarEnUSD) {
+        document.getElementById('totalEquiposVenta').innerHTML = `$${subtotalUSD.toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
+        document.getElementById('totalInstalacion').innerHTML = `$${(costoInstalacion / tipoCambioActual).toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
+        document.getElementById('subtotalGeneral').innerHTML = `$${subtotalUSD.toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
+        document.getElementById('ivaMonto').innerHTML = `$${ivaUSD.toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
+        document.getElementById('totalFinalDisplay').innerHTML = `$${totalFinalUSD.toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
+    } else {
+        document.getElementById('totalEquiposVenta').innerHTML = `$${totalEquiposVenta.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
+        document.getElementById('totalInstalacion').innerHTML = `$${costoInstalacion.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
+        document.getElementById('subtotalGeneral').innerHTML = `$${subtotalMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
+        document.getElementById('ivaMonto').innerHTML = `$${ivaMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
+        document.getElementById('totalFinalDisplay').innerHTML = `$${totalFinalMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
     }
+    
+    document.getElementById('autorizacionAlert').style.display = totalFinalMXN > 500000 ? 'block' : 'none';
+    return { subtotal: mostrarEnUSD ? subtotalUSD : subtotalMXN, iva: mostrarEnUSD ? ivaUSD : ivaMXN, totalFinal: mostrarEnUSD ? totalFinalUSD : totalFinalMXN };
+}
     
     function renderAll() { renderEquipos(); renderInstalaciones(); calcularTotales(); }
     
-    function renderCatalogoTrane() {
-        let search = document.getElementById('searchTrane')?.value.toLowerCase() || '';
-        let filtered = catalogoTrane.filter(e => e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search));
-        let tbody = document.getElementById('catalogoTraneBody');
-        if(tbody) tbody.innerHTML = filtered.map((e, idx) => {
-            let precioVenta = calcularPrecioVentaTrane(e.costoUSD);
-            return `<tr>
-                <td><strong>${e.modelo}</strong></td><td>${e.tipo}</td><td>${e.capacidad}</td><td>${e.tension}</td>
-                <td style="font-size:0.75rem;">${e.tecnologia}</td><td>$${e.costoUSD.toFixed(2)} USD <button class="edit-precio-btn" onclick="editarPrecioEquipo('TRANE',${idx})">✏️</button></td>
-                <td><strong>$${precioVenta.toFixed(2)}</strong> MXN</td>
-                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('TRANE','${e.modelo}','${e.capacidad}',${precioVenta})">+ Cotizar</button></td>
-            </tr>`;
-        }).join('');
-    }
+ function renderCatalogoTrane() {
+    let search = document.getElementById('searchTrane')?.value.toLowerCase() || '';
+    let filtered = catalogoTrane.filter(e => e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search));
+    let tbody = document.getElementById('catalogoTraneBody');
+    if(tbody) tbody.innerHTML = filtered.map((e, idx) => {
+        let precioVenta = calcularPrecioVentaTrane(e.costoUSD);
+        let descripcionEscapada = (e.tecnologia || '').replace(/'/g, "\\'");
+        return `<tr>
+            <td><strong>${e.modelo}</strong></td>
+            <td>${e.tipo}</td>
+            <td>${e.capacidad}</td>
+            <td>${e.tension}</td>
+            <td style="font-size:0.75rem;">${e.tecnologia}</td>
+            <td>$${e.costoUSD.toFixed(2)} USD <button class="edit-precio-btn" onclick="editarPrecioEquipo('TRANE',${idx})">✏️</button></td>
+            <td><strong>$${precioVenta.toFixed(2)}</strong> MXN</td>
+            <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('TRANE','${e.modelo}','${e.capacidad}',${precioVenta}, '${descripcionEscapada}')">+ Cotizar</button></td>
+        </table>`;
+    }).join('');
+}
     
-    function renderCatalogoHisense() {
-        let search = document.getElementById('searchHisense')?.value.toLowerCase() || '';
-        let filtered = catalogoHisense.filter(e => e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search));
-        let tbody = document.getElementById('catalogoHisenseBody');
-        if(tbody) tbody.innerHTML = filtered.map((e, idx) => {
-            let precioVenta = calcularPrecioVentaNormal(e.precioBase, 20);
-            return `<tr>
-                <td><strong>${e.modelo}</strong></td><td>${e.tipo}</td><td>${e.capacidad}</td><td>${e.tension}</td>
-                <td style="font-size:0.75rem;">${e.tecnologia}</td><td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('HISENSE',${idx})">✏️</button></td>
-                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('HISENSE','${e.modelo}','${e.capacidad}',${precioVenta})">+ Cotizar</button></td>
-            </tr>`;
-        }).join('');
-    }
+function renderCatalogoHisense() {
+    let search = document.getElementById('searchHisense')?.value.toLowerCase() || '';
+    let filtered = catalogoHisense.filter(e => e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search));
+    let tbody = document.getElementById('catalogoHisenseBody');
+    if(tbody) tbody.innerHTML = filtered.map((e, idx) => {
+        let precioVenta = calcularPrecioVentaNormal(e.precioBase, 0);
+        let descripcionEscapada = (e.tecnologia || '').replace(/'/g, "\\'");
+        return `<tr>
+            <td><strong>${e.modelo}</strong></td>
+            <td>${e.tipo}</td>
+            <td>${e.capacidad}</td>
+            <td>${e.tension}</td>
+            <td style="font-size:0.75rem;">${e.tecnologia}</td>
+            <td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('HISENSE',${idx})">✏️</button></td>
+            <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('HISENSE','${e.modelo}','${e.capacidad}',${precioVenta}, '${descripcionEscapada}')">+ Cotizar</button></td>
+        </tr>`;
+    }).join('');
+}
+
+function renderCatalogoYork() {
+    let search = document.getElementById('searchYork')?.value.toLowerCase() || '';
+    let filtered = catalogoYork.filter(e => e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search));
+    let tbody = document.getElementById('catalogoYorkBody');
+    if(tbody) tbody.innerHTML = filtered.map((e, idx) => {
+        let precioMXN = e.precioUSD * tipoCambioActual;
+        let precioVenta = calcularPrecioVentaNormal(precioMXN, 0);
+        let descripcionEscapada = (e.tecnologia || '').replace(/'/g, "\\'");
+        return `<tr>
+            <td><strong>${e.modelo}</strong></td>
+            <td>${e.tipo}</td>
+            <td>${e.capacidad}</td>
+            <td>${e.tension}</td>
+            <td style="font-size:0.75rem;">${e.tecnologia}</td>
+            <td><strong>$${precioVenta.toFixed(2)}</strong> MXN <button class="edit-precio-btn" onclick="editarPrecioEquipo('YORK',${idx})">✏️</button></td>
+            <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('YORK','${e.modelo}','${e.capacidad}',${precioVenta}, '${descripcionEscapada}')">+ Cotizar</button></td>
+        </tr>`;
+    }).join('');
+}
     
-    function renderCatalogoYork() {
-        let search = document.getElementById('searchYork')?.value.toLowerCase() || '';
-        let filtered = catalogoYork.filter(e => e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search));
-        let tbody = document.getElementById('catalogoYorkBody');
-        if(tbody) tbody.innerHTML = filtered.map((e, idx) => {
-            let precioMXN = e.precioUSD * tipoCambioActual;
-            let precioVenta = calcularPrecioVentaNormal(precioMXN, 20);
-            return `<tr>
-                <td><strong>${e.modelo}</strong></td><td>${e.tipo}</td><td>${e.capacidad}</td><td>${e.tension}</td>
-                <td style="font-size:0.75rem;">${e.tecnologia}</td><td><strong>$${precioVenta.toFixed(2)}</strong> MXN <button class="edit-precio-btn" onclick="editarPrecioEquipo('YORK',${idx})">✏️</button></td>
-                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('YORK','${e.modelo}','${e.capacidad}',${precioVenta})">+ Cotizar</button></td>
-            </tr>`;
-        }).join('');
-    }
+function renderCatalogoCarrier() {
+    let tbody = document.getElementById('catalogoCarrierBody');
+    if(tbody) tbody.innerHTML = catalogoCarrier.map((e, idx) => {
+        let precioVenta = calcularPrecioVentaNormal(e.precioBase, 0);
+        let descripcionEscapada = (e.tecnologia || '').replace(/'/g, "\\'");
+        return `<tr>
+            <td><strong>${e.modelo}</strong></td>
+            <td>${e.tipo}</td>
+            <td>${e.capacidad}</td>
+            <td>${e.tension}</td>
+            <td style="font-size:0.75rem;">${e.tecnologia}</td>
+            <td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('CARRIER',${idx})">✏️</button></td>
+            <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('CARRIER','${e.modelo}','${e.capacidad}',${precioVenta}, '${descripcionEscapada}')">+ Cotizar</button></td>
+        </tr>`;
+    }).join('');
+}
     
-    function renderCatalogoCarrier() {
-        let tbody = document.getElementById('catalogoCarrierBody');
-        if(tbody) tbody.innerHTML = catalogoCarrier.map((e, idx) => {
-            let precioVenta = calcularPrecioVentaNormal(e.precioBase, 20);
-            return `<tr>
-                <td><strong>${e.modelo}</strong></td><td>${e.tipo}</td><td>${e.capacidad}</td><td>${e.tension}</td>
-                <td style="font-size:0.75rem;">${e.tecnologia}</td><td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('CARRIER',${idx})">✏️</button></td>
-                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('CARRIER','${e.modelo}','${e.capacidad}',${precioVenta})">+ Cotizar</button></td>
-            </tr>`;
-        }).join('');
-    }
-    
-    function renderCatalogoDuventus() {
-        let tbody = document.getElementById('catalogoDuventusBody');
-        if(tbody) tbody.innerHTML = catalogoDuventus.map((e, idx) => {
-            let precioVenta = calcularPrecioVentaNormal(e.precioBase, 20);
-            return `<tr>
-                <td><strong>${e.modelo}</strong></td><td>${e.tipo}</td><td>${e.capacidad}</td><td>${e.tension}</td>
-                <td style="font-size:0.75rem;">${e.tecnologia}</td><td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('DUVENTUS',${idx})">✏️</button></td>
-                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('DUVENTUS','${e.modelo}','${e.capacidad}',${precioVenta})">+ Cotizar</button></td>
-            </tr>`;
-        }).join('');
-    }
-    
+ function renderCatalogoDuventus() {
+    let tbody = document.getElementById('catalogoDuventusBody');
+    if(tbody) tbody.innerHTML = catalogoDuventus.map((e, idx) => {
+        let precioVenta = calcularPrecioVentaNormal(e.precioBase, 0);
+        let descripcionEscapada = (e.tecnologia || '').replace(/'/g, "\\'");
+        return `<tr>
+            <td><strong>${e.modelo}</strong></td>
+            <td>${e.tipo}</td>
+            <td>${e.capacidad}</td>
+            <td>${e.tension}</td>
+            <td style="font-size:0.75rem;">${e.tecnologia}</td>
+            <td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('DUVENTUS',${idx})">✏️</button></td>
+            <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('DUVENTUS','${e.modelo}','${e.capacidad}',${precioVenta}, '${descripcionEscapada}')">+ Cotizar</button></td>
+        </tr>`;
+    }).join('');
+}
+
     function renderCatalogoRheem() {
-        let tbody = document.getElementById('catalogoRheemBody');
-        if(tbody) tbody.innerHTML = catalogoRheem.map((e, idx) => {
-            let precioVenta = calcularPrecioVentaNormal(e.precioBase, 20);
-            return `<tr>
-                <td><strong>${e.modelo}</strong></td><td>${e.tipo}</td><td>${e.capacidad}</td><td>${e.tension}</td>
-                <td style="font-size:0.75rem;">${e.tecnologia}</td><td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('RHEEM',${idx})">✏️</button></td>
-                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('RHEEM','${e.modelo}','${e.capacidad}',${precioVenta})">+ Cotizar</button></td>
-            </tr>`;
-        }).join('');
-    }
-    
-    window.agregarEquipoDirecto = function(marca, modelo, capacidad, precioVenta) {
-        let precioVentaUSD = precioVenta / tipoCambioActual;
-        equipos.push({ id: nextId++, marca, modelo, capacidad, cantidad: 1, precioVenta, precioVentaUSD, descripcion: `Equipo ${marca} ${modelo} ${capacidad}` });
-        renderAll();
-        setActiveModule('cotizador');
-        showToast(`✓ ${marca} ${modelo} agregado - $${precioVenta.toFixed(2)} MXN`);
-    };
+    let tbody = document.getElementById('catalogoRheemBody');
+    if(tbody) tbody.innerHTML = catalogoRheem.map((e, idx) => {
+        let precioVenta = calcularPrecioVentaNormal(e.precioBase, 0);
+        let descripcionEscapada = (e.tecnologia || '').replace(/'/g, "\\'");
+        return `<tr>
+            <td><strong>${e.modelo}</strong></td>
+            <td>${e.tipo}</td>
+            <td>${e.capacidad}</td>
+            <td>${e.tension}</td>
+            <td style="font-size:0.75rem;">${e.tecnologia}</td>
+            <td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('RHEEM',${idx})">✏️</button></td>
+            <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('RHEEM','${e.modelo}','${e.capacidad}',${precioVenta}, '${descripcionEscapada}')">+ Cotizar</button></td>
+        </tr>`;
+    }).join('');
+}
+
+window.agregarEquipoDirecto = function(marca, modelo, capacidad, precioVenta, tecnologiaCompleta) {
+    let precioVentaUSD = precioVenta / tipoCambioActual;
+    equipos.push({ 
+        id: nextId++, 
+        marca, 
+        modelo, 
+        capacidad, 
+        cantidad: 1, 
+        precioVenta, 
+        precioVentaUSD, 
+        descripcion: tecnologiaCompleta || `Equipo ${marca} ${modelo} ${capacidad}` 
+    });
+    renderAll();
+    setActiveModule('cotizador');
+    showToast(`✓ ${marca} ${modelo} agregado - $${precioVenta.toFixed(2)} MXN`);
+};
     
     function agregarServicioPredefinido(servicio) {
         let cantidad = prompt("Ingrese la cantidad:", "1");
@@ -1316,19 +1444,24 @@
         document.getElementById('listaOtros').innerHTML = preciosOtros.map(s => `<div class="servicio-item"><div class="servicio-info"><div class="servicio-nombre">${s.concepto}</div><div class="servicio-desc">${s.descripcion}</div></div><div class="servicio-precio">$${s.costoUnitario.toFixed(2)}</div><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarServicioPredefinido({concepto:'${s.concepto}', descripcion:'${s.descripcion}', costoUnitario:${s.costoUnitario}})">+ Agregar</button></div>`).join('');
     }
     
-    function exportToPDF() {
-        let cliente = document.getElementById('clienteName').value;
-        let vendedor = document.getElementById('vendedorNombre').value;
-        let condiciones = document.getElementById('condicionesPago').value;
-        let fecha = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
-        let { subtotal, iva, totalFinal } = calcularTotales();
+function exportToPDF() {
+    let cliente = document.getElementById('clienteName').value;
+    let vendedor = document.getElementById('vendedorNombre').value;
+    let condiciones = document.getElementById('condicionesPago').value;
+    let fecha = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+    let { subtotal, iva, totalFinal } = calcularTotales();
+    
+    // Determinar la moneda actual
+    let mostrarEnUSDpdf = mostrarEnUSD;
+    let simboloMoneda = "$";
+    let codigoMoneda = mostrarEnUSDpdf ? "USD" : "MXN";
 
-        historial.unshift({ cliente, fecha, total: totalFinal.toFixed(2) });
-        let historialBody = document.getElementById('historialBody');
-        if(historialBody) historialBody.innerHTML = historial.slice(0,10).map(h => `<tr><td>${h.cliente}</td><td>${h.fecha}</td><td>$${h.total}</td>`).join('');
+    historial.unshift({ cliente, fecha, total: totalFinal.toFixed(2) });
+    let historialBody = document.getElementById('historialBody');
+    if(historialBody) historialBody.innerHTML = historial.slice(0,10).map(h => `<tr><td>${h.cliente}</td><td>${h.fecha}</td><td>$${h.total}</td>`).join('');
 
-        let win = window.open('', '_blank');
-        win.document.write(`
+    let win = window.open('', '_blank');
+    win.document.write(`
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1338,38 +1471,20 @@
     <style>
         :root { --ayce-red: #B22234; --ayce-dark: #1e293b; --text-main: #334155; --text-light: #64748b; --bg-light: #f8fafc; --border: #e2e8f0; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
- /* ⭐ NUEVO: Elimina encabezados y pies de página automáticos ⭐ */
-        @page {
-            margin: 0;
-        }
+        @page { margin: 0; }
         @media print {
-            @page {
-                margin: 0;
-            }
-            body {
-                margin: 1.5cm;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+            @page { margin: 0; }
+            body { margin: 1.5cm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
         body { font-family: 'Inter', sans-serif; color: var(--text-main); background: #fff; font-size: 11px; line-height: 1.4; padding: 40px; }
         .invoice-container { max-width: 900px; margin: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--ayce-dark); padding-bottom: 25px; margin-bottom: 35px; }
-        .logo-block { display: flex; align-items: center; gap: 18px; }
-        .vector-emblem { width: 70px; height: 70px; background: #ffffff; border: 2px solid var(--ayce-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(178,34,52,0.1); }
-        .vector-emblem svg { width: 45px; height: 45px; fill: var(--ayce-red); }
-        .company-name h1 { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; color: var(--ayce-dark); letter-spacing: -0.5px; margin: 0; }
-        .company-name p { font-size: 10px; color: var(--ayce-red); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 3px; }
-        .meta-block { text-align: right; }
-        .doc-type { font-family: 'Montserrat', sans-serif; color: var(--ayce-dark); font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .folio-info { font-size: 11px; color: var(--text-light); }
-        .folio-info strong { color: var(--ayce-red); font-size: 13px; }
         .data-panel { display: grid; grid-template-columns: 1.6fr 1.3fr; gap: 25px; background: var(--bg-light); padding: 20px 25px; border-radius: 10px; margin-bottom: 35px; border: 1px solid var(--border); }
         .data-card h4 { font-size: 9px; color: var(--text-light); font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 5px;}
         .data-card p { font-size: 13px; font-weight: 600; color: var(--ayce-dark); }
         .condiciones-text { color: var(--ayce-red) !important; font-weight: 700 !important; }
         .seccion-title { font-size: 11px; font-weight: 700; color: var(--ayce-dark); text-transform: uppercase; letter-spacing: 1px; border-left: 3px solid var(--ayce-red); padding-left: 10px; margin-bottom: 12px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; table-layout: fixed; border: 1px solid var(--border); }
+        .table-wrapper { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; }
         th { background: #f1f5f9; padding: 12px; font-size: 10px; text-transform: uppercase; color: var(--text-main); font-weight: 700; text-align: left; border-bottom: 2px solid var(--border); }
         td { padding: 12px; font-size: 11px; border-bottom: 1px solid var(--border); color: var(--text-main); vertical-align: top; }
         .row-alt td { background: #fafbfc; }
@@ -1386,199 +1501,149 @@
         .conditions-panel { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #fff8f8; border: 1px solid #fee2e2; padding: 20px; border-radius: 8px; font-size: 10px; color: #7f1d1d; line-height: 1.5; }
         .conditions-panel strong { color: var(--ayce-red); }
         .footer { margin-top: 50px; text-align: center; font-size: 9px; color: var(--text-light); border-top: 1px solid var(--border); padding-top: 20px; }
-        @media print { body { padding: 0; background: white; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;} .invoice-container { max-width: 100%; width: 100%; border: none;} .summary-box { box-shadow: none; border: 2px solid var(--ayce-dark) !important;} .total-final-row { background: var(--ayce-dark) !important; color: white !important;} }
+        @media print { body { padding: 0; background: white; } .summary-box { box-shadow: none; border: 2px solid var(--ayce-dark) !important;} .total-final-row { background: var(--ayce-dark) !important; color: white !important;} }
+        
+        .ayc-brand-header { background: #ffffff; padding: 0; margin-bottom: 40px; }
+        .ayc-top-bar { height: 6px; background: linear-gradient(90deg, #00b5a6, #007a7a); width: 100%; }
+        .ayc-main-content { display: flex; justify-content: space-between; align-items: center; padding: 35px 50px; }
+        .ayc-logo-section { display: flex; align-items: center; gap: 25px; }
+        .ayc-emblem-container { width: 70px; height: 70px; }
+        .ayc-svg-icon { width: 100%; height: 100%; }
+        .ayc-text-stack { border-left: 1px solid #e2e8f0; padding-left: 25px; }
+        .ayc-brand-title { font-size: 26px; color: var(--ayce-dark); letter-spacing: -0.5px; }
+        .ayc-brand-title strong { color: #00b5a6; font-weight: 800; }
+        .ayc-brand-subtitle { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: #64748b; }
+        .ayc-meta-section { text-align: right; }
+        .ayc-doc-label { font-size: 18px; font-weight: 700; text-transform: uppercase; color: var(--ayce-dark); }
+        .ayc-date-badge { display: inline-block; margin-top: 10px; padding: 6px 16px; background-color: #f8fafc; border-radius: 4px; border-right: 3px solid #b91c1c; }
+        .ayc-bottom-divider { height: 1px; background: #e2e8f0; margin: 0 50px; }
     </style>
 </head>
 <body>
     <div class="invoice-container">
         <div class="ayc-brand-header">
-    <div class="ayc-top-bar"></div>
-    
-    <div class="ayc-main-content">
-        <div class="ayc-logo-section">
-            <div class="ayc-emblem-container">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="ayc-svg-icon">
-                    <defs>
-                        <linearGradient id="bladeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#00b5a6;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#007a7a;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <g transform="translate(50,50)">
-                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(0)" rx="1" />
-                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(30)" rx="1" />
-                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(60)" rx="1" />
-                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(90)" rx="1" />
-                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(120)" rx="1" />
-                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(150)" rx="1" />
-                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(180)" rx="1" />
-                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(210)" rx="1" />
-                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(240)" rx="1" />
-                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(270)" rx="1" />
-                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(300)" rx="1" />
-                        <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(330)" rx="1" />
-                        <circle cx="0" cy="0" r="11" fill="#00b5a6" />
-                    </g>
-                </svg>
+            <div class="ayc-top-bar"></div>
+            <div class="ayc-main-content">
+                <div class="ayc-logo-section">
+                    <div class="ayc-emblem-container">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="ayc-svg-icon">
+                            <defs><linearGradient id="bladeGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#00b5a6"/><stop offset="100%" style="stop-color:#007a7a"/></linearGradient></defs>
+                            <g transform="translate(50,50)">
+                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(0)" rx="1"/>
+                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(30)" rx="1"/>
+                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(60)" rx="1"/>
+                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(90)" rx="1"/>
+                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(120)" rx="1"/>
+                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(150)" rx="1"/>
+                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(180)" rx="1"/>
+                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(210)" rx="1"/>
+                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(240)" rx="1"/>
+                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(270)" rx="1"/>
+                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(300)" rx="1"/>
+                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(330)" rx="1"/>
+                                <circle cx="0" cy="0" r="11" fill="#00b5a6"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="ayc-text-stack">
+                        <span class="ayc-brand-title">Grupo <strong>AYCE</strong> México</span>
+                        <span class="ayc-brand-subtitle">Ingeniería Térmica & Soluciones HVAC Corporativas</span>
+                    </div>
+                </div>
+                <div class="ayc-meta-section">
+                    <h2 class="ayc-doc-label">Propuesta Técnica - Comercial</h2>
+                    <div class="ayc-date-badge">
+                        <span class="ayc-date-text">Emisión: <strong>${fecha}</strong></span>
+                    </div>
+                </div>
             </div>
-            <div class="ayc-text-stack">
-                <span class="ayc-brand-title">Grupo <strong>AYCE</strong> México</span>
-                <span class="ayc-brand-subtitle">Ingeniería Térmica & Soluciones HVAC Corporativas</span>
-            </div>
+            <div class="ayc-bottom-divider"></div>
         </div>
-
-        <div class="ayc-meta-section">
-            <h2 class="ayc-doc-label">Propuesta Técnica - Comercial</h2>
-            <div class="ayc-date-badge">
-                <span class="ayc-date-text">Emisión: <strong>13 de abril de 2026</strong></span>
-            </div>
-        </div>
-    </div>
-    
-    <div class="ayc-bottom-divider"></div>
-</div>
-
-<style>
-    :root {
-        --ayce-primary: #00b5a6;
-        --ayce-secondary: #007a7a;
-        --ayce-accent: #b91c1c;
-        --ayce-dark: #1e293b;
-        --ayce-light-gray: #f8fafc;
-    }
-
-    .ayc-brand-header {
-        background: #ffffff;
-        padding: 0;
-        margin-bottom: 40px;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    /* Barra superior de acento */
-    .ayc-top-bar {
-        height: 6px;
-        background: linear-gradient(90deg, var(--ayce-primary), var(--ayce-secondary));
-        width: 100%;
-    }
-
-    .ayc-main-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 35px 50px;
-    }
-
-    /* Estilo del Logo e Identidad */
-    .ayc-logo-section {
-        display: flex;
-        align-items: center;
-        gap: 25px;
-    }
-
-    .ayc-emblem-container {
-        width: 70px;
-        height: 70px;
-        position: relative;
-    }
-
-    .ayc-svg-icon {
-        width: 100%;
-        height: 100%;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));
-    }
-
-    .ayc-text-stack {
-        display: flex;
-        flex-direction: column;
-        border-left: 1px solid #e2e8f0;
-        padding-left: 25px;
-    }
-
-    .ayc-brand-title {
-        font-size: 26px;
-        color: var(--ayce-dark);
-        letter-spacing: -0.5px;
-        line-height: 1;
-    }
-
-    .ayc-brand-title strong {
-        color: var(--ayce-primary);
-        font-weight: 800;
-    }
-
-    .ayc-brand-subtitle {
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 1.2px;
-        color: #64748b;
-        margin-top: 8px;
-        font-weight: 500;
-    }
-
-    /* Estilo de la sección de Propuesta */
-    .ayc-meta-section {
-        text-align: right;
-    }
-
-    .ayc-doc-label {
-        font-size: 18px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--ayce-dark);
-        margin: 0;
-        letter-spacing: 0.5px;
-    }
-
-    .ayc-date-badge {
-        display: inline-block;
-        margin-top: 10px;
-        padding: 6px 16px;
-        background-color: var(--ayce-light-gray);
-        border-radius: 4px;
-        border-right: 3px solid var(--ayce-accent);
-    }
-
-    .ayc-date-text {
-        font-size: 13px;
-        color: #475569;
-    }
-
-    .ayc-date-text strong {
-        color: var(--ayce-accent);
-    }
-
-    /* Línea divisoria inferior */
-    .ayc-bottom-divider {
-        height: 1px;
-        background: #e2e8f0;
-        margin: 0 50px;
-    }
-</style>
         <div class="data-panel">
             <div class="data-card"><h4>CLIENTE / RAZÓN SOCIAL</h4><p>${cliente}</p></div>
             <div class="data-card" style="text-align: right;"><h4>INGENIERO RESPONSABLE</h4><p>${vendedor}</p></div>
             <div class="data-card"><h4>CONDICIONES DE PAGO</h4><p class="condiciones-text">${condiciones}</p></div>
             <div class="data-card" style="text-align: right;"><h4>VALIDEZ DE LA OFERTA</h4><p>15 Días Naturales</p></div>
         </div>
+        
         <div class="seccion-title">Suministro de Equipamiento HVAC de Alta Eficiencia</div>
-        <table><thead><tr><th class="col-desc">Descripción Técnica del Sistema</th><th class="col-qty">Cant.</th><th class="col-price">P. Unitario</th><th class="col-total">Subtotal</th></tr></thead>
-            <tbody>${equipos.map((eq, index) => `<tr class="${index % 2 === 0 ? '' : 'row-alt'}"><td class="col-desc"><strong>${eq.marca.toUpperCase()}</strong> - ${eq.modelo}<br><small style="color:var(--text-light); font-size:9px">${eq.descripcion || 'Suministro de equipo principal certificado'}</small></td><td class="col-qty">${eq.cantidad}</td><td class="col-price">$${eq.precioVenta.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td><td class="col-total">$${(eq.cantidad * eq.precioVenta).toLocaleString('es-MX', {minimumFractionDigits: 2})}</td></tr>`).join('')}</tbody>
-        </table>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-desc">Descripción Técnica del Sistema</th>
+                        <th class="col-qty">Cant.</th>
+                        <th class="col-price">P. Unitario</th>
+                        <th class="col-total">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${equipos.map((eq, index) => {
+                        let precioUnitario = mostrarEnUSDpdf ? (eq.precioVenta / tipoCambioActual) : eq.precioVenta;
+                        let subtotalEq = mostrarEnUSDpdf ? ((eq.cantidad * eq.precioVenta) / tipoCambioActual) : (eq.cantidad * eq.precioVenta);
+                        return `<tr class="${index % 2 === 0 ? '' : 'row-alt'}">
+                            <td class="col-desc"><strong>${eq.marca.toUpperCase()}</strong> - ${eq.modelo}<br><small style="color:var(--text-light); font-size:9px">${eq.descripcion || 'Suministro de equipo principal certificado'}</small></td>
+                            <td class="col-qty">${eq.cantidad}</td>
+                            <td class="col-price">${simboloMoneda}${precioUnitario.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</td>
+                            <td class="col-total">${simboloMoneda}${subtotalEq.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</td>
+                        </tr>`;
+                    }).join('')}
+                </tbody>
+            </table>
+        </div>
+        
         <div class="seccion-title">Servicios Especializados de Instalación & Puesta en Marcha</div>
-        <table><thead><tr><th class="col-desc">Concepto</th><th class="col-qty">Cant.</th><th class="col-price">Costo Unitario</th><th class="col-total">Subtotal</th></tr></thead>
-            <tbody>${instalaciones.map((i, index) => `<tr class="${index % 2 === 0 ? '' : 'row-alt'}"><td class="col-desc">${i.concepto}<br><small style="color:var(--text-light); font-size:9px">${i.descripcion}</small></td><td class="col-qty">${i.cantidad}</td><td class="col-price">$${i.costoUnitario.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td><td class="col-total">$${(i.cantidad * i.costoUnitario).toLocaleString('es-MX', {minimumFractionDigits: 2})}</td></tr>`).join('')}</tbody>
-        </table>
-        <div class="summary-container"><div class="summary-box"><div class="summary-row"><span>Subtotal Neto</span><strong>$${subtotal.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong></div><div class="summary-row"><span>I.V.A. Trasladado (16%)</span><strong>$${iva.toLocaleString('es-MX', {minimumFractionDigits: 2})}</strong></div><div class="total-final-row"><span>Inversión Total</span><span>$${totalFinal.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</span></div></div></div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-desc">Concepto</th>
+                        <th class="col-qty">Cant.</th>
+                        <th class="col-price">Costo Unitario</th>
+                        <th class="col-total">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${instalaciones.map((i, index) => {
+                        let costoUnitario = mostrarEnUSDpdf ? (i.costoUnitario / tipoCambioActual) : i.costoUnitario;
+                        let subtotalInst = mostrarEnUSDpdf ? ((i.cantidad * i.costoUnitario) / tipoCambioActual) : (i.cantidad * i.costoUnitario);
+                        return `<tr class="${index % 2 === 0 ? '' : 'row-alt'}">
+                            <td class="col-desc">${i.concepto}<br><small style="color:var(--text-light); font-size:9px">${i.descripcion}</small></td>
+                            <td class="col-qty">${i.cantidad}</td>
+                            <td class="col-price">${simboloMoneda}${costoUnitario.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</td>
+                            <td class="col-total">${simboloMoneda}${subtotalInst.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</td>
+                        </tr>`;
+                    }).join('')}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="summary-container">
+            <div class="summary-box">
+                <div class="summary-row"><span>Subtotal Neto</span><strong>${simboloMoneda}${(mostrarEnUSDpdf ? (subtotal / tipoCambioActual) : subtotal).toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</strong></div>
+                <div class="summary-row"><span>I.V.A. Trasladado (16%)</span><strong>${simboloMoneda}${(mostrarEnUSDpdf ? (iva / tipoCambioActual) : iva).toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</strong></div>
+                <div class="total-final-row"><span>Inversión Total</span><span>${simboloMoneda}${(mostrarEnUSDpdf ? (totalFinal / tipoCambioActual) : totalFinal).toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</span></div>
+            </div>
+        </div>
+        
         <div class="seccion-title">Dictamen Legal & Normativo</div>
-        <div class="conditions-panel"><p><strong>Logística:</strong> Horario de entrega de Lunes a Viernes de 8:30 a 6:30 pm. Programación en 3 a 5 días hábiles post-validación de depósito.</p><p><strong>Devoluciones:</strong> No se aceptan devoluciones de mercancía ni reembolsos monetarios. Cargo excepcional del 20% sobre valor neto autorizado.</p><p><strong>Finanzas:</strong> Favor de enviar comprobante de pago para habilitar programación del servicio. No se maneja ningún tipo de crédito comercial.</p><p><strong>Garantía:</strong> Un (01) año en partes eléctricas y componentes generales. Cinco (05) años en compresor principal (sujeto a plan de mantenimiento corporativo).</p></div>
-        <footer class="footer"><p>Grupo AYCE México | Periférico Adolfo López Mateos No. 4293 Int P3-300, Tlalpan, CDMX 14210 | www.grupoayce.com.mx</p><p style="margin-top:5px; font-weight:700; text-transform:uppercase; color:var(--ayce-dark); letter-spacing:0.5px">Asesoría de Ingeniería para un Rendimiento Superior</p></footer>
+        <div class="conditions-panel">
+            <p><strong>Logística:</strong> Horario de entrega de Lunes a Viernes de 8:30 a 6:30 pm. Programación en 3 a 5 días hábiles post-validación de depósito.</p>
+            <p><strong>Devoluciones:</strong> No se aceptan devoluciones de mercancía ni reembolsos monetarios. Cargo excepcional del 20% sobre valor neto autorizado.</p>
+            <p><strong>Finanzas:</strong> Favor de enviar comprobante de pago para habilitar programación del servicio. No se maneja ningún tipo de crédito comercial.</p>
+            <p><strong>Garantía:</strong> Un (01) año en partes eléctricas y componentes generales. Cinco (05) años en compresor principal (sujeto a plan de mantenimiento corporativo).</p>
+        </div>
+        <footer class="footer">
+            <p>Grupo AYCE México | Periférico Adolfo López Mateos No. 4293 Int P3-300, Tlalpan, CDMX 14210 | www.grupoayce.com.mx</p>
+            <p style="margin-top:5px; font-weight:700; text-transform:uppercase; color:var(--ayce-dark); letter-spacing:0.5px">Asesoría de Ingeniería para un Rendimiento Superior</p>
+        </footer>
     </div>
     <script>window.onload = function() { setTimeout(function() { window.print(); setTimeout(function() { window.close(); }, 500); }, 300); };<\/script>
 </body>
 </html>`);
-        win.document.close();
-        showToast("Propuesta Técnica Gerencial Generada");
-    }
+    win.document.close();
+    showToast(`Propuesta Técnica Gerencial Generada en ${mostrarEnUSDpdf ? "USD" : "MXN"}`);
+}
     
     function showToast(msg) { let t = document.createElement('div'); t.className = 'toast'; t.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
     
@@ -1592,12 +1657,32 @@
     
     document.getElementById('agregarEquipoBtn')?.addEventListener('click', () => { setActiveModule('catalogo'); showToast("Use el Catálogo HVAC"); });
     document.getElementById('agregarServicioPredefinidoBtn')?.addEventListener('click', () => { cargarListasServicios(); document.getElementById('modalServicio').style.display = 'flex'; });
-    document.getElementById('agregarInstalacionBtn')?.addEventListener('click', () => { let c = prompt("Concepto:"); if(c){ let costo = parseFloat(prompt("Costo:")); instalaciones.push({ id: nextId++, concepto: c, descripcion: "Personalizado", cantidad: 1, costoUnitario: isNaN(costo)?0:costo }); renderAll(); } });
+document.getElementById('agregarInstalacionBtn')?.addEventListener('click', () => { 
+    let concepto = prompt("Concepto del servicio:"); 
+    if(concepto){ 
+        let costo = parseFloat(prompt("Costo del servicio:"));
+        let descripcion = prompt("Descripción detallada:", concepto);
+        
+        instalaciones.push({ 
+            id: nextId++, 
+            concepto: concepto, 
+            descripcion: descripcion || concepto, 
+            cantidad: 1, 
+            costoUnitario: isNaN(costo)?0:costo 
+        }); 
+        renderAll(); 
+        showToast(`✓ Servicio "${concepto}" agregado`);
+    } 
+});   
     document.getElementById('actualizarTCBtn')?.addEventListener('click', async () => { await obtenerTipoCambio(); renderCatalogoTrane(); renderCatalogoYork(); renderEquipos(); });
     document.getElementById('toggleCurrencyBtn')?.addEventListener('click', toggleCurrency);
     document.getElementById('closeModalServicioBtn')?.addEventListener('click', () => document.getElementById('modalServicio').style.display = 'none');
     document.getElementById('exportPdfBtn')?.addEventListener('click', exportToPDF);
-    document.getElementById('areaM2')?.addEventListener('input', () => { let sug = (parseFloat(document.getElementById('areaM2').value) / 16).toFixed(2); document.getElementById('capSugerida').innerText = sug; });
+   document.getElementById('areaM2')?.addEventListener('input', () => { 
+    let area = parseFloat(document.getElementById('areaM2').value) || 0;
+    let sug = (area / 16).toFixed(2); 
+    document.getElementById('capSugerida').innerText = sug; 
+});
     document.getElementById('agregarEquipoCatalogoBtn')?.addEventListener('click', () => document.getElementById('modalNuevoEquipo').style.display = 'flex');
     document.getElementById('guardarNuevoEquipoBtn')?.addEventListener('click', agregarNuevoEquipo);
     document.getElementById('cancelarNuevoEquipoBtn')?.addEventListener('click', () => document.getElementById('modalNuevoEquipo').style.display = 'none');
