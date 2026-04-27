@@ -14,6 +14,8 @@
     <meta name="theme-color" content="#B22234">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -538,6 +540,167 @@
     font-weight: 600;
 }
 
+/* Estilos para selector de modo */
+.modo-selector-btn {
+    background: #e2e8f0;
+    color: #475569;
+}
+.modo-selector-btn.active-multi {
+    background: linear-gradient(135deg, #B22234, #1E3A5F);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.modo-selector-btn.active-trane {
+    background: linear-gradient(135deg, #1E6650, #0D3B2E);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Advertencia de modo exclusivo */
+.warning-trane-mode {
+    background: #fffbeb;
+    border-left: 4px solid #eab308;
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.8rem;
+    color: #92400e;
+}
+.warning-trane-mode i {
+    font-size: 1.2rem;
+    color: #eab308;
+}
+
+/* ========== ESTILOS PARA REPORTE POR DÍA ========== */
+.filtro-fecha-container {
+    background: white;
+    border-radius: 24px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 15px;
+    justify-content: space-between;
+}
+
+.filtro-fecha-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filtro-fecha-group label {
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: #1E3A5F;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.filtro-fecha-group input {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    font-size: 0.9rem;
+}
+
+.filtro-fecha-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.metricas-dia-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.metrica-dia-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s;
+}
+
+.metrica-dia-card:hover {
+    transform: translateY(-3px);
+}
+
+.metrica-dia-card i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.metrica-dia-card .metric-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1E3A5F;
+}
+
+.metrica-dia-card .metric-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.tabla-historica-container {
+    margin-top: 25px;
+    overflow-x: auto;
+}
+
+.tabla-historica {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+.tabla-historica th {
+    background: #1E3A5F;
+    color: white;
+    padding: 12px;
+    text-align: center;
+}
+
+.tabla-historica td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tabla-historica tr:hover {
+    background: #f8fafc;
+}
+
+.fecha-actual-badge {
+    background: #B22234;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* Estilos para botones de período */
+.btn-periodo {
+    transition: all 0.2s ease;
+}
+.btn-periodo:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.btn-periodo.active-periodo {
+    background: #B22234;
+    color: white;
+    border: none;
+}
 
 
     </style>
@@ -571,11 +734,21 @@
 
 <!-- CONTENIDO PRINCIPAL -->
 <div id="appContent" class="app-content">
-    <div class="user-info-bar no-print">
+  <div class="user-info-bar no-print">
+    <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
         <div>
             <i class="fas fa-user-circle"></i> 
             <strong id="userNameDisplay"></strong>
             <span id="userRoleDisplay" class="user-role-badge"></span>
+        </div>
+        <!-- SELECTOR DE MODO TRANE EXCLUSIVO -->
+        <div style="display: flex; gap: 8px; background: #f1f5f9; padding: 4px; border-radius: 40px;">
+            <button id="btnModoMultimarca" class="modo-selector-btn" style="padding: 6px 20px; border-radius: 30px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                🌐 Multi-marca
+            </button>
+            <button id="btnModoTraneExclusivo" class="modo-selector-btn" style="padding: 6px 20px; border-radius: 30px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                🔷 TRANE Exclusivo
+            </button>
         </div>
         <div>
             <button onclick="cerrarSesion()" class="logout-btn">
@@ -583,6 +756,7 @@
             </button>
         </div>
     </div>
+</div>
 
     <div class="app-container">
         <div class="header-premium no-print">
@@ -933,116 +1107,202 @@
     <!-- MÓDULO DE ESTADÍSTICAS -->
 
 
-    <div id="estadisticasModule" style="display:none;">
-        <div class="card-premium">
-            <div class="card-header">
-                <h2><i class="fas fa-chart-line"></i> 📊 Estadísticas Comerciales</h2>
+<div id="estadisticasModule" style="display:none;">
+    <div class="card-premium">
+        <div class="card-header">
+            <h2><i class="fas fa-chart-line"></i> 📊 Estadísticas Comerciales</h2>
+        </div>
+        <div class="card-body estadisticas-container">
+            
+            <!-- ========== NUEVO: FILTRO POR FECHA ========== -->
+            <div class="filtro-fecha-container">
+                <div class="filtro-fecha-group">
+                    <label><i class="fas fa-calendar-alt"></i> Seleccionar Fecha</label>
+                    <input type="date" id="fechaSelector" value="">
+                </div>
+                <div class="filtro-fecha-buttons">
+                    <button id="btnFiltrarFecha" class="btn-primary" style="padding: 10px 20px;">
+                        <i class="fas fa-search"></i> Filtrar
+                    </button>
+                    <button id="btnLimpiarFiltro" class="btn-secondary" style="padding: 10px 20px;">
+                        <i class="fas fa-undo-alt"></i> Limpiar
+                    </button>
+                    <button id="btnExportarHistorico" class="btn-secondary" style="padding: 10px 20px; background: #1E3A5F; color: white; border: none;">
+                        <i class="fas fa-file-excel"></i> Exportar Tabla
+                    </button>
+                </div>
             </div>
-            <div class="card-body estadisticas-container">
-                
-                <!-- Semáforo Principal -->
-                <div class="semaforo-card">
-                    <h3><i class="fas fa-traffic-light"></i> TASA DE CIERRE</h3>
-                    <div class="semaforo-indicador" id="semaforoIndicador">🟢</div>
-                    <div class="semaforo-tasa">
-                        <span id="tasaCierre">0</span>%
-                    </div>
-                    <div class="semaforo-label">
-                        <span id="semaforoTexto">Cargando...</span>
-                    </div>
-                    <div class="recomendacion-box">
-                        <i class="fas fa-lightbulb"></i>
-                        <strong>💡 RECOMENDACIÓN</strong>
-                        <div class="recomendacion-texto" id="recomendacionTexto">
-                            Calculando tu rendimiento...
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Tarjetas de resumen -->
-                <div class="stats-grid-4">
-                    <div class="stat-card">
-                        <i class="fas fa-file-invoice" style="color:#3b82f6;"></i>
-                        <div class="stat-number" id="totalCotizaciones">0</div>
-                        <div class="stat-label">TOTAL COTIZACIONES</div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-check-circle" style="color:#22c55e;"></i>
-                        <div class="stat-number" id="totalCerradas">0</div>
-                        <div class="stat-label">✅ CERRADAS</div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-clock" style="color:#eab308;"></i>
-                        <div class="stat-number" id="totalEnProceso">0</div>
-                        <div class="stat-label">⏳ EN PROCESO</div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-times-circle" style="color:#ef4444;"></i>
-                        <div class="stat-number" id="totalPerdidas">0</div>
-                        <div class="stat-label">❌ PERDIDAS</div>
-                    </div>
-                </div>
-
-                <!-- Barras de seguimiento -->
-                <div class="card-premium" style="margin-top: 20px; box-shadow: none; border: 1px solid #e2e8f0;">
-                    <div class="card-header" style="background: #f8fafc; color: #1E3A5F;">
-                        <h3><i class="fas fa-chart-simple"></i> DETALLE DE SEGUIMIENTOS</h3>
-                    </div>
-                    <div class="card-body">
-                        <div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                <span>📞 Pendientes</span>
-                                <span id="pendientesCount">0</span>
-                            </div>
-                            <div class="barra-progreso-container">
-                                <div class="barra-progreso barra-pendiente" id="barraPendiente" style="width: 0%;">0%</div>
-                            </div>
-                        </div>
-                        <div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                <span>📱 Contactados</span>
-                                <span id="contactadosCount">0</span>
-                            </div>
-                            <div class="barra-progreso-container">
-                                <div class="barra-progreso barra-contactado" id="barraContactado" style="width: 0%;">0%</div>
-                            </div>
-                        </div>
-                        <div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                <span>📄 Cotizados</span>
-                                <span id="cotizadosCount">0</span>
-                            </div>
-                            <div class="barra-progreso-container">
-                                <div class="barra-progreso barra-cotizado" id="barraCotizado" style="width: 0%;">0%</div>
-                            </div>
-                        </div>
-                        <div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                <span>✅ Cerrados</span>
-                                <span id="cerradosCount">0</span>
-                            </div>
-                            <div class="barra-progreso-container">
-                                <div class="barra-progreso barra-cerrado" id="barraCerrado" style="width: 0%;">0%</div>
-                            </div>
-                        </div>
-                        <div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                                <span>❌ Perdidos</span>
-                                <span id="perdidosCount">0</span>
-                            </div>
-                            <div class="barra-progreso-container">
-                                <div class="barra-progreso barra-perdido" id="barraPerdido" style="width: 0%;">0%</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+            <!-- ========== MÉTRICAS DEL DÍA SELECCIONADO ========== -->
+            <div id="fechaSeleccionadaInfo" style="margin-bottom: 15px; display: none;">
+                <span class="fecha-actual-badge"><i class="fas fa-calendar-day"></i> Mostrando métricas para: <span id="fechaMostrada">-</span></span>
             </div>
+
+            <div class="metricas-dia-grid" id="metricasDiaGrid">
+                <div class="metrica-dia-card">
+                    <i class="fas fa-file-invoice" style="color: #3b82f6;"></i>
+                    <div class="metric-number" id="diaCotizaciones">0</div>
+                    <div class="metric-label">📄 Cotizaciones del día</div>
+                </div>
+                <div class="metrica-dia-card">
+                    <i class="fas fa-dollar-sign" style="color: #22c55e;"></i>
+                    <div class="metric-number" id="diaMontoVendido">$0</div>
+                    <div class="metric-label">💰 Monto Vendido (cerradas)</div>
+                </div>
+                <div class="metrica-dia-card">
+                    <i class="fas fa-tasks" style="color: #eab308;"></i>
+                    <div class="metric-number" id="diaSeguimientosCreados">0</div>
+                    <div class="metric-label">📋 Seguimientos creados</div>
+                </div>
+                <div class="metrica-dia-card">
+                    <i class="fas fa-clock" style="color: #ef4444;"></i>
+                    <div class="metric-number" id="diaSeguimientosPorVencer">0</div>
+                    <div class="metric-label">⏰ Seguimientos por vencer</div>
+                </div>
+                <div class="metrica-dia-card">
+                    <i class="fas fa-users" style="color: #8b5cf6;"></i>
+                    <div class="metric-number" id="diaLeadsCreados">0</div>
+                    <div class="metric-label">🎯 Leads creados</div>
+                </div>
+            </div>
+
+           <!-- ========== GRÁFICO DE BARRAS ========== -->
+
+<div class="grafico-container" style="background: white; border-radius: 24px; padding: 20px; margin-bottom: 25px; border: 1px solid #e2e8f0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+        <h4 style="color: #1E3A5F; margin: 0;">
+            <i class="fas fa-chart-bar"></i> Evolución de Actividad
+        </h4>
+        <div style="display: flex; gap: 10px;">
+            <button id="btnPeriodo7" class="btn-periodo" style="padding: 6px 15px; border-radius: 20px; border: 1px solid #B22234; background: white; color: #B22234; cursor: pointer; font-weight: 600;">
+                7 días
+            </button>
+            <button id="btnPeriodo15" class="btn-periodo" style="padding: 6px 15px; border-radius: 20px; border: 1px solid #B22234; background: white; color: #B22234; cursor: pointer; font-weight: 600;">
+                15 días
+            </button>
+            <button id="btnPeriodo30" class="btn-periodo active-periodo" style="padding: 6px 15px; border-radius: 20px; background: #B22234; color: white; border: none; cursor: pointer; font-weight: 600;">
+                30 días
+            </button>
+            <button id="btnExportarGrafico" class="btn-secondary" style="padding: 6px 15px;">
+                <i class="fas fa-file-excel"></i> Exportar Datos
+            </button>
         </div>
     </div>
+    <canvas id="graficoActividad" style="width: 100%; max-height: 400px; height: 400px;"></canvas>
+    <div style="margin-top: 15px; display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; font-size: 0.75rem;">
+        <div><span style="display: inline-block; width: 12px; height: 12px; background: #3b82f6; border-radius: 2px; margin-right: 5px;"></span> Cotizaciones</div>
+        <div><span style="display: inline-block; width: 12px; height: 12px; background: #22c55e; border-radius: 2px; margin-right: 5px;"></span> Monto Vendido (Miles)</div>
+        <div><span style="display: inline-block; width: 12px; height: 12px; background: #eab308; border-radius: 2px; margin-right: 5px;"></span> Seguimientos</div>
+        <div><span style="display: inline-block; width: 12px; height: 12px; background: #8b5cf6; border-radius: 2px; margin-right: 5px;"></span> Leads</div>
+        <div><span style="display: inline-block; width: 12px; height: 12px; background: #ef4444; border-radius: 2px; margin-right: 5px;"></span> Por vencer</div>
+    </div>
+</div>
 
 
-<!-- MODALES -->
+            <!-- ========== SEMÁFORO Y ESTADÍSTICAS EXISTENTES ========== -->
+            <div class="semaforo-card">
+                <h3><i class="fas fa-traffic-light"></i> TASA DE CIERRE GLOBAL</h3>
+                <div class="semaforo-indicador" id="semaforoIndicador">🟢</div>
+                <div class="semaforo-tasa">
+                    <span id="tasaCierre">0</span>%
+                </div>
+                <div class="semaforo-label">
+                    <span id="semaforoTexto">Cargando...</span>
+                </div>
+                <div class="recomendacion-box">
+                    <i class="fas fa-lightbulb"></i>
+                    <strong>💡 RECOMENDACIÓN</strong>
+                    <div class="recomendacion-texto" id="recomendacionTexto">
+                        Calculando tu rendimiento...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarjetas de resumen global -->
+            <div class="stats-grid-4">
+                <div class="stat-card">
+                    <i class="fas fa-file-invoice" style="color:#3b82f6;"></i>
+                    <div class="stat-number" id="totalCotizaciones">0</div>
+                    <div class="stat-label">TOTAL COTIZACIONES</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-check-circle" style="color:#22c55e;"></i>
+                    <div class="stat-number" id="totalCerradas">0</div>
+                    <div class="stat-label">✅ CERRADAS</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clock" style="color:#eab308;"></i>
+                    <div class="stat-number" id="totalEnProceso">0</div>
+                    <div class="stat-label">⏳ EN PROCESO</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-times-circle" style="color:#ef4444;"></i>
+                    <div class="stat-number" id="totalPerdidas">0</div>
+                    <div class="stat-label">❌ PERDIDAS</div>
+                </div>
+            </div>
+
+            <!-- Barras de seguimiento -->
+            <div class="card-premium" style="margin-top: 20px; box-shadow: none; border: 1px solid #e2e8f0;">
+                <div class="card-header" style="background: #f8fafc; color: #1E3A5F;">
+                    <h3><i class="fas fa-chart-simple"></i> DETALLE DE SEGUIMIENTOS</h3>
+                </div>
+                <div class="card-body">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>📞 Pendientes</span>
+                            <span id="pendientesCount">0</span>
+                        </div>
+                        <div class="barra-progreso-container">
+                            <div class="barra-progreso barra-pendiente" id="barraPendiente" style="width: 0%;">0%</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>📱 Contactados</span>
+                            <span id="contactadosCount">0</span>
+                        </div>
+                        <div class="barra-progreso-container">
+                            <div class="barra-progreso barra-contactado" id="barraContactado" style="width: 0%;">0%</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>📄 Cotizados</span>
+                            <span id="cotizadosCount">0</span>
+                        </div>
+                        <div class="barra-progreso-container">
+                            <div class="barra-progreso barra-cotizado" id="barraCotizado" style="width: 0%;">0%</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>✅ Cerrados</span>
+                            <span id="cerradosCount">0</span>
+                        </div>
+                        <div class="barra-progreso-container">
+                            <div class="barra-progreso barra-cerrado" id="barraCerrado" style="width: 0%;">0%</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>❌ Perdidos</span>
+                            <span id="perdidosCount">0</span>
+                        </div>
+                        <div class="barra-progreso-container">
+                            <div class="barra-progreso barra-perdido" id="barraPerdido" style="width: 0%;">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-------------- MODALES ------------------>
+
+
 <div id="modalServicio" style="display:none;" class="modal-overlay no-print">
     <div class="modal-content">
         <h3 style="color:#B22234; margin-bottom:20px;"><i class="fas fa-tools"></i> Seleccionar Servicio Predefinido</h3>
@@ -1840,36 +2100,36 @@ document.getElementById('cargarCotizacionActualBtn')?.addEventListener('click', 
     }
 
     function cargarRecordatoriosEnModal() {
-        const container = document.getElementById('listaRecordatoriosContainer');
-        if (!container) return;
-        const pendientes = obtenerRecordatoriosPendientes();
-        if (pendientes.length === 0) {
-            container.innerHTML = `<div class="sin-recordatorios"><i class="fas fa-check-circle" style="font-size:48px; color:#22c55e;"></i><p>¡No hay recordatorios pendientes!</p></div>`;
-            return;
-        }
-        container.innerHTML = pendientes.map((item, idx) => `
-            <div class="recordatorio-item">
-                <div class="cliente-nombre"><i class="fas fa-user"></i> ${escapeHtml(item.nombre || 'Sin nombre')}</div>
-                <div class="fecha"><i class="fas fa-calendar"></i> Fecha límite: ${item.fecha || 'No especificada'}</div>
-                <div class="importe"><i class="fas fa-dollar-sign"></i> $${(item.importe || 0).toLocaleString('es-MX')} ${item.moneda || 'MXN'}</div>
-                <div class="comentario"><i class="fas fa-comment"></i> ${escapeHtml(item.comentarios || 'Sin comentarios')}</div>
-                <button class="btn-completar" onclick="marcarRecordatorioCompletado(${idx})"><i class="fas fa-check"></i> Marcar como contactado</button>
-            </div>
-        `).join('');
-        const verTodos = document.createElement('a');
-        verTodos.href = '#';
-        verTodos.className = 'ver-todos-link';
-        verTodos.innerHTML = '<i class="fas fa-list"></i> Ver todos los seguimientos en CRM';
-        verTodos.onclick = (e) => {
-            e.preventDefault();
-            cerrarModalRecordatorios();
-            setActiveModule('historial');
-            document.querySelectorAll('.crm-tab-btn').forEach(btn => {
-                if (btn.dataset.crm === 'seguimientos') btn.click();
-            });
-        };
-        container.appendChild(verTodos);
+    const container = document.getElementById('listaRecordatoriosContainer');
+    if (!container) return;
+    const pendientes = obtenerRecordatoriosPendientes();
+    if (pendientes.length === 0) {
+        container.innerHTML = `<div class="sin-recordatorios"><i class="fas fa-check-circle" style="font-size:48px; color:#22c55e;"></i><p>¡No hay recordatorios pendientes!</p></div>`;
+        return;
     }
+    container.innerHTML = pendientes.map((item, idx) => `
+        <div class="recordatorio-item">
+            <div class="cliente-nombre"><i class="fas fa-user"></i> ${escapeHtml(item.nombre || 'Sin nombre')}</div>
+            <div class="fecha"><i class="fas fa-calendar"></i> Fecha límite: ${item.fecha || 'No especificada'}</div>
+            <div class="importe"><i class="fas fa-dollar-sign"></i> $${(item.importe || 0).toLocaleString('es-MX')} ${item.moneda || 'MXN'}</div>
+            <div class="comentario"><i class="fas fa-comment"></i> ${escapeHtml(item.comentarios || 'Sin comentarios')}</div>
+            <button class="btn-completar" onclick="marcarRecordatorioCompletado(${idx})"><i class="fas fa-check"></i> Marcar como contactado</button>
+        </div>
+    `).join('');
+    const verTodos = document.createElement('a');
+    verTodos.href = '#';
+    verTodos.className = 'ver-todos-link';
+    verTodos.innerHTML = '<i class="fas fa-list"></i> Ver todos los seguimientos en CRM';
+    verTodos.onclick = (e) => {
+        e.preventDefault();
+        cerrarModalRecordatorios();
+        setActiveModule('historial');
+        document.querySelectorAll('.crm-tab-btn').forEach(btn => {
+            if (btn.dataset.crm === 'seguimientos') btn.click();
+        });
+    };
+    container.appendChild(verTodos);
+}
 
     function mostrarModalRecordatorios() {
         const modal = document.getElementById('modalRecordatorios');
@@ -2318,6 +2578,542 @@ setTimeout(() => {
     recuperarRespaldoEmergencia();
 }, 2000);
 
+
+// ========== FUNCIONES PARA REPORTE POR DÍA ==========
+
+// Convertir fecha dd/mm/aaaa a aaaa-mm-dd para comparar
+function convertirFechaParaComparar(fechaStr) {
+    if (!fechaStr) return null;
+    // Si ya viene en formato ISO, devolver
+    if (fechaStr.includes('-')) return fechaStr;
+    // Formato dd/mm/aaaa
+    const partes = fechaStr.split('/');
+    if (partes.length === 3) {
+        return `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
+    }
+    return null;
+}
+
+// Obtener métricas para una fecha específica
+function obtenerMetricasPorFecha(fechaSeleccionada) {
+    const vendedorActual = document.getElementById('vendedorNombre').value;
+    const fechaComparar = convertirFechaParaComparar(fechaSeleccionada);
+    
+    // Filtrar cotizaciones del vendedor y de la fecha
+    const cotizacionesDelDia = historialCotizaciones.filter(c => {
+        if (c.ejecutivo !== vendedorActual) return false;
+        const fechaCotizacion = convertirFechaParaComparar(c.fecha);
+        return fechaCotizacion === fechaComparar;
+    });
+    
+    // Calcular monto vendido (solo cotizaciones cerradas)
+    let montoVendido = 0;
+    const cotizacionesCerradas = cotizacionesDelDia.filter(c => {
+        const tieneSeguimientoCerrado = seguimientosList.some(s => 
+            s.cotizacionId === c.id && s.estado === 'Cerrado'
+        );
+        if (tieneSeguimientoCerrado) {
+            montoVendido += c.importe || 0;
+        }
+        return tieneSeguimientoCerrado;
+    });
+    
+    // Seguimientos creados en esa fecha
+    const seguimientosCreados = seguimientosList.filter(s => {
+        if (s.ejecutivo !== vendedorActual) return false;
+        const fechaCreacion = convertirFechaParaComparar(s.fechaCreacion);
+        return fechaCreacion === fechaComparar;
+    });
+    
+    // Seguimientos por vencer (fecha límite = fecha seleccionada, estado Pendiente)
+    const seguimientosPorVencer = seguimientosList.filter(s => {
+        if (s.ejecutivo !== vendedorActual) return false;
+        if (s.estado !== 'Pendiente') return false;
+        const fechaLimite = convertirFechaParaComparar(s.fecha);
+        return fechaLimite === fechaComparar;
+    });
+    
+    // Leads creados en esa fecha
+    const leadsCreados = leadsList.filter(l => {
+        if (l.ejecutivo !== vendedorActual) return false;
+        const fechaLead = convertirFechaParaComparar(l.fecha);
+        return fechaLead === fechaComparar;
+    });
+    
+    return {
+        cotizaciones: cotizacionesDelDia.length,
+        montoVendido: montoVendido,
+        seguimientosCreados: seguimientosCreados.length,
+        seguimientosPorVencer: seguimientosPorVencer.length,
+        leadsCreados: leadsCreados.length
+    };
+}
+
+// Obtener histórico de últimos 30 días
+function obtenerHistorico30Dias() {
+    const vendedorActual = document.getElementById('vendedorNombre').value;
+    const resultados = [];
+    const hoy = new Date();
+    
+    for (let i = 29; i >= 0; i--) {
+        const fecha = new Date();
+        fecha.setDate(hoy.getDate() - i);
+        const año = fecha.getFullYear();
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        const fechaStr = `${dia}/${mes}/${año}`;
+        const fechaComparar = `${año}-${mes}-${dia}`;
+        
+        // Filtrar cotizaciones del vendedor y de la fecha
+        const cotizacionesDelDia = historialCotizaciones.filter(c => {
+            if (c.ejecutivo !== vendedorActual) return false;
+            const fechaCotizacion = convertirFechaParaComparar(c.fecha);
+            return fechaCotizacion === fechaComparar;
+        });
+        
+        // Calcular monto vendido
+        let montoVendido = 0;
+        cotizacionesDelDia.forEach(c => {
+            const tieneSeguimientoCerrado = seguimientosList.some(s => 
+                s.cotizacionId === c.id && s.estado === 'Cerrado'
+            );
+            if (tieneSeguimientoCerrado) {
+                montoVendido += c.importe || 0;
+            }
+        });
+        
+        // Seguimientos creados
+        const seguimientosCreados = seguimientosList.filter(s => {
+            if (s.ejecutivo !== vendedorActual) return false;
+            const fechaCreacion = convertirFechaParaComparar(s.fechaCreacion);
+            return fechaCreacion === fechaComparar;
+        });
+        
+        // Seguimientos por vencer
+        const seguimientosPorVencer = seguimientosList.filter(s => {
+            if (s.ejecutivo !== vendedorActual) return false;
+            if (s.estado !== 'Pendiente') return false;
+            const fechaLimite = convertirFechaParaComparar(s.fecha);
+            return fechaLimite === fechaComparar;
+        });
+        
+        // Leads creados
+        const leadsCreados = leadsList.filter(l => {
+            if (l.ejecutivo !== vendedorActual) return false;
+            const fechaLead = convertirFechaParaComparar(l.fecha);
+            return fechaLead === fechaComparar;
+        });
+        
+        resultados.push({
+            fecha: fechaStr,
+            cotizaciones: cotizacionesDelDia.length,
+            montoVendido: montoVendido,
+            seguimientosCreados: seguimientosCreados.length,
+            seguimientosPorVencer: seguimientosPorVencer.length,
+            leadsCreados: leadsCreados.length
+        });
+    }
+    
+    return resultados;
+}
+
+// Actualizar tabla histórica
+function actualizarTablaHistorica() {
+    const historico = obtenerHistorico30Dias();
+    const tbody = document.getElementById('tablaHistoricaBody');
+    if (!tbody) return;
+    
+    if (historico.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay datos disponibles</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = historico.map(dia => `
+        <tr>
+            <td><strong>${dia.fecha}</strong></td>
+            <td>${dia.cotizaciones}</td>
+            <td>$${dia.montoVendido.toLocaleString('es-MX')}</td>
+            <td>${dia.seguimientosCreados}</td>
+            <td>${dia.seguimientosPorVencer}</td>
+            <td>${dia.leadsCreados}</td>
+        </tr>
+    `).join('');
+}
+
+// Actualizar métricas del día seleccionado
+function actualizarMetricasPorFecha(fecha) {
+    if (!fecha) {
+        // Ocultar sección de métricas por día
+        document.getElementById('fechaSeleccionadaInfo').style.display = 'none';
+        return;
+    }
+    
+    const metricas = obtenerMetricasPorFecha(fecha);
+    document.getElementById('fechaSeleccionadaInfo').style.display = 'block';
+    document.getElementById('fechaMostrada').innerText = fecha;
+    document.getElementById('diaCotizaciones').innerText = metricas.cotizaciones;
+    document.getElementById('diaMontoVendido').innerHTML = `$${metricas.montoVendido.toLocaleString('es-MX')}`;
+    document.getElementById('diaSeguimientosCreados').innerText = metricas.seguimientosCreados;
+    document.getElementById('diaSeguimientosPorVencer').innerText = metricas.seguimientosPorVencer;
+    document.getElementById('diaLeadsCreados').innerText = metricas.leadsCreados;
+}
+
+// Exportar tabla histórica a CSV
+function exportarHistoricoExcel() {
+    const historico = obtenerHistorico30Dias();
+    if (historico.length === 0) {
+        showToast("No hay datos para exportar");
+        return;
+    }
+    
+    const vendedorActual = document.getElementById('vendedorNombre').value;
+    const fechaActual = new Date().toLocaleDateString('es-MX');
+    
+    let csvContent = "Fecha,Cotizaciones,Monto Vendido (MXN),Seguimientos Creados,Seguimientos por Vencer,Leads Creados\n";
+    
+    historico.forEach(dia => {
+        csvContent += `"${dia.fecha}",${dia.cotizaciones},"$${dia.montoVendido.toLocaleString('es-MX')}",${dia.seguimientosCreados},${dia.seguimientosPorVencer},${dia.leadsCreados}\n`;
+    });
+    
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', `Historico_${vendedorActual}_${fechaActual.replace(/\//g, '-')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("✅ Histórico exportado a Excel");
+}
+
+// Inicializar selector de fecha con el día actual
+function inicializarFechaSelector() {
+    const today = new Date();
+    const año = today.getFullYear();
+    const mes = String(today.getMonth() + 1).padStart(2, '0');
+    const dia = String(today.getDate()).padStart(2, '0');
+    const fechaInput = document.getElementById('fechaSelector');
+    if (fechaInput) {
+        fechaInput.value = `${año}-${mes}-${dia}`;
+    }
+}
+
+// Configurar event listeners del filtro por fecha
+function configurarFiltroFecha() {
+    const btnFiltrar = document.getElementById('btnFiltrarFecha');
+    const btnLimpiar = document.getElementById('btnLimpiarFiltro');
+    const btnExportar = document.getElementById('btnExportarHistorico');
+    const fechaInput = document.getElementById('fechaSelector');
+    
+    if (btnFiltrar) {
+        btnFiltrar.addEventListener('click', () => {
+            if (fechaInput && fechaInput.value) {
+                // Convertir de YYYY-MM-DD a DD/MM/YYYY
+                const partes = fechaInput.value.split('-');
+                const fechaMostrar = `${partes[2]}/${partes[1]}/${partes[0]}`;
+                actualizarMetricasPorFecha(fechaMostrar);
+                showToast(`📅 Mostrando métricas para: ${fechaMostrar}`);
+            } else {
+                showToast("⚠️ Seleccione una fecha primero");
+            }
+        });
+    }
+    
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', () => {
+            actualizarMetricasPorFecha(null);
+            if (fechaInput) fechaInput.value = '';
+            showToast("🌐 Mostrando estadísticas globales");
+        });
+    }
+    
+    if (btnExportar) {
+        btnExportar.addEventListener('click', exportarHistoricoExcel);
+    }
+}
+
+// ========== FUNCIONES PARA GRÁFICO DE BARRAS ==========
+
+let chartActividad = null;
+let periodoActual = 30; // 7, 15 o 30 días
+
+// Obtener datos para el gráfico según período
+function obtenerDatosGrafico(dias) {
+    const vendedorActual = document.getElementById('vendedorNombre').value;
+    const resultados = [];
+    const hoy = new Date();
+    
+    for (let i = dias - 1; i >= 0; i--) {
+        const fecha = new Date();
+        fecha.setDate(hoy.getDate() - i);
+        const año = fecha.getFullYear();
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        const fechaStr = `${dia}/${mes}/${año}`;
+        const fechaComparar = `${año}-${mes}-${dia}`;
+        
+        // Formato legible para mostrar en el gráfico
+        const fechaFormateada = `${dia}/${mes}`;
+        
+        // Filtrar cotizaciones
+        const cotizacionesDelDia = historialCotizaciones.filter(c => {
+            if (c.ejecutivo !== vendedorActual) return false;
+            const fechaCotizacion = convertirFechaParaComparar(c.fecha);
+            return fechaCotizacion === fechaComparar;
+        });
+        
+        // Calcular monto vendido (en miles para gráfico)
+        let montoVendido = 0;
+        cotizacionesDelDia.forEach(c => {
+            const tieneSeguimientoCerrado = seguimientosList.some(s => 
+                s.cotizacionId === c.id && s.estado === 'Cerrado'
+            );
+            if (tieneSeguimientoCerrado) {
+                montoVendido += c.importe || 0;
+            }
+        });
+        
+        // Seguimientos creados
+        const seguimientosCreados = seguimientosList.filter(s => {
+            if (s.ejecutivo !== vendedorActual) return false;
+            const fechaCreacion = convertirFechaParaComparar(s.fechaCreacion);
+            return fechaCreacion === fechaComparar;
+        });
+        
+        // Seguimientos por vencer
+        const seguimientosPorVencer = seguimientosList.filter(s => {
+            if (s.ejecutivo !== vendedorActual) return false;
+            if (s.estado !== 'Pendiente') return false;
+            const fechaLimite = convertirFechaParaComparar(s.fecha);
+            return fechaLimite === fechaComparar;
+        });
+        
+        // Leads creados
+        const leadsCreados = leadsList.filter(l => {
+            if (l.ejecutivo !== vendedorActual) return false;
+            const fechaLead = convertirFechaParaComparar(l.fecha);
+            return fechaLead === fechaComparar;
+        });
+        
+        resultados.push({
+            fecha: fechaFormateada,
+            fechaCompleta: fechaStr,
+            cotizaciones: cotizacionesDelDia.length,
+            montoVendido: Math.round(montoVendido / 1000), // Convertir a miles
+            montoVendidoReal: montoVendido,
+            seguimientosCreados: seguimientosCreados.length,
+            seguimientosPorVencer: seguimientosPorVencer.length,
+            leadsCreados: leadsCreados.length
+        });
+    }
+    
+    return resultados;
+}
+
+// Renderizar gráfico
+function renderizarGrafico(dias) {
+    const datos = obtenerDatosGrafico(dias);
+    const ctx = document.getElementById('graficoActividad').getContext('2d');
+    
+    if (chartActividad) {
+        chartActividad.destroy();
+    }
+    
+    chartActividad = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: datos.map(d => d.fecha),
+            datasets: [
+                {
+                    label: '📄 Cotizaciones',
+                    data: datos.map(d => d.cotizaciones),
+                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 1,
+                    yAxisID: 'y',
+                    borderRadius: 6
+                },
+                {
+                    label: '💰 Monto Vendido (miles $)',
+                    data: datos.map(d => d.montoVendido),
+                    backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                    borderColor: '#22c55e',
+                    borderWidth: 1,
+                    yAxisID: 'y',
+                    borderRadius: 6
+                },
+                {
+                    label: '📋 Seguimientos creados',
+                    data: datos.map(d => d.seguimientosCreados),
+                    backgroundColor: 'rgba(234, 179, 8, 0.7)',
+                    borderColor: '#eab308',
+                    borderWidth: 1,
+                    yAxisID: 'y',
+                    borderRadius: 6
+                },
+                {
+                    label: '🎯 Leads creados',
+                    data: datos.map(d => d.leadsCreados),
+                    backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                    borderColor: '#8b5cf6',
+                    borderWidth: 1,
+                    yAxisID: 'y',
+                    borderRadius: 6
+                },
+                {
+                    label: '⏰ Por vencer',
+                    data: datos.map(d => d.seguimientosPorVencer),
+                    backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                    borderColor: '#ef4444',
+                    borderWidth: 1,
+                    yAxisID: 'y',
+                    borderRadius: 6
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            let value = context.raw;
+                            if (context.dataset.label.includes('Monto')) {
+                                return `${label}: $${(value * 1000).toLocaleString('es-MX')}`;
+                            }
+                            return `${label}: ${value}`;
+                        }
+                    }
+                },
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 10 },
+                        boxWidth: 12
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Cantidad / Miles de pesos',
+                        font: { size: 10 }
+                    },
+                    ticks: {
+                        stepSize: 1,
+                        callback: function(value) {
+                            if (value >= 1000) return (value / 1000) + 'k';
+                            return value;
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Fecha (día/mes)',
+                        font: { size: 10 }
+                    },
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45,
+                        font: { size: 9 }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Exportar datos del gráfico a Excel
+function exportarDatosGrafico() {
+    const datos = obtenerDatosGrafico(periodoActual);
+    const vendedorActual = document.getElementById('vendedorNombre').value;
+    const fechaActual = new Date().toLocaleDateString('es-MX');
+    
+    let csvContent = "Fecha,Cotizaciones,Monto Vendido (MXN),Seguimientos Creados,Seguimientos por Vencer,Leads Creados\n";
+    
+    datos.forEach(dia => {
+        csvContent += `"${dia.fechaCompleta}",${dia.cotizaciones},"$${dia.montoVendidoReal.toLocaleString('es-MX')}",${dia.seguimientosCreados},${dia.seguimientosPorVencer},${dia.leadsCreados}\n`;
+    });
+    
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', `Grafico_Actividad_${vendedorActual}_${fechaActual.replace(/\//g, '-')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("✅ Datos del gráfico exportados a Excel");
+}
+
+// Configurar botones de período
+function configurarPeriodosGrafico() {
+    const btn7 = document.getElementById('btnPeriodo7');
+    const btn15 = document.getElementById('btnPeriodo15');
+    const btn30 = document.getElementById('btnPeriodo30');
+    const btnExportar = document.getElementById('btnExportarGrafico');
+    
+    if (btn7) {
+        btn7.addEventListener('click', () => {
+            periodoActual = 7;
+            actualizarBotonesPeriodo(btn7, btn15, btn30);
+            renderizarGrafico(7);
+            showToast("📊 Mostrando últimos 7 días");
+        });
+    }
+    
+    if (btn15) {
+        btn15.addEventListener('click', () => {
+            periodoActual = 15;
+            actualizarBotonesPeriodo(btn7, btn15, btn30);
+            renderizarGrafico(15);
+            showToast("📊 Mostrando últimos 15 días");
+        });
+    }
+    
+    if (btn30) {
+        btn30.addEventListener('click', () => {
+            periodoActual = 30;
+            actualizarBotonesPeriodo(btn7, btn15, btn30);
+            renderizarGrafico(30);
+            showToast("📊 Mostrando últimos 30 días");
+        });
+    }
+    
+    if (btnExportar) {
+        btnExportar.addEventListener('click', exportarDatosGrafico);
+    }
+}
+
+function actualizarBotonesPeriodo(btn7, btn15, btn30) {
+    [btn7, btn15, btn30].forEach(btn => {
+        if (btn) {
+            btn.classList.remove('active-periodo');
+            btn.style.background = 'white';
+            btn.style.color = '#B22234';
+            btn.style.border = '1px solid #B22234';
+        }
+    });
+    
+    const btnActivo = periodoActual === 7 ? btn7 : (periodoActual === 15 ? btn15 : btn30);
+    if (btnActivo) {
+        btnActivo.classList.add('active-periodo');
+        btnActivo.style.background = '#B22234';
+        btnActivo.style.color = 'white';
+        btnActivo.style.border = 'none';
+    }
+}
+
+
+
+
 </script>
 
 <!-- MODAL PARA AGREGAR EQUIPO -->
@@ -2345,6 +3141,146 @@ setTimeout(() => {
     let cargaCalculadaTR = 0;
     let cargaCalculadaBTU = 0;
     let mostrarEnUSD = false; // Nueva variable para toggle de moneda
+
+// ========== DATOS PARA PDF SEGÚN MODO ==========
+const datosEmpresa = {
+    multimarca: {
+        nombre: "Grupo Aire Acondicionado AYCE",
+        logo: "file:///C:/Users/Airey/Desktop/logo.png",
+        razonSocial: "Grupo Aire Acondicionado AYCE",
+        eslogan: "Ingeniería Térmica · Distribución Autorizada TRANE · HISENSE · YORK"
+    },
+    traneExclusivo: {
+        nombre: "Aire y Clima Especializado",
+        logo: "file:///C:/Users/Airey/Desktop/Cotizador/AireyClima.jpeg",
+        razonSocial: "Aire y Clima Especializado",
+        eslogan: "Distribuidor Autorizado TRANE · Especialistas en Climatización"
+    }
+};
+
+// ========== MODO EXCLUSIVO TRANE ==========
+let modoTraneExclusivo = false; // false = multi-marca, true = solo TRANE
+
+// Cargar modo guardado al iniciar
+function cargarModoGuardado() {
+    const guardado = localStorage.getItem('modoTraneExclusivo');
+    if (guardado === 'true') {
+        modoTraneExclusivo = true;
+    } else {
+        modoTraneExclusivo = false;
+    }
+    actualizarSelectorModo();
+}
+
+// Guardar modo
+function guardarModo(modo) {
+    modoTraneExclusivo = modo;
+    localStorage.setItem('modoTraneExclusivo', modo);
+    actualizarSelectorModo();
+    
+    // Refrescar catálogo para mostrar solo lo permitido
+    if (document.getElementById('catalogoModule') && document.getElementById('catalogoModule').style.display !== 'none') {
+        // Refrescar la pestaña activa del catálogo
+        const activeTab = document.querySelector('.tab-catalogo-btn.active');
+        if (activeTab) {
+            const tabName = activeTab.dataset.tab;
+            if (tabName === 'trane') renderCatalogoTrane();
+            else if (tabName === 'hisense') renderCatalogoHisense();
+            else if (tabName === 'york') renderCatalogoYork();
+            else if (tabName === 'carrier') renderCatalogoCarrier();
+            else if (tabName === 'duventus') renderCatalogoDuventus();
+            else if (tabName === 'rheem') renderCatalogoRheem();
+        }
+    }
+    
+    // Mostrar advertencia si hay equipos no-Trane en modo exclusivo
+    verificarEquiposNoTrane();
+    
+    showToast(modo ? "🔷 Modo TRANE Exclusivo activado" : "🌐 Modo Multi-marca activado");
+}
+
+
+function guardarModo(modo) {
+    modoTraneExclusivo = modo;
+    localStorage.setItem('modoTraneExclusivo', modo);
+    actualizarSelectorModo();
+    
+    // Refrescar catálogo para mostrar solo lo permitido
+    if (document.getElementById('catalogoModule') && document.getElementById('catalogoModule').style.display !== 'none') {
+        const activeTab = document.querySelector('.tab-catalogo-btn.active');
+        if (activeTab) {
+            const tabName = activeTab.dataset.tab;
+            if (tabName === 'trane') renderCatalogoTrane();
+            else if (tabName === 'hisense') renderCatalogoHisense();
+            else if (tabName === 'york') renderCatalogoYork();
+            else if (tabName === 'carrier') renderCatalogoCarrier();
+            else if (tabName === 'duventus') renderCatalogoDuventus();
+            else if (tabName === 'rheem') renderCatalogoRheem();
+        }
+    }
+    
+    // 👇 AGREGAR ESTA LÍNEA 👇
+    actualizarVisibilidadTabsCatalogo();
+    
+    verificarEquiposNoTrane();
+    
+    showToast(modo ? "🔷 Modo TRANE Exclusivo activado" : "🌐 Modo Multi-marca activado");
+}
+
+
+
+// Actualizar apariencia del selector según el modo actual
+function actualizarSelectorModo() {
+    const btnMulti = document.getElementById('btnModoMultimarca');
+    const btnTrane = document.getElementById('btnModoTraneExclusivo');
+    
+    if (!btnMulti || !btnTrane) return;
+    
+    if (modoTraneExclusivo) {
+        btnMulti.classList.remove('active-multi');
+        btnMulti.classList.add('modo-selector-btn');
+        btnMulti.style.background = '#e2e8f0';
+        btnMulti.style.color = '#475569';
+        
+        btnTrane.classList.remove('modo-selector-btn');
+        btnTrane.classList.add('active-trane');
+    } else {
+        btnMulti.classList.remove('modo-selector-btn');
+        btnMulti.classList.add('active-multi');
+        
+        btnTrane.classList.remove('active-trane');
+        btnTrane.classList.add('modo-selector-btn');
+        btnTrane.style.background = '#e2e8f0';
+        btnTrane.style.color = '#475569';
+    }
+}
+
+// Verificar si hay equipos no-Trane en modo exclusivo
+function verificarEquiposNoTrane() {
+    // Eliminar advertencia existente
+    const warningExistente = document.querySelector('.warning-trane-mode');
+    if (warningExistente) warningExistente.remove();
+    
+    if (!modoTraneExclusivo) return;
+    
+    // Buscar equipos que no sean TRANE
+    const equiposNoTrane = equipos.filter(eq => eq.marca !== 'TRANE');
+    
+    if (equiposNoTrane.length > 0) {
+        const warningDiv = document.createElement('div');
+        warningDiv.className = 'warning-trane-mode';
+        warningDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i>
+            <span><strong>⚠️ Modo TRANE Exclusivo activo.</strong> Tienes ${equiposNoTrane.length} equipo(s) de otras marcas en esta cotización. Debes eliminarlos para cumplir con las políticas del distribuidor TRANE.</span>
+        `;
+        
+        // Insertar antes de la sección de equipos
+        const equiposSection = document.querySelector('.seccion-cotizacion');
+        if (equiposSection) {
+            equiposSection.insertBefore(warningDiv, equiposSection.firstChild);
+        }
+    }
+}
     
     async function obtenerTipoCambio() {
         try {
@@ -3177,12 +4113,40 @@ function exportToPDF() {
     if(historialBody) historialBody.innerHTML = historial.slice(0,10).map(h => `<tr><td>${h.cliente}</td><td>${h.fecha}</td><td>$${h.total}</td>`).join('');
 
     let win = window.open('', '_blank');
+    
+    // Determinar qué logo mostrar
+    let logoHTML = '';
+    if (modoTraneExclusivo) {
+        // Modo TRANE Exclusivo: mostrar logo de AireyClima
+        logoHTML = `<img src="${datosEmpresa.traneExclusivo.logo}" style="width:70px; height:70px; object-fit:contain;" onerror="this.style.display='none'; this.parentElement.innerHTML='<svg viewBox=\'0 0 100 100\' style=\'width:70px;height:70px\'><rect width=\'100\' height=\'100\' fill=\'#1E6650\' rx=\'12\'/><text x=\'50\' y=\'67\' text-anchor=\'middle\' fill=\'white\' font-size=\'40\' font-weight=\'bold\'>❄️</text></svg>'">`;
+    } else {
+        // Modo Multi-marca: mostrar SVG original
+        logoHTML = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="ayc-svg-icon">
+                        <defs><linearGradient id="bladeGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#00b5a6"/><stop offset="100%" style="stop-color:#007a7a"/></linearGradient></defs>
+                        <g transform="translate(50,50)">
+                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(0)" rx="1"/>
+                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(30)" rx="1"/>
+                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(60)" rx="1"/>
+                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(90)" rx="1"/>
+                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(120)" rx="1"/>
+                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(150)" rx="1"/>
+                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(180)" rx="1"/>
+                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(210)" rx="1"/>
+                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(240)" rx="1"/>
+                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(270)" rx="1"/>
+                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(300)" rx="1"/>
+                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(330)" rx="1"/>
+                            <circle cx="0" cy="0" r="11" fill="#00b5a6"/>
+                        </g>
+                    </svg>`;
+    }
+    
     win.document.write(`
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Propuesta_Técnica_Grupo_AYCE_${cliente.replace(/\s+/g, '_')}</title>
+    <title>Propuesta_Técnica_${modoTraneExclusivo ? 'AireyClima' : 'Grupo_AYCE'}_${cliente.replace(/\s+/g, '_')}</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --ayce-red: #B22234; --ayce-dark: #1e293b; --text-main: #334155; --text-light: #64748b; --bg-light: #f8fafc; --border: #e2e8f0; }
@@ -3220,18 +4184,18 @@ function exportToPDF() {
         @media print { body { padding: 0; background: white; } .summary-box { box-shadow: none; border: 2px solid var(--ayce-dark) !important;} .total-final-row { background: var(--ayce-dark) !important; color: white !important;} }
         
         .ayc-brand-header { background: #ffffff; padding: 0; margin-bottom: 40px; }
-        .ayc-top-bar { height: 6px; background: linear-gradient(90deg, #00b5a6, #007a7a); width: 100%; }
+        .ayc-top-bar { height: 6px; background: linear-gradient(90deg, ${modoTraneExclusivo ? '#B22234, #8B1A2B' : '#00b5a6, #007a7a'}); width: 100%; }
         .ayc-main-content { display: flex; justify-content: space-between; align-items: center; padding: 35px 50px; }
         .ayc-logo-section { display: flex; align-items: center; gap: 25px; }
         .ayc-emblem-container { width: 70px; height: 70px; }
         .ayc-svg-icon { width: 100%; height: 100%; }
         .ayc-text-stack { border-left: 1px solid #e2e8f0; padding-left: 25px; }
         .ayc-brand-title { font-size: 26px; color: var(--ayce-dark); letter-spacing: -0.5px; }
-        .ayc-brand-title strong { color: #00b5a6; font-weight: 800; }
+        .ayc-brand-title strong { color: ${modoTraneExclusivo ? '#B22234' : '#00b5a6'}; font-weight: 800; }
         .ayc-brand-subtitle { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: #64748b; }
         .ayc-meta-section { text-align: right; }
         .ayc-doc-label { font-size: 18px; font-weight: 700; text-transform: uppercase; color: var(--ayce-dark); }
-        .ayc-date-badge { display: inline-block; margin-top: 10px; padding: 6px 16px; background-color: #f8fafc; border-radius: 4px; border-right: 3px solid #b91c1c; }
+        .ayc-date-badge { display: inline-block; margin-top: 10px; padding: 6px 16px; background-color: #f8fafc; border-radius: 4px; border-right: 3px solid ${modoTraneExclusivo ? '#1E6650' : '#b91c1c'}; }
         .ayc-bottom-divider { height: 1px; background: #e2e8f0; margin: 0 50px; }
     </style>
 </head>
@@ -3242,28 +4206,11 @@ function exportToPDF() {
             <div class="ayc-main-content">
                 <div class="ayc-logo-section">
                     <div class="ayc-emblem-container">
-                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="ayc-svg-icon">
-                            <defs><linearGradient id="bladeGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#00b5a6"/><stop offset="100%" style="stop-color:#007a7a"/></linearGradient></defs>
-                            <g transform="translate(50,50)">
-                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(0)" rx="1"/>
-                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(30)" rx="1"/>
-                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(60)" rx="1"/>
-                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(90)" rx="1"/>
-                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(120)" rx="1"/>
-                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(150)" rx="1"/>
-                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(180)" rx="1"/>
-                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(210)" rx="1"/>
-                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(240)" rx="1"/>
-                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(270)" rx="1"/>
-                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(300)" rx="1"/>
-                                <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(330)" rx="1"/>
-                                <circle cx="0" cy="0" r="11" fill="#00b5a6"/>
-                            </g>
-                        </svg>
+                        ${logoHTML}
                     </div>
                     <div class="ayc-text-stack">
-                        <span class="ayc-brand-title">Grupo <strong>AYCE</strong> México</span>
-                        <span class="ayc-brand-subtitle">Ingeniería Térmica & Soluciones HVAC Corporativas</span>
+                        <span class="ayc-brand-title">${modoTraneExclusivo ? 'Aire y Clima' : 'Grupo'} <strong>${modoTraneExclusivo ? 'Especializado' : 'AYCE'}</strong> México</span>
+                        <span class="ayc-brand-subtitle">${modoTraneExclusivo ? 'Distribuidor Autorizado TRANE · Soluciones en Climatización' : 'Ingeniería Térmica & Soluciones HVAC Corporativas'}</span>
                     </div>
                 </div>
                 <div class="ayc-meta-section">
@@ -3282,7 +4229,7 @@ function exportToPDF() {
             <div class="data-card" style="text-align: right;"><h4>VALIDEZ DE LA OFERTA</h4><p>15 Días Naturales</p></div>
         </div>
         
-        <div class="seccion-title">Suministro de Equipamiento HVAC de Alta Eficiencia</div>
+        <div class="seccion-title">Suministro de Equipamiento HVAC </div>
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -3342,7 +4289,7 @@ function exportToPDF() {
             </div>
         </div>
         
-        <div class="seccion-title">Dictamen Legal & Normativo</div>
+        <div class="seccion-title">Condiciones de Venta </div>
         <div class="conditions-panel">
             <p><strong>Logística:</strong> Horario de entrega de Lunes a Viernes de 8:30 a 6:30 pm. Programación en 3 a 5 días hábiles post-validación de depósito.</p>
             <p><strong>Devoluciones:</strong> No se aceptan devoluciones de mercancía ni reembolsos monetarios. Cargo excepcional del 20% sobre valor neto autorizado.</p>
@@ -3350,8 +4297,8 @@ function exportToPDF() {
             <p><strong>Garantía:</strong> Un (01) año en partes eléctricas y componentes generales. Cinco (05) años en compresor principal (sujeto a plan de mantenimiento corporativo).</p>
         </div>
         <footer class="footer">
-            <p>Grupo AYCE México | Periférico Adolfo López Mateos No. 4293 Int P3-300, Tlalpan, CDMX 14210 | www.grupoayce.com.mx</p>
-            <p style="margin-top:5px; font-weight:700; text-transform:uppercase; color:var(--ayce-dark); letter-spacing:0.5px">Asesoría de Ingeniería para un Rendimiento Superior</p>
+            <p>${modoTraneExclusivo ? 'Aire y Clima Especializado' : 'Grupo AYCE México'} | Periférico Adolfo López Mateos No. 4293 Int P3-300, Tlalpan, CDMX 14210 | www.grupoayce.com.mx</p>
+            <p style="margin-top:5px; font-weight:700; text-transform:uppercase; color:var(--ayce-dark); letter-spacing:0.5px">${modoTraneExclusivo ? 'Distribuidor Autorizado TRANE' : 'Asesoría de Ingeniería para un Rendimiento Superior'}</p>
         </footer>
     </div>
     <script>window.onload = function() { setTimeout(function() { window.print(); setTimeout(function() { window.close(); }, 500); }, 300); };<\/script>
@@ -3377,6 +4324,7 @@ function exportToPDF() {
     }
     if(m === 'estadisticas') {
         actualizarSemaforo();
+        actualizarTablaHistorica();
     }
 }
     
@@ -3435,12 +4383,65 @@ document.getElementById('agregarInstalacionBtn')?.addEventListener('click', () =
             else if(this.dataset.tab === 'rheem') renderCatalogoRheem();
         });
     });
+
+// Mostrar/ocultar pestañas según el modo actual
+function actualizarVisibilidadTabsCatalogo() {
+    const tabs = document.querySelectorAll('.tab-catalogo-btn');
+    
+    if (modoTraneExclusivo) {
+        // En modo TRANE Exclusivo: solo mostrar la pestaña TRANE
+        tabs.forEach(tab => {
+            if (tab.dataset.tab === 'trane') {
+                tab.style.display = 'inline-block';
+                // Si no está activa, activarla
+                if (!tab.classList.contains('active')) {
+                    tab.click();
+                }
+            } else {
+                tab.style.display = 'none';
+            }
+        });
+    } else {
+        // En modo Multi-marca: mostrar todas las pestañas
+        tabs.forEach(tab => {
+            tab.style.display = 'inline-block';
+        });
+    }
+}
+
+// Eventos para el selector de modo
+const btnMultimarca = document.getElementById('btnModoMultimarca');
+const btnTraneExclusivo = document.getElementById('btnModoTraneExclusivo');
+
+if (btnMultimarca) {
+    btnMultimarca.addEventListener('click', () => {
+        if (modoTraneExclusivo) guardarModo(false);
+    });
+}
+
+if (btnTraneExclusivo) {
+    btnTraneExclusivo.addEventListener('click', () => {
+        if (!modoTraneExclusivo) guardarModo(true);
+    });
+}
+
+// Cargar modo guardado al iniciar
+cargarModoGuardado();
+
+setTimeout(() => {
+    actualizarVisibilidadTabsCatalogo();
+}, 100);
     
     document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => setActiveModule(btn.dataset.module)));
     window.agregarServicioPredefinido = agregarServicioPredefinido;
     
     equipos = []; instalaciones = []; renderAll(); setActiveModule('cotizador'); obtenerTipoCambio();
-
+ setTimeout(() => {
+    inicializarFechaSelector();
+    configurarFiltroFecha();
+    renderizarGrafico(30);  // Inicializa gráfico con 30 días
+    configurarPeriodosGrafico();
+}, 500);
 
 </script>
 </body>
