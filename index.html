@@ -1451,6 +1451,13 @@
         return idUnico;
     }
 
+    let tipoCambioActual = 20.50;
+    let mostrarEnUSD = false;
+    let nextId = 1;
+    let historial = [];
+    let cargaCalculadaBTU = 0;
+    let cargaCalculadaTR = 0;
+
     // ========== FUNCIÓN PARA MIGRAR DATOS ANTIGUOS ==========
     function migrarDatosAntiguos() {
         let datosModificados = false;
@@ -1790,7 +1797,7 @@ function cerrarModalEditarSeguimiento() {
 
     // ========== AGREGAR REGISTROS ==========
 
- document.getElementById('agregarHistorialBtn')?.addEventListener('click', () => {
+document.getElementById('agregarHistorialBtn')?.addEventListener('click', async () => {
     let nombreCliente = document.getElementById('clienteName').value.trim();
     let condicionesPago = document.getElementById('condicionesPago').value.trim();
     let area = parseFloat(document.getElementById('areaM2').value) || 0;
@@ -1801,12 +1808,10 @@ function cerrarModalEditarSeguimiento() {
         return;
     }
     
-    // Calcular totales
     let total = calcularTotales();
     let importeTotal = total.totalFinal;
     let moneda = mostrarEnUSD ? 'USD' : 'MXN';
     
-    // ========== NUEVO: Descripción COMPLETA (equipos + instalaciones) ==========
     let descEquipos = equipos.map(e => `${e.marca} ${e.modelo} (${e.cantidad})`).join(', ');
     let descInstalaciones = instalaciones.map(i => `${i.concepto} (${i.cantidad})`).join(', ');
     
@@ -1818,133 +1823,127 @@ function cerrarModalEditarSeguimiento() {
     }
     if (!descripcionCompleta) descripcionCompleta = 'Sin equipos ni instalaciones';
     
-    if (cotizacionEnEdicion) {
-        // ========== MODO EDICIÓN ==========
-        const index = historialCotizaciones.findIndex(c => c.id === cotizacionEnEdicion);
-        if (index !== -1) {
-            historialCotizaciones[index] = {
-                ...historialCotizaciones[index],
-                nombre: nombreCliente,
-                condicionesPago: condicionesPago,
-                areaM2: area,
-                importe: importeTotal,
-                moneda: moneda,
-                descEquipo: descripcionCompleta,  // ← AHORA USA DESCRIPCIÓN COMPLETA
-                ejecutivo: ejecutivo,
-                equipos: [...equipos],
-                instalaciones: [...instalaciones],
-                fecha: new Date().toLocaleDateString('es-MX')
-            };
-            
-            actualizarSeguimientosPorCotizacion(cotizacionEnEdicion, nombreCliente, importeTotal, moneda, descripcionCompleta);
-            
-            localStorage.setItem('crm_historial', JSON.stringify(historialCotizaciones));
-            renderHistorial();
-            showToast(`✓ Cotización actualizada: ${nombreCliente} - $${importeTotal.toFixed(2)} ${moneda}`);
-            
-            cotizacionEnEdicion = null;
-            const guardarBtn = document.getElementById('agregarHistorialBtn');
-            if (guardarBtn) {
-                guardarBtn.textContent = 'Guardar Cotización';
-                guardarBtn.style.background = 'linear-gradient(95deg, #B22234, #8B1A2B)';
-            }
-        }
-    } else {
-        // ========== MODO NUEVA COTIZACIÓN ==========
-        const nuevoId = generarIdUnico();
-        
-        const vendedorActual = document.getElementById('vendedorNombre').value;
-        const prefijosVendedor = {
-            'Alexis Vázquez': 'ALX',
-            'Administrador': 'ADM',
-            'Equipo de Ventas': 'VTAS'
-        };
-        const prefijo = prefijosVendedor[vendedorActual] || vendedorActual.substring(0, 3).toUpperCase();
-        const keyUltimoNumero = `ultimoNumero_${prefijo}`;
-        let ultimoNumero = parseInt(localStorage.getItem(keyUltimoNumero) || '0');
-        ultimoNumero++;
-        const numeroCotizacion = `${prefijo}-${String(ultimoNumero).padStart(3, '0')}`;
-        localStorage.setItem(keyUltimoNumero, ultimoNumero);
-        
-        let nuevo = {
-            id: nuevoId,
-            numeroCotizacion: numeroCotizacion,
-            nombre: nombreCliente,
-            idCliente: 'N/A',
-            medio: 'No especificado',
-            importe: importeTotal,
-            moneda: moneda,
-            descEquipo: descripcionCompleta,  // ← AHORA USA DESCRIPCIÓN COMPLETA
-            categoria: 'Nuevo',
-            ejecutivo: ejecutivo,
-            fecha: new Date().toLocaleDateString('es-MX'),
-            vendedorQueCreo: ejecutivo,
-            equipos: [...equipos],
-            instalaciones: [...instalaciones],
-            condicionesPago: condicionesPago,
-            areaM2: area
-        };
-        
-        historialCotizaciones.unshift(nuevo);
-        localStorage.setItem('crm_historial', JSON.stringify(historialCotizaciones));
-        renderHistorial();
-        showToast(`✓ Nueva cotización ${numeroCotizacion} registrada: ${nombreCliente} - $${importeTotal.toFixed(2)} ${moneda}`);
-    }
+    // ========== 1. GENERAR NÚMERO DE COTIZACIÓN PRIMERO ==========
+    const vendedorActual = document.getElementById('vendedorNombre').value;
+    const prefijosVendedor = { 'Alexis Vázquez': 'ALX', 'Administrador': 'ADM', 'Equipo de Ventas': 'VTAS' };
+    const prefijo = prefijosVendedor[vendedorActual] || vendedorActual.substring(0, 3).toUpperCase();
+    const keyUltimoNumero = `ultimoNumero_${prefijo}`;
+    let ultimoNumero = parseInt(localStorage.getItem(keyUltimoNumero) || '0');
+    ultimoNumero++;
+    const numeroCotizacion = `${prefijo}-${String(ultimoNumero).padStart(3, '0')}`;
+    localStorage.setItem(keyUltimoNumero, ultimoNumero);
+    
+    // ========== 2. ENVIAR A GOOGLE SHEETS ==========
+    await guardarEnAPI('guardarCotizacion', {
+        cliente: nombreCliente,
+        condicionesPago: condicionesPago,
+        area: area,
+        subtotal: total.subtotal,
+        iva: total.iva,
+        total: total.totalFinal,
+        moneda: moneda,
+        numeroCotizacion: numeroCotizacion,  // ✅ AHORA SÍ ESTÁ DEFINIDO
+        equipos: equipos.map(e => ({
+            marca: e.marca,
+            modelo: e.modelo,
+            cantidad: e.cantidad,
+            precioUnitario: e.precioVenta
+        })),
+        instalaciones: instalaciones.map(i => ({
+            concepto: i.concepto,
+            cantidad: i.cantidad,
+            costoUnitario: i.costoUnitario
+        })),
+        descripcionEquipo: descripcionCompleta
+    });
+    
+    // ========== 3. GUARDAR EN LOCALSTORAGE ==========
+    const nuevoId = generarIdUnico();
+    
+    let nuevo = {
+        id: nuevoId,
+        numeroCotizacion: numeroCotizacion,
+        nombre: nombreCliente,
+        idCliente: 'N/A',
+        medio: 'No especificado',
+        importe: importeTotal,
+        moneda: moneda,
+        descEquipo: descripcionCompleta,
+        categoria: 'Nuevo',
+        ejecutivo: ejecutivo,
+        fecha: new Date().toLocaleDateString('es-MX'),
+        vendedorQueCreo: ejecutivo,
+        equipos: [...equipos],
+        instalaciones: [...instalaciones],
+        condicionesPago: condicionesPago,
+        areaM2: area
+    };
+    
+    historialCotizaciones.unshift(nuevo);
+    localStorage.setItem('crm_historial', JSON.stringify(historialCotizaciones));
+    renderHistorial();
+    
+    showToast(`✓ Cotización ${numeroCotizacion} guardada: $${importeTotal.toFixed(2)} ${moneda}`);
 });
 
-      document.getElementById('agregarSeguimientoBtn')?.addEventListener('click', () => {
-        let fecha = document.getElementById('newSegFecha').value;
-        if (!fecha) {
-            showToast("⚠️ Por favor seleccione una fecha de seguimiento");
-            return;
-        }
-        
-        // 🔵 NUEVO: Generar ID único para el seguimiento
-        const nuevoId = generarIdUnico();
-        
-        // 🔵 Buscar si hay una cotización del mismo cliente (para asociarla)
-        let cotizacionAsociadaId = null;
-        let clienteActual = document.getElementById('newSegNombre').value;
-        
-        // Buscar cotización del mismo cliente
-        let cotizacionEncontrada = historialCotizaciones.find(c => c.nombre === clienteActual);
-        if (cotizacionEncontrada) {
-            cotizacionAsociadaId = cotizacionEncontrada.id;
-        }
-        
-        let nuevo = {
-            id: nuevoId,
-            cotizacionId: cotizacionAsociadaId,
-            nombre: document.getElementById('newSegNombre').value || 'Sin nombre',
-            idCliente: document.getElementById('newSegIdCliente').value || 'N/A',
-            medio: document.getElementById('newSegMedio').value,
-            importe: parseFloat(document.getElementById('newSegImporte').value) || 0,
-            moneda: document.getElementById('newSegMoneda').value,
-            descEquipo: document.getElementById('newSegDescEquipo').value || 'No especificado',
-            fecha: fecha,
-            estado: document.getElementById('newSegEstado').value,
-            ejecutivo: document.getElementById('newSegEjecutivo').value || document.getElementById('vendedorNombre').value,
-            comentarios: document.getElementById('newSegComentarios').value || '',
-            fechaCreacion: new Date().toLocaleDateString('es-MX'),
-            vendedorQueCreo: document.getElementById('vendedorNombre').value
-        };
-        
-        console.log("✅ Seguimiento guardado con ID:", nuevoId, "asociado a cotización:", cotizacionAsociadaId);
-        
-        seguimientosList.unshift(nuevo);
-        localStorage.setItem('crm_seguimientos', JSON.stringify(seguimientosList));
-        renderSeguimientos();
-        showToast(`✓ Seguimiento agregado para: ${nuevo.nombre} - Estado: ${nuevo.estado}`);
-        
-        // Limpiar campos
-        document.getElementById('newSegNombre').value = '';
-        document.getElementById('newSegIdCliente').value = '';
-        document.getElementById('newSegImporte').value = '';
-        document.getElementById('newSegDescEquipo').value = '';
-        document.getElementById('newSegFecha').value = '';
-        document.getElementById('newSegEjecutivo').value = '';
-        document.getElementById('newSegComentarios').value = '';
+document.getElementById('agregarSeguimientoBtn')?.addEventListener('click', async () => {
+    let fecha = document.getElementById('newSegFecha').value;
+    if (!fecha) {
+        showToast("⚠️ Por favor seleccione una fecha de seguimiento");
+        return;
+    }
+    
+    const nuevoId = generarIdUnico();
+    let clienteActual = document.getElementById('newSegNombre').value;
+    
+    let cotizacionEncontrada = historialCotizaciones.find(c => c.nombre === clienteActual);
+    let cotizacionAsociadaId = cotizacionEncontrada?.id || null;
+    
+    let nuevo = {
+        id: nuevoId,
+        cotizacionId: cotizacionAsociadaId,
+        nombre: document.getElementById('newSegNombre').value || 'Sin nombre',
+        idCliente: document.getElementById('newSegIdCliente').value || 'N/A',
+        medio: document.getElementById('newSegMedio').value,
+        importe: parseFloat(document.getElementById('newSegImporte').value) || 0,
+        moneda: document.getElementById('newSegMoneda').value,
+        descEquipo: document.getElementById('newSegDescEquipo').value || 'No especificado',
+        fecha: fecha,
+        estado: document.getElementById('newSegEstado').value,
+        ejecutivo: document.getElementById('newSegEjecutivo').value || document.getElementById('vendedorNombre').value,
+        comentarios: document.getElementById('newSegComentarios').value || '',
+        fechaCreacion: new Date().toLocaleDateString('es-MX'),
+        vendedorQueCreo: document.getElementById('vendedorNombre').value
+    };
+    
+    // Enviar a Google Sheets - NOTA: la sesión se envía automáticamente desde guardarEnAPI
+    await guardarEnAPI('guardarSeguimiento', {
+        cliente: nuevo.nombre,
+        cotizacionId: cotizacionAsociadaId,
+        medio: nuevo.medio,
+        importe: nuevo.importe,
+        moneda: nuevo.moneda,
+        descEquipo: nuevo.descEquipo,
+        fecha: fecha,
+        estado: nuevo.estado,
+        comentarios: nuevo.comentarios
     });
+    
+    seguimientosList.unshift(nuevo);
+    localStorage.setItem('crm_seguimientos', JSON.stringify(seguimientosList));
+    renderSeguimientos();
+    actualizarBadgeRecordatorios();
+    showToast(`✓ Seguimiento agregado para: ${nuevo.nombre} - Estado: ${nuevo.estado}`);
+    
+    // Limpiar campos
+    document.getElementById('newSegNombre').value = '';
+    document.getElementById('newSegIdCliente').value = '';
+    document.getElementById('newSegImporte').value = '';
+    document.getElementById('newSegDescEquipo').value = '';
+    document.getElementById('newSegFecha').value = '';
+    document.getElementById('newSegEjecutivo').value = '';
+    document.getElementById('newSegComentarios').value = '';
+});
 
 
 document.getElementById('vendedorNombre')?.addEventListener('change', function() {
@@ -1954,21 +1953,38 @@ document.getElementById('vendedorNombre')?.addEventListener('change', function()
     }
 });
 
-    document.getElementById('agregarLeadBtn')?.addEventListener('click', () => {
-        let nuevo = {
-            telefono: document.getElementById('newLeadTelefono').value || 'No especificado',
-            correo: document.getElementById('newLeadCorreo').value || 'No especificado',
-            contacto: document.getElementById('newLeadContacto').value || 'Sin contacto',
-            empresa: document.getElementById('newLeadEmpresa').value || 'No especificada',
-            categoria: document.getElementById('newLeadCategoria').value,
-            ejecutivo: document.getElementById('newLeadEjecutivo').value || 'No asignado',
-            fecha: new Date().toLocaleDateString('es-MX')
-        };
-        leadsList.unshift(nuevo);
-        localStorage.setItem('crm_leads', JSON.stringify(leadsList));
-        renderLeads();
-        showToast("Lead registrado");
+document.getElementById('agregarLeadBtn')?.addEventListener('click', async () => {
+    let nuevo = {
+        telefono: document.getElementById('newLeadTelefono').value || 'No especificado',
+        correo: document.getElementById('newLeadCorreo').value || 'No especificado',
+        contacto: document.getElementById('newLeadContacto').value || 'Sin contacto',
+        empresa: document.getElementById('newLeadEmpresa').value || 'No especificada',
+        categoria: document.getElementById('newLeadCategoria').value,
+        ejecutivo: document.getElementById('newLeadEjecutivo').value || document.getElementById('vendedorNombre').value,
+        fecha: new Date().toLocaleDateString('es-MX')
+    };
+    
+    // Enviar a Google Sheets
+    await guardarEnAPI('guardarLead', {
+        contacto: nuevo.contacto,
+        telefono: nuevo.telefono,
+        email: nuevo.correo,
+        empresa: nuevo.empresa,
+        categoria: nuevo.categoria
     });
+    
+    leadsList.unshift(nuevo);
+    localStorage.setItem('crm_leads', JSON.stringify(leadsList));
+    renderLeads();
+    showToast("Lead registrado");
+    
+    // Limpiar campos
+    document.getElementById('newLeadTelefono').value = '';
+    document.getElementById('newLeadCorreo').value = '';
+    document.getElementById('newLeadContacto').value = '';
+    document.getElementById('newLeadEmpresa').value = '';
+    document.getElementById('newLeadEjecutivo').value = '';
+});
 
 document.getElementById('cargarCotizacionSegBtn')?.addEventListener('click', () => {
     document.getElementById('newSegNombre').value = document.getElementById('clienteName').value;
@@ -3137,10 +3153,8 @@ function actualizarBotonesPeriodo(btn7, btn15, btn30) {
 </div>
 
 <script>
-    let tipoCambioActual = 20.50;
-    let cargaCalculadaTR = 0;
-    let cargaCalculadaBTU = 0;
-    let mostrarEnUSD = false; // Nueva variable para toggle de moneda
+    
+    const API_URL = 'https://script.google.com/macros/s/AKfycbw05wKaTRhp1vBP-CAieJfB4IJrUsN-g0JiyxTtFCfRXGDTIbHIC4cr71uOPeE0yuPI/exec';
 
 // ========== DATOS PARA PDF SEGÚN MODO ==========
 const datosEmpresa = {
@@ -3410,280 +3424,364 @@ function verificarEquiposNoTrane() {
     showToast(mostrarEnUSD ? "Mostrando todo en USD" : "Mostrando todo en MXN");
 }
     
-    // CATÁLOGOS (mismos datos)
-    let catalogoTrane = [
-        { modelo: "4MCW1512A9000AA", tipo: "EVAPORADOR", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 310 },
-        { modelo: "4TTK1512A9L00AA", tipo: "CONDENSADORA", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 310 },
-        { modelo: "4MCW1512A1000AA", tipo: "EVAPORADOR", capacidad: "1.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 385 },
-        { modelo: "4TTK1512A1L00AA", tipo: "CONDENSADORA", capacidad: "1.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 520 },
-        { modelo: "4MCW1518A1000AA", tipo: "EVAPORADOR", capacidad: "1.5 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 490 },
-        { modelo: "4TTK1518A1L00AA", tipo: "CONDENSADORA", capacidad: "1.5 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 685 },
-        { modelo: "4MCW1524A1000AA", tipo: "EVAPORADOR", capacidad: "2.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 620 },
-        { modelo: "4TTK1524A1L00AA", tipo: "CONDENSADORA", capacidad: "2.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 890 },
-        { modelo: "4MCW1530A1000AA", tipo: "EVAPORADOR", capacidad: "2.5 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 740 },
-        { modelo: "4TTK1530A1L00AA", tipo: "CONDENSADORA", capacidad: "2.5 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 109 },
-        { modelo: "4MCW1536A1000AA", tipo: "EVAPORADOR", capacidad: "3.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 950 },
-        { modelo: "4TTK1536A1L00AA", tipo: "CONDENSADORA", capacidad: "3.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", costoUSD: 139 },
-        { modelo: "4MWW1512A9000AA", tipo: "EVAPORADOR", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 410 },
-        { modelo: "4TWK1512A9L00AA", tipo: "CONDENSADORA", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 560 },
-        { modelo: "4MWW1512A1000AA", tipo: "EVAPORADOR", capacidad: "1.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 410 },
-        { modelo: "4TWK1512A1L00AA", tipo: "CONDENSADORA", capacidad: "1.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 5650 },
-        { modelo: "4MWW1518A1000AA", tipo: "EVAPORADOR", capacidad: "1.5 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 5400 },
-        { modelo: "4TWK1518A1L00AA", tipo: "CONDENSADORA", capacidad: "1.5 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 7300 },
-        { modelo: "4MWW1524A1000AA", tipo: "EVAPORADOR", capacidad: "2.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 6800 },
-        { modelo: "4TWK1524A1L00AA", tipo: "CONDENSADORA", capacidad: "2.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 9400 },
-        { modelo: "4MWW1530A1000AA", tipo: "EVAPORADOR", capacidad: "2.5 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 8200 },
-        { modelo: "4TWK1530A1L00AA", tipo: "CONDENSADORA", capacidad: "2.5 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 11800 },
-        { modelo: "4MWW1536A1000AA", tipo: "EVAPORADOR", capacidad: "3.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 10500 },
-        { modelo: "4TWK1536A1L00AA", tipo: "CONDENSADORA", capacidad: "3.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", costoUSD: 15200 },
-        { modelo: "4MXW1612E1000AA", tipo: "EVAPORADOR INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 7900 },
-        { modelo: "4TXK1612E1P00AA", tipo: "CONDENSADORA INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 9200 },
-        { modelo: "4MXW1618E1000AA", tipo: "EVAPORADOR INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 10500 },
-        { modelo: "4TXK1618E1P00AA", tipo: "CONDENSADORA INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 12800 },
-        { modelo: "4MXW1624E1000AA", tipo: "EVAPORADOR INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 13500 },
-        { modelo: "4TXK1624E1P00AA", tipo: "CONDENSADORA INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 160 },
-        { modelo: "4MXW2336CF000AA", tipo: "EVAPORADOR INVERTER", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 18500 },
-        { modelo: "4TXK2336CFP00AA", tipo: "CONDENSADORA INVERTER", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 22500 },
-        { modelo: "4TXK6512G1000AA", tipo: "CONDENSADORA INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 8900 },
-        { modelo: "4TXK6518G1000AA", tipo: "CONDENSADORA INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 1250 },
-        { modelo: "4TXK6524G1000AA", tipo: "CONDENSADORA INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 1680 },
-        { modelo: "4TXK6536G1000AA", tipo: "CONDENSADORA INVERTER", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 2250 },
-        { modelo: "4TXK6548G1000AA", tipo: "CONDENSADORA INVERTER", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 2850 },
-        { modelo: "4TXK6560G1000AA", tipo: "CONDENSADORA INVERTER", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 3450 },
-        { modelo: "4MXD6512G1000AA", tipo: "FAN & COIL", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 560 },
-        { modelo: "4MXD6518G1000AA", tipo: "FAN & COIL", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 780 },
-        { modelo: "4MXD6524G1000AA", tipo: "FAN & COIL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 1050 },
-        { modelo: "4MXD6536G1000AA", tipo: "FAN & COIL", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 1450 },
-        { modelo: "4MXD6548G1000AA", tipo: "FAN & COIL", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 1890 },
-        { modelo: "4MXD6560G1000BA", tipo: "FAN & COIL", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 2350 },
-        { modelo: "4MXC6518G1000AA", tipo: "CASSETTE", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 8900 },
-        { modelo: "4MXC6524G1000AA", tipo: "CASSETTE", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 1250 },
-        { modelo: "4MXC6536G1000AA", tipo: "CASSETTE", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 1680 },
-        { modelo: "4MXC6548G1000AA", tipo: "CASSETTE", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 2250 },
-        { modelo: "4MXC6560G1000AA", tipo: "CASSETTE", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 2890 },
-        { modelo: "4MXX6518G1000AA", tipo: "PISO TECHO", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 890 },
-        { modelo: "4MXX6524G1000AA", tipo: "PISO TECHO", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 1180 },
-        { modelo: "4MXX6536G1000AA", tipo: "PISO TECHO", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 1580 },
-        { modelo: "4MXX6548G1000AA", tipo: "PISO TECHO", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 2050 },
-        { modelo: "4MXX6560G1000AA", tipo: "PISO TECHO", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", costoUSD: 2590 },
-        { modelo: "TWE18043BAAP01H", tipo: "MANEJADORA", capacidad: "15 TR", tension: "220V", tecnologia: "COMERCIAL R410A", costoUSD: 455 },
-        { modelo: "TTA18043DAAE02P", tipo: "CONDENSADORA", capacidad: "15 TR", tension: "220V", tecnologia: "COMERCIAL R410A", costoUSD: 680 }
-    ];
+  // ========== CARGAR CATÁLOGO DESDE API ==========
+// ========== CARGAR CATÁLOGO DESDE API CON JSONP ==========
+let catalogoEquipos = [];
 
-    let catalogoHisense = [
-        { modelo: "AC121CF", tipo: "MINISPLIT", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 4640 },
-        { modelo: "AC122CF", tipo: "MINISPLIT", capacidad: "1.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 4008 },
-        { modelo: "AC182CF", tipo: "MINISPLIT", capacidad: "1.5 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 6724 },
-        { modelo: "AC242CF", tipo: "MINISPLIT", capacidad: "2.0 TR", tension: "220V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 8319 },
-        { modelo: "AH121CF", tipo: "MINISPLIT", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR FRIO CALOR R410A", precioBase: 4302 },
-        { modelo: "AH122CF", tipo: "MINISPLIT", capacidad: "1.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", precioBase: 4302 },
-        { modelo: "AH182CF", tipo: "MINISPLIT", capacidad: "1.5 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", precioBase: 6983 },
-        { modelo: "AH242CF", tipo: "MINISPLIT", capacidad: "2.0 TR", tension: "220V", tecnologia: "ESTANDAR FRIO CALOR R410A", precioBase: 8441 },
-        { modelo: "AT121CBW", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 4957 },
-        { modelo: "AT122CBW", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 4767 },
-        { modelo: "AT182CBW", tipo: "MINISPLIT INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 6800 },
-        { modelo: "AT242CBW", tipo: "MINISPLIT INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 9741 },
-        { modelo: "AT122CBW01", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 4699 },
-        { modelo: "AT182CBW01", tipo: "MINISPLIT INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 6800 },
-        { modelo: "AT242CBW01", tipo: "MINISPLIT INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 9741 },
-        { modelo: "ART121KA", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 4699 },
-        { modelo: "ART122KA", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 4699 },
-        { modelo: "ART242KA", tipo: "MINISPLIT INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 9741 },
-        { modelo: "ART121KAW", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 4699 },
-        { modelo: "ART122KAW", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 4699 },
-        { modelo: "ART182KAW", tipo: "MINISPLIT INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 6800 },
-        { modelo: "ART242KAW", tipo: "MINISPLIT INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 9741 },
-        { modelo: "ART362HBW", tipo: "MINISPLIT INVERTER", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 14897 },
-        { modelo: "ARU121KA", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 4957 },
-        { modelo: "ARU122KA", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 4957 },
-        { modelo: "ARU121KAW", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 4957 },
-        { modelo: "ARU122KAW", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 4957 },
-        { modelo: "ARU182KAW", tipo: "MINISPLIT INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 7800 },
-        { modelo: "ARU242KAW", tipo: "MINISPLIT INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 9655 },
-        { modelo: "ARU362HBW", tipo: "MINISPLIT INVERTER", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 18431 },
-        { modelo: "AP12CWN2", tipo: "PORTATIL", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER SOLO FRIO R32", precioBase: 5086 },
-        { modelo: "AUV-36UWKC", tipo: "PISO TECHO", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 22427 },
-        { modelo: "AUV-48UWNC", tipo: "PISO TECHO", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 28552 },
-        { modelo: "AUV-60UWNC", tipo: "PISO TECHO", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 32181 },
-        { modelo: "AUC24UR5S", tipo: "CASSETTE", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 18500 },
-        { modelo: "AUC-48UR5S", tipo: "CASSETTE", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 28900 },
-        { modelo: "AUC-36UWKK", tipo: "CASSETTE", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 22612 },
-        { modelo: "AUC-60UWNK", tipo: "CASSETTE", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 30707 },
-        { modelo: "AUD-24UWJLL", tipo: "FAN & COIL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 18534 },
-        { modelo: "AUD-36UX4SEHS", tipo: "FAN & COIL", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 23871 },
-        { modelo: "AUD-48UX5SH", tipo: "FAN & COIL", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 32784 },
-        { modelo: "AUD-60UWEH", tipo: "FAN & COIL", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A", precioBase: 33806 }
-    ];
-
-let catalogoYork = [
-    { modelo: "KYHFE12ZJMAXAORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410, JUEGO HIGHWALL YORK 1 TON ON/OFF SOLO FRIO 220/1/60 HASTA 11.3 SEER R410", precioUSD: 284.20 },
-    { modelo: "KYHFE12ZXMAXAORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "110V", tecnologia: "ON/OFF SOLO FRIO R410, JUEGO HIGHWALL YORK 1 TON ON/OFF SOLO FRIO 110/1/60 R410A", precioUSD: 306.24 },
-    { modelo: "KYHFE18ZJMAXAORX", tipo: "HIGHWALL", capacidad: "1.5 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410, JUEGO HIGHWALL YORK 1.5 TON ON/OFF SOLO FRIO 220/1/60 HASTA 11.4 SEER R410", precioUSD: 435.00 },
-    { modelo: "KYHFE24ZJMAXAORX", tipo: "HIGHWALL", capacidad: "2.0 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410, JUEGO HIGHWALL YORK 2 TON ON/OFF SOLO FRIO 220/1/60 HASTA 11.2 SEER R410", precioUSD: 569.56 },
-    { modelo: "KYHGE12ZJMAXAORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "220V", tecnologia: "ON/OFF FRIO CALOR R410, JUEGO HIGHWALL YORK 1 TON ON/OFF FRIO CALOR 220/1/60 HASTA 11.3 SEER R410", precioUSD: 319.00 },
-    { modelo: "KYHGE12ZXMAXAORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "110V", tecnologia: "ON/OFF FRIO CALOR R410, JUEGO HIGHWALL YORK 1 TON ON/OFF FRIO CALOR 110/1/60 HASTA 11.3 SEER R410", precioUSD: 327.12 },
-    { modelo: "KYHGE18ZJMAXAORX", tipo: "HIGHWALL", capacidad: "1.5 TR", tension: "220V", tecnologia: "ON/OFF FRIO CALOR R410, JUEGO HIGHWALL YORK 1.5 TON ON/OFF FRIO CALOR 220/1/60 HASTA 11.4 SEER R410", precioUSD: 511.56 },
-    { modelo: "KYHGE24ZJMAXAORX", tipo: "HIGHWALL", capacidad: "2.0 TR", tension: "220V", tecnologia: "ON/OFF FRIO CALOR R410, JUEGO HIGHWALL YORK 2 TON ON/OFF FRIO CALOR 220/1/60 HASTA 11.2 SEER R410", precioUSD: 656.56 },
-    { modelo: "KYHJF12ZJ6AXKORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO HIGHWALL YORK 1 TON INVERTER SOLO FRIO 220/1/60 HASTA 17.2 SEER R32 (OPCION WIFI)", precioUSD: 342.20 },
-    { modelo: "KYHJF12ZX6AXKORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO HIGHWALL YORK 1 TON INVERTER SOLO FRIO 110/1/60", precioUSD: 377.00 },
-    { modelo: "KYHJF18ZJ6AXKORX", tipo: "HIGHWALL", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO HIGHWALL YORK 1.5 TON INVERTER SOLO FRIO 220/1/60 HASTA 17.6 SEER R32 (OPCION WIFI)", precioUSD: 489.52 },
-    { modelo: "KYHJF24ZJ6AXKORX", tipo: "HIGHWALL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO HIGHWALL YORK 2 TON INVERTER SOLO FRIO 220/1/60 HASTA 17 SEER R32 (OPCION WIFI)", precioUSD: 646.12 },
-    { modelo: "KYHKF12ZJ6AXKORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO HIGHWALL YORK 1 TON INVERTER FRIO CALOR 220/1/60 HASTA 17.2 SEER R32 (OPCION WIFI)", precioUSD: 365.40 },
-    { modelo: "KYHKF12ZJ6AXTORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO HIGHWALL YORK 1 TON INVERTER FRIO CALOR 220/1/60 HASTA 17 SEER R32 (OPCION WIFI)", precioUSD: 370.06 },
-    { modelo: "KYHKF12ZX6AXKORX", tipo: "HIGHWALL", capacidad: "1.0 TR", tension: "110V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO HIGHWALL YORK 1 TON INVERTER FRIO CALOR 110/1/60 HASTA 20 SEER R32 (OPCION WIFI)", precioUSD: 396.72 },
-    { modelo: "KYHKF18ZJ6AXKORX", tipo: "HIGHWALL", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO HIGHWALL YORK 1.5 TON INVERTER FRIO CALOR 220/1/60 HASTA 17.6 SEER R32 (OPCION WIFI)", precioUSD: 532.44 },
-    { modelo: "KYHKF24ZJ6AXKORX", tipo: "HIGHWALL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO HIGHWALL YORK 2 TON INVERTER FRIO CALOR 220/1/60 HASTA 17 SEER R32 (OPCION WIFI)", precioUSD: 699.48 },
-    { modelo: "KYHKF36ZJMGXHORX", tipo: "HIGHWALL", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO HIGHWALL YORK 3 TON INVERTER FRIO CALOR 220/1/60 HASTA 17 SEER R32 (OPCION WIFI)", precioUSD: 1200.60 },
-    { modelo: "KYKJF18BZTMC-MORX", tipo: "CASSETTE", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO CASSETTE YORK 1.5 TON INVERTER SOLO FRIO 220/1/60 HASTA 19 SEER R32", precioUSD: 1272.52 },
-    { modelo: "KYKKE18BZTMC-MOR1", tipo: "CASSETTE", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R410A, JUEGO CASSETTE YORK 1.5 TON INVERTER FRIO CALOR 220/1/60 R410A", precioUSD: 1555.56 },
-    { modelo: "KYKKF18BZTMC-MORX", tipo: "CASSETTE", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO CASSETTE YORK 1.5 TON INVERTER FRIO CALOR 220/1/60 HASTA 19 SEER R32", precioUSD: 1401.28 },
-    { modelo: "KYKJE24BZTMC-MOR1", tipo: "CASSETTE", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A, JUEGO CASSETTE YORK 2 TON INVERTER SOLO FRIO 220/1/60 R410A", precioUSD: 1644.88 },
-    { modelo: "KYKJF24BZTMC-MORX", tipo: "CASSETTE", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO CASSETTE YORK 2 TON INVERTER SOLO FRIO 220/1/60 HASTA 19 SEER R32", precioUSD: 1396.64 },
-    { modelo: "KYKKF24BZTMC-MORX", tipo: "CASSETTE", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO CASSETTE YORK 2 TON INVERTER FRIO CALOR 220/1/60 HASTA 19 SEER R32", precioUSD: 1705.20 },
-    { modelo: "KYKJF36BZTMC-MORX", tipo: "CASSETTE", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO CASSETTE YORK 3 TON INVERTER SOLO FRIO 220/1/60 HASTA 16 SEER R32", precioUSD: 1772.48 },
-    { modelo: "KYKKF36BZTMC-MORX", tipo: "CASSETTE", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO CASSETTE YORK 3 TON INVERTER FRIO CALOR 220/1/60 HASTA 16 SEER R32", precioUSD: 1872.75 },
-    { modelo: "KYKJF48BZTMC-MORX", tipo: "CASSETTE", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO CASSETTE YORK 4 TON INVERTER SOLO FRIO 220/1/60 HASTA 16 SEER R32", precioUSD: 2202.84 },
-    { modelo: "KYKKF48BZTMC-MORX", tipo: "CASSETTE", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO CASSETTE YORK 4 TON INVERTER FRIO CALOR 220/1/60 HASTA 16 SEER R32", precioUSD: 2398.88 },
-    { modelo: "KYKJF55BZTMC-MORX", tipo: "CASSETTE", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO CASSETTE YORK 5 TON INVERTER SOLO FRIO 220/1/60 HASTA 15.5 SEER R32", precioUSD: 2531.12 },
-    { modelo: "KYKKF55BZTMC-MORX", tipo: "CASSETTE", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO CASSETTE YORK 5 TON INVERTER FRIO CALOR 220/1/60 HASTA 15.5 SEER R32", precioUSD: 2652.92 },
-    { modelo: "KYEJF18BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO FAN & COIL YORK 1.5 TON INVERTER SOLO FRIO 220/1/60 HASTA 19 SEER R32", precioUSD: 1220.32 },
-    { modelo: "KYEKF18BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO FAN & COIL YORK 1.5 TON INVERTER FRIO CALOR 220/1/60 HASTA 19 SEER R32", precioUSD: 1278.32 },
-    { modelo: "KYEJF24BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO FAN & COIL YORK 2 TON INVERTER SOLO FRIO 220/1/60 HASTA 19 SEER R32", precioUSD: 1322.40 },
-    { modelo: "KYEKF24BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO FAN & COIL YORK 2 TON INVERTER FRIO CALOR 220/1/60 HASTA 19 SEER R32", precioUSD: 1484.80 },
-    { modelo: "KYEJF36BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO FAN & COIL YORK 3 TON INVERTER SOLO FRIO 220/1/60 HASTA 15.5 SEER R32", precioUSD: 1734.20 },
-    { modelo: "KYEKF36BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO FAN & COIL YORK 3 TON INVERTER FRIO CALOR 220/1/60 HASTA 15.5 SEER R32", precioUSD: 1823.52 },
-    { modelo: "KYEJF48BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO FAN & COIL YORK 4 TON INVERTER SOLO FRIO 220/1/60 HASTA 15.5 SEER R32", precioUSD: 2248.08 },
-    { modelo: "KYEJE55BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A, JUEGO FAN & COIL YORK 5 TON INVERTER SOLO FRIO 220/1/60 R410A", precioUSD: 2955.88 },
-    { modelo: "KYEJF55BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO FAN & COIL YORK 5 TON INVERTER SOLO FRIO 220/1/60 HASTA 14.5 SEER R32", precioUSD: 2556.64 },
-    { modelo: "KYEKF55BZTMC-MOWX", tipo: "FAN & COIL", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO FAN & COIL YORK 5 TON INVERTER FRIO CALOR 220/1/60 HASTA 14.5 SEER R32", precioUSD: 2633.20 },
-    { modelo: "KYFJF36BZTMC-MORX", tipo: "PISO TECHO", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO PISO TECHO YORK 3 TON INVERTER SOLO FRIO 220/1/60 HASTA 16 SEER R32", precioUSD: 1798.00 },
-    { modelo: "KYFKF36BZTMC-MORX", tipo: "PISO TECHO", capacidad: "3.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO PISO TECHO YORK 3 TON INVERTER FRIO CALOR 220/1/60 HASTA 16 SEER R32", precioUSD: 1900.08 },
-    { modelo: "KYFJF48BZTMC-MORX", tipo: "PISO TECHO", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO PISO TECHO YORK 4 TON INVERTER SOLO FRIO 220/1/60 HASTA 15 SEER R32", precioUSD: 2183.12 },
-    { modelo: "KYFKF48BZTMC-MORX", tipo: "PISO TECHO", capacidad: "4.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO PISO TECHO YORK 4 TON INVERTER FRIO CALOR 220/1/60 HASTA 15.5 SEER R32", precioUSD: 2299.12 },
-    { modelo: "KYFJF55BZTMC-MORX", tipo: "PISO TECHO", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R32, JUEGO PISO TECHO YORK 5 TON INVERTER SOLO FRIO 220/1/60 HASTA 15 SEER R32", precioUSD: 2561.28 },
-    { modelo: "KYFKF55BZTMC-MORX", tipo: "PISO TECHO", capacidad: "5.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32, JUEGO PISO TECHO YORK 5 TON INVERTER FRIO CALOR 220/1/60 HASTA 15 SEER R32", precioUSD: 2587.96 },
-    { modelo: "YMFE36BNJMC-MOX", tipo: "PAQUETE", capacidad: "3.0 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410A, PAQUETE RESIDENCIAL YORK 3 TON SOLO FRIO 220/1/60 R410A", precioUSD: 1954.60 },
-    { modelo: "YMFE60BNJMCMS-X", tipo: "PAQUETE", capacidad: "5.0 TR", tension: "220V", tecnologia: "ON/OFF SOLO FRIO R410A, PAQUETE RESIDENCIAL YORK 5 TON SOLO FRIO 220/1/60 HASTA 14 SEER DESC. HORIZ. R410", precioUSD: 2836.20 },
-    { modelo: "ZF240C00Y2A1AAA1A1", tipo: "PAQUETE COMERCIAL", capacidad: "20 TR", tension: "230V", tecnologia: "COMERCIAL R410A, PAQUETE COMERCIAL YORK 20 TON SOLO FRIO 208-230/3/60 R410A AL/CU DESC CONV", precioUSD: 13982.64 },
-    { modelo: "ZF240C00Y4A1AAA1A1", tipo: "PAQUETE COMERCIAL", capacidad: "20 TR", tension: "440V", tecnologia: "COMERCIAL R410A, PAQUETE COMERCIAL YORK 20 TON SOLO FRIO 440/3/60 R410A", precioUSD: 13690.32 },
-    { modelo: "ZF300C00Y2A1AAA1A2", tipo: "PAQUETE COMERCIAL", capacidad: "25 TR", tension: "230V", tecnologia: "COMERCIAL R410A, PAQUETE COMERCIAL YORK 25 TON SOLO FRIO 208-230/3/60 R410 AL/CU DESC CONV", precioUSD: 14953.56 }
-];
-
-    let catalogoCarrier = [
-        { modelo: "53PXQ123D", tipo: "MINISPLIT INVERTER", capacidad: "1.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 8900 },
-        { modelo: "53PXQ243D", tipo: "MINISPLIT INVERTER", capacidad: "2.0 TR", tension: "220V", tecnologia: "INVERTER FRIO CALOR R32", precioBase: 14900 }
-    ];
-
-    let catalogoDuventus = [
-        { modelo: "IVR9M120F002", tipo: "EVAPORADORA", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 3200 },
-        { modelo: "OVR9M120F002", tipo: "CONDENSADORA", capacidad: "1.0 TR", tension: "110V", tecnologia: "ESTANDAR SOLO FRIO R410A", precioBase: 4600 }
-    ];
-
-    let catalogoRheem = [
-        { modelo: "RTAI-18C2", tipo: "MINISPLIT INVERTER", capacidad: "1.5 TR", tension: "220V", tecnologia: "INVERTER SOLO FRIO R410A", precioBase: 7800 }
-    ];
-
-    // Servicios predefinidos (mismos)
-    const preciosMiniSplit = [
-        { concepto: "Instalación Mecánica", descripcion: "Tubería cobre, aislamiento, drenaje (4m)", costoUnitario: 3350 },
-        { concepto: "Instalación Eléctrica", descripcion: "Cableado, protecciones (4m)", costoUnitario: 3350 },
-        { concepto: "Casa a 110V con Clavija", descripcion: "Protección y conexión", costoUnitario: 1080 },
-        { concepto: "220V Sin centro de carga, sin Pastilla", descripcion: "Instalación eléctrica 220V", costoUnitario: 2268 },
-        { concepto: "Mantenimiento", descripcion: "Servicio básico", costoUnitario: 1080 },
-        { concepto: "Diagnóstico", descripcion: "Revisión y evaluación", costoUnitario: 1080 },
-        { concepto: "Base Metálica, Piso y Mensula", descripcion: "Soporte estructural", costoUnitario: 1080 },
-        { concepto: "Bomba Condensado Mini 110V", descripcion: "Bomba de elevación", costoUnitario: 3672 },
-        { concepto: "Bomba Condensado Mini 220V", descripcion: "Bomba de elevación", costoUnitario: 3348 },
-        { concepto: "Mantenimiento Portail", descripcion: "Servicio especializado", costoUnitario: 1400 },
-        { concepto: "Exceden Tubería", descripcion: "Metro adicional tubería", costoUnitario: 490 },
-        { concepto: "Bomba Condensado USAPUMP", descripcion: "Bomba de condensado universal", costoUnitario: 1850 },
-        { concepto: "Extractor SOLER PALAU CFP300", descripcion: "Ventilación 300 CFM 127V", costoUnitario: 3200 },
-        { concepto: "Extractor SOLER PALAU TD-350/125", descripcion: "Ventilador tubular 127V", costoUnitario: 4200 }
-    ];
-
-    const preciosPisoTecho = [
-        { concepto: "Instalación Mecánica", descripcion: "Tubería cobre, aislamiento (4m)", costoUnitario: 5724 },
-        { concepto: "Instalación Eléctrica", descripcion: "Cableado y protecciones (4m)", costoUnitario: 3348 },
-        { concepto: "Mantenimiento", descripcion: "Servicio completo", costoUnitario: 1620 },
-        { concepto: "Diagnóstico", descripcion: "Revisión técnica", costoUnitario: 1620 },
-        { concepto: "Base Metálica, Piso y Mensula", descripcion: "Soporte estructural", costoUnitario: 1620 },
-        { concepto: "Bomba Condensado", descripcion: "Bomba de elevación", costoUnitario: 4320 }
-    ];
-
-    const preciosOtros = [
-        { concepto: "Pastilla", descripcion: "Interruptor termomagnético", costoUnitario: 650 },
-        { concepto: "Centro de Carga", descripcion: "Panel eléctrico", costoUnitario: 1026 },
-        { concepto: "Desmontaje", descripcion: "Retiro de equipo existente", costoUnitario: 1620 },
-        { concepto: "Pleno Fan and Coil", descripcion: "Caja de distribución", costoUnitario: 4320 },
-        { concepto: "Registro Tablaroca 10x10", descripcion: "Registro de acceso", costoUnitario: 650 },
-        { concepto: "Paso de Losa", descripcion: "Perforación losa concreta", costoUnitario: 432 },
-        { concepto: "Recarga de gas R22", descripcion: "Carga de refrigerante", costoUnitario: 3564 },
-        { concepto: "Recarga de gas R410", descripcion: "Carga de refrigerante", costoUnitario: 2484 },
-        { concepto: "Mantenimiento con Sanitizante MiniSplit", descripcion: "Limpieza profunda", costoUnitario: 1900 },
-        { concepto: "Mantenimiento con Sanitizante U-MATCH", descripcion: "Limpieza profunda", costoUnitario: 2380 },
-        { concepto: "Lavado y Vacío de Sistema", descripcion: "Limpieza de líneas", costoUnitario: 2380 },
-        { concepto: "Reparación de Fuga", descripcion: "Detección y reparación", costoUnitario: 2380 },
-        { concepto: "Instalación Mecánica TVR", descripcion: "Por tonelada de refrigeración", costoUnitario: 2380 }
-    ];
-
-    let instalaciones = [];
-    let equipos = [];
-    let nextId = 100;
-    let historial = [];
-
-// ============ SISTEMA DE AUTENTICACIÓN ============
-    const usuarios = {
-        'admin': { password: 'Admin123!', nombre: 'Administrador', rol: 'admin' },
- 	'Viridiana Aguirre': { password: 'Viri123!', nombre: 'Viridiana Aguirre', rol: 'Gerente Ventas' },
-        'alexis Ibarra': { password: 'Alexis2024', nombre: 'Alexis Ibarra', rol: 'Vendedor' },
-	'Cristina Asistente': { password: 'Cristina!', nombre: 'Asistente', rol: 'vendedora' },
-        'Ricardo Gonzalez': { password: 'Ricardo2024', nombre: 'Ricardo Gonzalez', rol: 'Vendedor' },
-	'Laura Asistente': { password: 'Laura123!', nombre: 'Laura Asistente', rol: 'Vendedor' },
-        'Vanesa Valladares': { password: 'Vanessa2024', nombre: 'Vanessa Valladares', rol: 'vendedora' },
-	'Gabriela Ibarra': { password: 'Gabriela123!', nombre: 'Gabriela Ibarra', rol: 'vendedora' },
-        'Irving Andrade': { password: 'Irving2024', nombre: 'Irving Andrade', rol: 'vendedor' },
-	'Oscar Cedillo': { password: 'Oscar123!', nombre: 'Oscar Cedillo', rol: 'vendedor' },
-	'Karla Solis': { password: 'Karla123!', nombre: 'Karla Solis', rol: 'vendedora' },
-        'Sharon Andrade': { password: 'Ventas123', nombre: 'Sharon Andrade', rol: 'vendedora' }
+function cargarCatalogoDesdeAPI() {
+    console.log("1. Iniciando carga de catálogo...");
+    showToast("📡 Cargando catálogo...");
+    
+    // Crear un nombre único para la función callback
+    const callbackName = 'jsonp_catalogo_' + Date.now();
+    console.log("2. Callback name:", callbackName);
+    
+    // Definir la función callback global
+    window[callbackName] = function(data) {
+        console.log("3. Callback ejecutado. Datos recibidos:", data);
+        // Limpiar el script después de usarlo
+        delete window[callbackName];
+        
+        if (data.exito && data.equipos) {
+            catalogoEquipos = data.equipos;
+            console.log("4. Equipos cargados:", catalogoEquipos.length);
+            showToast(`✅ ${catalogoEquipos.length} equipos cargados`);
+            // Refrescar todas las pestañas del catálogo
+            renderCatalogoTrane();
+            renderCatalogoHisense();
+            renderCatalogoYork();
+            renderCatalogoCarrier();
+            renderCatalogoDuventus();
+            renderCatalogoRheem();
+        } else {
+            console.log("4. Error en datos:", data);
+            showToast("⚠️ Error al cargar catálogo: " + (data.error || "sin datos"));
+        }
     };
     
-    let usuarioActual = null;
+    // Crear el script JSONP
+    const script = document.createElement('script');
+    script.src = `${API_URL}?accion=obtenerEquipos&callback=${callbackName}`;
+    console.log("5. Script URL:", script.src);
+    
+    // Manejar errores
+    script.onerror = function() {
+        console.log("6. ERROR: Script no se pudo cargar");
+        delete window[callbackName];
+        showToast("❌ Error de conexión con el servidor");
+    };
+    
+    document.body.appendChild(script);
+    console.log("7. Script añadido al body");
+}
 
-    function verificarLogin() {
-        const usuario = document.getElementById('loginUsuario').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        const errorDiv = document.getElementById('loginError');
+// ========== FUNCIÓN PARA GUARDAR EN GOOGLE SHEETS ==========
+
+
+async function guardarEnAPI(accion, datos) {
+    try {
+        showToast(`📡 Guardando ${accion}...`);
         
-        if (!usuario || !password) {
-            errorDiv.style.display = 'block';
-            errorDiv.innerHTML = 'Ingrese usuario y contraseña';
+        // Obtener datos de sesión actual
+        const sesion = {
+            usuario: document.getElementById('vendedorNombre')?.value || 'Desconocido',
+            nombre: document.getElementById('userNameDisplay')?.innerText || 'Vendedor',
+            rol: document.getElementById('userRoleDisplay')?.innerText === 'Administrador' ? 'admin' : 'vendedor'
+        };
+        
+        // Enviar TODO en un solo objeto
+        const payload = {
+            accion: accion,
+            sesion: sesion,
+            ...datos  // Esto fusiona los datos específicos
+        };
+        
+        // Usar no-cors para evitar problemas de CORS
+        await fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        console.log(`✅ ${accion} enviado a la nube`);
+        showToast(`✅ ${accion} guardado correctamente`);
+        return true;
+        
+    } catch (error) {
+        console.error(`❌ Error al guardar ${accion}:`, error);
+        showToast(`⚠️ Error de conexión, guardado localmente`);
+        return false;
+    }
+}
+
+function cargarServiciosDesdeAPI() {
+    const callbackName = 'jsonp_servicios_' + Date.now();
+    
+    window[callbackName] = function(data) {
+        delete window[callbackName];
+        
+        if (data.exito && data.servicios && data.servicios.length > 0) {
+            serviciosGlobales = data.servicios;
+            console.log(`✅ ${serviciosGlobales.length} servicios cargados`);
+        } else {
+            console.error("❌ Error al cargar servicios");
+        }
+    };
+    
+    const script = document.createElement('script');
+    script.src = `${API_URL}?accion=obtenerServicios&callback=${callbackName}`;
+    script.onerror = () => { delete window[callbackName]; };
+    document.body.appendChild(script);
+}
+
+cargarServiciosDesdeAPI();
+
+
+// ========== CATÁLOGOS (se llenan desde API) ==========
+let catalogoTrane = [];
+let catalogoHisense = [];
+let catalogoYork = [];
+let catalogoCarrier = [];
+let catalogoDuventus = [];
+let catalogoRheem = [];
+let serviciosGlobales = [];  // Agregar esto con las otras variables globales
+
+// ========== FUNCIONES DE RENDERIZADO DE CATÁLOGO ==========
+
+function renderCatalogoTrane() {
+    let search = document.getElementById('searchTrane')?.value.toLowerCase() || '';
+    let filtered = catalogoEquipos.filter(e => 
+        e.marca === 'TRANE' && 
+        (e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search))
+    );
+    let tbody = document.getElementById('catalogoTraneBody');
+    if(tbody) {
+        if(filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No hay equipos TRANE disponibles</td></tr>';
             return;
         }
+        tbody.innerHTML = filtered.map(e => `
+            <tr>
+                <td><strong>${escapeHtml(e.modelo)}</strong></td>
+                <td>${escapeHtml(e.tipo || '')}</td>
+                <td>${escapeHtml(e.capacidad || '')}</td>
+                <td>${escapeHtml(e.tension || '')}</td>
+                <td style="font-size:0.75rem;">${escapeHtml(e.tecnologia || '')}</td>
+                <td><strong>$${e.precioVenta.toFixed(2)}</strong> MXN</td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('TRANE','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">+ Cotizar</button></td>
+            </tr>
+        `).join('');
+    }
+}
+
+function renderCatalogoHisense() {
+    let search = document.getElementById('searchHisense')?.value.toLowerCase() || '';
+    let filtered = catalogoEquipos.filter(e => 
+        e.marca === 'HISENSE' && 
+        (e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search))
+    );
+    let tbody = document.getElementById('catalogoHisenseBody');
+    if(tbody) {
+        if(filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay equipos HISENSE disponibles</td></tr>';
+            return;
+        }
+        tbody.innerHTML = filtered.map(e => `
+            <tr>
+                <td><strong>${escapeHtml(e.modelo)}</strong></td>
+                <td>${escapeHtml(e.tipo || '')}</td>
+                <td>${escapeHtml(e.capacidad || '')}</td>
+                <td>${escapeHtml(e.tension || '')}</td>
+                <td style="font-size:0.75rem;">${escapeHtml(e.tecnologia || '')}</td>
+                <td><strong>$${e.precioVenta.toFixed(2)}</strong> MXN</td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('HISENSE','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">+ Cotizar</button></td>
+            </tr>
+        `).join('');
+    }
+}
+
+function renderCatalogoYork() {
+    let search = document.getElementById('searchYork')?.value.toLowerCase() || '';
+    let filtered = catalogoEquipos.filter(e => 
+        e.marca === 'YORK' && 
+        (e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search))
+    );
+    let tbody = document.getElementById('catalogoYorkBody');
+    if(tbody) {
+        if(filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay equipos YORK disponibles</td></tr>';
+            return;
+        }
+        tbody.innerHTML = filtered.map(e => `
+            <tr>
+                <td><strong>${escapeHtml(e.modelo)}</strong></td>
+                <td>${escapeHtml(e.tipo || '')}</td>
+                <td>${escapeHtml(e.capacidad || '')}</td>
+                <td>${escapeHtml(e.tension || '')}</td>
+                <td style="font-size:0.75rem;">${escapeHtml(e.tecnologia || '')}</td>
+                <td><strong>$${e.precioVenta.toFixed(2)}</strong> MXN</td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('YORK','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">+ Cotizar</button></td>
+            </tr>
+        `).join('');
+    }
+}
+
+function renderCatalogoCarrier() {
+    let filtered = catalogoEquipos.filter(e => e.marca === 'CARRIER');
+    let tbody = document.getElementById('catalogoCarrierBody');
+    if(tbody) {
+        if(filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay equipos CARRIER disponibles</td></tr>';
+            return;
+        }
+        tbody.innerHTML = filtered.map(e => `
+            <tr>
+                <td><strong>${escapeHtml(e.modelo)}</strong></td>
+                <td>${escapeHtml(e.tipo || '')}</td>
+                <td>${escapeHtml(e.capacidad || '')}</td>
+                <td>${escapeHtml(e.tension || '')}</td>
+                <td style="font-size:0.75rem;">${escapeHtml(e.tecnologia || '')}</td>
+                <td><strong>$${e.precioVenta.toFixed(2)}</strong> MXN</td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('CARRIER','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">+ Cotizar</button></td>
+            </tr>
+        `).join('');
+    }
+}
+
+function renderCatalogoDuventus() {
+    let filtered = catalogoEquipos.filter(e => e.marca === 'DUVENTUS');
+    let tbody = document.getElementById('catalogoDuventusBody');
+    if(tbody) {
+        if(filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay equipos DUVENTUS disponibles</td></tr>';
+            return;
+        }
+        tbody.innerHTML = filtered.map(e => `
+            <tr>
+                <td><strong>${escapeHtml(e.modelo)}</strong></td>
+                <td>${escapeHtml(e.tipo || '')}</td>
+                <td>${escapeHtml(e.capacidad || '')}</td>
+                <td>${escapeHtml(e.tension || '')}</td>
+                <td style="font-size:0.75rem;">${escapeHtml(e.tecnologia || '')}</td>
+                <td><strong>$${e.precioVenta.toFixed(2)}</strong> MXN</td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('DUVENTUS','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">+ Cotizar</button></td>
+            </tr>
+        `).join('');
+    }
+}
+
+function renderCatalogoRheem() {
+    let filtered = catalogoEquipos.filter(e => e.marca === 'RHEEM');
+    let tbody = document.getElementById('catalogoRheemBody');
+    if(tbody) {
+        if(filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay equipos RHEEM disponibles</td></tr>';
+            return;
+        }
+        tbody.innerHTML = filtered.map(e => `
+            <tr>
+                <td><strong>${escapeHtml(e.modelo)}</strong></td>
+                <td>${escapeHtml(e.tipo || '')}</td>
+                <td>${escapeHtml(e.capacidad || '')}</td>
+                <td>${escapeHtml(e.tension || '')}</td>
+                <td style="font-size:0.75rem;">${escapeHtml(e.tecnologia || '')}</td>
+                <td><strong>$${e.precioVenta.toFixed(2)}</strong> MXN</td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('RHEEM','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">+ Cotizar</button></td>
+            </tr>
+        `).join('');
+    }
+}
+
+
+// ============ SISTEMA DE AUTENTICACIÓN CONTRA GOOGLE SHEETS ============
+// ============ SISTEMA DE AUTENTICACIÓN CON JSONP (evita CORS) ============
+
+function verificarLogin() {
+    const usuario = document.getElementById('loginUsuario').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errorDiv = document.getElementById('loginError');
+    
+    if (!usuario || !password) {
+        errorDiv.style.display = 'block';
+        errorDiv.innerHTML = '⚠️ Ingrese usuario y contraseña';
+        return;
+    }
+    
+    showToast("🔐 Verificando credenciales...");
+    
+    // Crear un nombre único para la función callback
+    const callbackName = 'jsonp_callback_' + Date.now();
+    
+    // Definir la función callback global
+    window[callbackName] = function(resultado) {
+        // Limpiar el script después de usarlo
+        delete window[callbackName];
         
-        if (usuarios[usuario] && usuarios[usuario].password === password) {
-            usuarioActual = { username: usuario, ...usuarios[usuario] };
+        if (resultado.exito && resultado.autenticado) {
+            // Guardar sesión
+            usuarioActual = resultado;
             
-            localStorage.setItem('sesion_activa', JSON.stringify({ username: usuario, timestamp: Date.now() }));
+            const sesion = {
+                usuario: resultado.usuario,
+                nombre: resultado.nombre,
+                rol: resultado.rol,
+                email: resultado.email,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('sesion_activa', JSON.stringify(sesion));
             
+            // Mostrar contenido principal
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('appContent').classList.add('active');
             
-            document.getElementById('userNameDisplay').innerText = usuarioActual.nombre;
-            const rolTexto = usuarioActual.rol === 'admin' ? 'Administrador' : 'Vendedor';
+            // Actualizar interfaz
+            document.getElementById('userNameDisplay').innerText = resultado.nombre;
+            
+            let rolTexto = '';
+            if (resultado.rol === 'admin') rolTexto = 'Administrador';
+            else if (resultado.rol === 'vendedor') rolTexto = 'Vendedor';
+            else rolTexto = resultado.rol;
             document.getElementById('userRoleDisplay').innerText = rolTexto;
             
             if (document.getElementById('vendedorNombre')) {
-                document.getElementById('vendedorNombre').value = usuarioActual.nombre;
+                document.getElementById('vendedorNombre').value = resultado.nombre;
             }
             
-            showToast(`Bienvenido ${usuarioActual.nombre}`);
-	   verificarYMostrarRecordatoriosAlInicio();
+            showToast(`✅ Bienvenido ${resultado.nombre}`);
+            verificarYMostrarRecordatoriosAlInicio();
+            
+            // ========== AGREGAR ESTA LÍNEA ==========
+            cargarCatalogoDesdeAPI();
+            // ========================================
+            
+            // Refrescar estadísticas si el módulo está visible
+            if (document.getElementById('estadisticasModule') && document.getElementById('estadisticasModule').style.display !== 'none') {
+                if (typeof actualizarSemaforo === 'function') actualizarSemaforo();
+            }
         } else {
             errorDiv.style.display = 'block';
-            errorDiv.innerHTML = 'Usuario o contraseña incorrectos';
+            errorDiv.innerHTML = resultado.mensaje || '❌ Usuario o contraseña incorrectos';
         }
-    }
+    };
     
+    // Crear el script JSONP
+    const script = document.createElement('script');
+    script.src = `${API_URL}?accion=verificarCredenciales&usuario=${encodeURIComponent(usuario)}&password=${encodeURIComponent(password)}&callback=${callbackName}`;
+    
+    // Manejar errores
+    script.onerror = function() {
+        delete window[callbackName];
+        errorDiv.style.display = 'block';
+        errorDiv.innerHTML = '❌ Error de conexión con el servidor';
+        showToast("❌ Error de conexión");
+    };
+    
+    document.body.appendChild(script);
+}
+  
     function cerrarSesion() {
     // ========== RESPALDO AUTOMÁTICO AL CERRAR SESIÓN ==========
     const respaldoAuto = {
@@ -3736,20 +3834,47 @@ let catalogoYork = [
     document.getElementById('loginError').style.display = 'none';
 }
     
-    function verificarSesionGuardada() {
-        const sesionGuardada = localStorage.getItem('sesion_activa');
-        if (sesionGuardada) {
-            const sesion = JSON.parse(sesionGuardada);
-            const horasTranscurridas = (Date.now() - sesion.timestamp) / (1000 * 60 * 60);
-            if (horasTranscurridas < 8 && usuarios[sesion.username]) {
-                document.getElementById('loginUsuario').value = sesion.username;
-                verificarLogin();
+function verificarSesionGuardada() {
+    const sesionGuardada = localStorage.getItem('sesion_activa');
+    if (sesionGuardada) {
+        const sesion = JSON.parse(sesionGuardada);
+        const horasTranscurridas = (Date.now() - sesion.timestamp) / (1000 * 60 * 60);
+        if (horasTranscurridas < 8) {
+            // Auto-completar visualmente
+            document.getElementById('loginUsuario').value = sesion.usuario;
+            document.getElementById('loginPassword').value = '••••••••';
+            
+            usuarioActual = {
+                exito: true,
+                autenticado: true,
+                usuario: sesion.usuario,
+                nombre: sesion.nombre,
+                rol: sesion.rol,
+                email: sesion.email
+            };
+            
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('appContent').classList.add('active');
+            document.getElementById('userNameDisplay').innerText = sesion.nombre;
+            
+            let rolTexto = sesion.rol === 'admin' ? 'Administrador' : 'Vendedor';
+            document.getElementById('userRoleDisplay').innerText = rolTexto;
+            
+            if (document.getElementById('vendedorNombre')) {
+                document.getElementById('vendedorNombre').value = sesion.nombre;
             }
+            
+            showToast(`✅ Bienvenido nuevamente ${sesion.nombre}`);
+            verificarYMostrarRecordatoriosAlInicio();
+            
+            // ========== AGREGAR ESTA LÍNEA ==========
+            cargarCatalogoDesdeAPI();
+            // ========================================
+        } else {
+            localStorage.removeItem('sesion_activa');
         }
     }
-
-
-    
+}  
     window.editarPrecioEquipo = function(marca, index) {
         let nuevoPrecio = prompt("Ingrese el nuevo precio:");
         if (nuevoPrecio !== null && !isNaN(parseFloat(nuevoPrecio))) {
@@ -3937,126 +4062,10 @@ document.querySelectorAll('.editUtilidadVendedor').forEach(i => i.addEventListen
     
     function renderAll() { renderEquipos(); renderInstalaciones(); calcularTotales(); }
     
- function renderCatalogoTrane() {
-    let search = document.getElementById('searchTrane')?.value.toLowerCase() || '';
-    let filtered = catalogoTrane.filter(e => e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search));
-    let tbody = document.getElementById('catalogoTraneBody');
-    if(tbody) tbody.innerHTML = filtered.map((e, idx) => {
-        let precioVenta = calcularPrecioVentaTrane(e.costoUSD);
-        let descripcionEscapada = (e.tecnologia || '').replace(/'/g, "\\'");
-        return `<tr>
-            <td><strong>${e.modelo}</strong></td>
-            <td>${e.tipo}</td>
-            <td>${e.capacidad}</td>
-            <td>${e.tension}</td>
-            <td style="font-size:0.75rem;">${e.tecnologia}</td>
-            <td>$${e.costoUSD.toFixed(2)} USD <button class="edit-precio-btn" onclick="editarPrecioEquipo('TRANE',${idx})">✏️</button></td>
-            <td><strong>$${precioVenta.toFixed(2)}</strong> MXN</td>
-            <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('TRANE','${e.modelo}','${e.capacidad}', ${e.costoUSD * tipoCambioActual}, '${descripcionEscapada}')">+ Cotizar</button></td>
-        </table>`;
-    }).join('');
-}
-    
-function renderCatalogoHisense() {
-    let search = document.getElementById('searchHisense')?.value.toLowerCase() || '';
-    let filtered = catalogoHisense.filter(e => e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search));
-    let tbody = document.getElementById('catalogoHisenseBody');
-    if(tbody) tbody.innerHTML = filtered.map((e, idx) => {
-        let precioVenta = calcularPrecioVentaNormal(e.precioBase, 0);
-        let descripcionEscapada = (e.tecnologia || '').replace(/'/g, "\\'");
-        return `<tr>
-            <td><strong>${e.modelo}</strong></td>
-            <td>${e.tipo}</td>
-            <td>${e.capacidad}</td>
-            <td>${e.tension}</td>
-            <td style="font-size:0.75rem;">${e.tecnologia}</td>
-            <td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('HISENSE',${idx})">✏️</button></td>
-            <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('HISENSE','${e.modelo}','${e.capacidad}', ${e.precioBase}, '${descripcionEscapada}')">+ Cotizar</button></td>
-        </tr>`;
-    }).join('');
-}
-
-function renderCatalogoYork() {
-    let search = document.getElementById('searchYork')?.value.toLowerCase() || '';
-    let filtered = catalogoYork.filter(e => e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search));
-    let tbody = document.getElementById('catalogoYorkBody');
-    if(tbody) tbody.innerHTML = filtered.map((e, idx) => {
-        let precioMXN = e.precioUSD * tipoCambioActual;
-        let precioVenta = calcularPrecioVentaNormal(precioMXN, 0);
-        let descripcionEscapada = (e.tecnologia || '').replace(/'/g, "\\'");
-        return `<tr>
-            <td><strong>${e.modelo}</strong></td>
-            <td>${e.tipo}</td>
-            <td>${e.capacidad}</td>
-            <td>${e.tension}</td>
-            <td style="font-size:0.75rem;">${e.tecnologia}</td>
-            <td><strong>$${precioVenta.toFixed(2)}</strong> MXN <button class="edit-precio-btn" onclick="editarPrecioEquipo('YORK',${idx})">✏️</button></td>
-            <td><button class="btn-secondary" style="padding:4px 12px;"onclick="agregarEquipoDirecto('YORK','${e.modelo}','${e.capacidad}', ${e.precioUSD * tipoCambioActual}, '${descripcionEscapada}')">+ Cotizar</button></td>
-        </tr>`;
-    }).join('');
-}
-    
-function renderCatalogoCarrier() {
-    let tbody = document.getElementById('catalogoCarrierBody');
-    if(tbody) tbody.innerHTML = catalogoCarrier.map((e, idx) => {
-        let precioVenta = calcularPrecioVentaNormal(e.precioBase, 0);
-        let descripcionEscapada = (e.tecnologia || '').replace(/'/g, "\\'");
-        return `<tr>
-            <td><strong>${e.modelo}</strong></td>
-            <td>${e.tipo}</td>
-            <td>${e.capacidad}</td>
-            <td>${e.tension}</td>
-            <td style="font-size:0.75rem;">${e.tecnologia}</td>
-            <td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('CARRIER',${idx})">✏️</button></td>
-            <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('CARRIER','${e.modelo}','${e.capacidad}',${precioVenta}, '${descripcionEscapada}')">+ Cotizar</button></td>
-        </tr>`;
-    }).join('');
-}
-    
- function renderCatalogoDuventus() {
-    let tbody = document.getElementById('catalogoDuventusBody');
-    if(tbody) tbody.innerHTML = catalogoDuventus.map((e, idx) => {
-        let precioVenta = calcularPrecioVentaNormal(e.precioBase, 0);
-        let descripcionEscapada = (e.tecnologia || '').replace(/'/g, "\\'");
-        return `<tr>
-            <td><strong>${e.modelo}</strong></td>
-            <td>${e.tipo}</td>
-            <td>${e.capacidad}</td>
-            <td>${e.tension}</td>
-            <td style="font-size:0.75rem;">${e.tecnologia}</td>
-            <td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('DUVENTUS',${idx})">✏️</button></td>
-            <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('DUVENTUS','${e.modelo}','${e.capacidad}',${precioVenta}, '${descripcionEscapada}')">+ Cotizar</button></td>
-        </tr>`;
-    }).join('');
-}
-
-    function renderCatalogoRheem() {
-    let tbody = document.getElementById('catalogoRheemBody');
-    if(tbody) tbody.innerHTML = catalogoRheem.map((e, idx) => {
-        let precioVenta = calcularPrecioVentaNormal(e.precioBase, 0);
-        let descripcionEscapada = (e.tecnologia || '').replace(/'/g, "\\'");
-        return `<tr>
-            <td><strong>${e.modelo}</strong></td>
-            <td>${e.tipo}</td>
-            <td>${e.capacidad}</td>
-            <td>${e.tension}</td>
-            <td style="font-size:0.75rem;">${e.tecnologia}</td>
-            <td><strong>$${precioVenta.toFixed(2)}</strong> <button class="edit-precio-btn" onclick="editarPrecioEquipo('RHEEM',${idx})">✏️</button></td>
-            <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('RHEEM','${e.modelo}','${e.capacidad}',${precioVenta}, '${descripcionEscapada}')">+ Cotizar</button></td>
-        </tr>`;
-    }).join('');
-}
-
-window.agregarEquipoDirecto = function(marca, modelo, capacidad, precioBase, tecnologiaCompleta) {
-    // precioBase debe ser el costo real del equipo (sin utilidades)
-    let utilidadEmpresaPorDefecto = 20;  // 18% por defecto
-    let utilidadVendedorPorDefecto = 10; // 20% por defecto
-    
-    // Calcular precio de venta con utilidades
-    let precioConUtilidadEmpresa = precioBase * (1 + utilidadEmpresaPorDefecto / 100);
-    let precioVentaFinal = precioConUtilidadEmpresa * (1 + utilidadVendedorPorDefecto / 100);
-    
-    let precioVentaUSD = precioVentaFinal / tipoCambioActual;
+ window.agregarEquipoDirecto = function(marca, modelo, capacidad, precioVenta, tecnologiaCompleta) {
+    // precioVenta ya viene con utilidades aplicadas desde la API
+    let utilidadEmpresaPorDefecto = 0;  // Ya no aplicamos utilidad extra porque el precio ya la incluye
+    let utilidadVendedorPorDefecto = 0;
     
     equipos.push({ 
         id: nextId++, 
@@ -4064,19 +4073,17 @@ window.agregarEquipoDirecto = function(marca, modelo, capacidad, precioBase, tec
         modelo, 
         capacidad, 
         cantidad: 1, 
-        precioBase: precioBase,           // ← nuevo campo
+        precioBase: precioVenta,  // Este es el precio que el vendedor ve como base
         utilidadEmpresa: utilidadEmpresaPorDefecto,
         utilidadVendedor: utilidadVendedorPorDefecto,
-        precioVenta: precioVentaFinal,     // ← precio con utilidades
-        precioVentaUSD: precioVentaUSD, 
+        precioVenta: precioVenta,
+        precioVentaUSD: precioVenta / tipoCambioActual, 
         descripcion: tecnologiaCompleta || `Equipo ${marca} ${modelo} ${capacidad}` 
     });
     renderAll();
     setActiveModule('cotizador');
-    showToast(`✓ ${marca} ${modelo} agregado - $${precioVentaFinal.toFixed(2)} MXN`);
-};
-    
-    function agregarServicioPredefinido(servicio) {
+    showToast(`✓ ${marca} ${modelo} agregado - $${precioVenta.toFixed(2)} MXN`);
+};    function agregarServicioPredefinido(servicio) {
         let cantidad = prompt("Ingrese la cantidad:", "1");
         if (cantidad !== null && !isNaN(parseFloat(cantidad))) {
             instalaciones.push({ id: nextId++, concepto: servicio.concepto, descripcion: servicio.descripcion, cantidad: parseFloat(cantidad), costoUnitario: servicio.costoUnitario });
@@ -4086,15 +4093,72 @@ window.agregarEquipoDirecto = function(marca, modelo, capacidad, precioBase, tec
         }
     }
     
-    function cargarListasServicios() {
-        const container = document.getElementById('categoriasServicios');
-        container.innerHTML = `<div class="categoria-servicios"><div class="categoria-titulo">📦 MiniSplit</div><div id="listaMiniSplit"></div></div>
-            <div class="categoria-servicios"><div class="categoria-titulo">🏢 Piso Techo / Fan & Coil</div><div id="listaPisoTecho"></div></div>
-            <div class="categoria-servicios"><div class="categoria-titulo">🔧 Otros Servicios</div><div id="listaOtros"></div></div>`;
-        document.getElementById('listaMiniSplit').innerHTML = preciosMiniSplit.map(s => `<div class="servicio-item"><div class="servicio-info"><div class="servicio-nombre">${s.concepto}</div><div class="servicio-desc">${s.descripcion}</div></div><div class="servicio-precio">$${s.costoUnitario.toFixed(2)}</div><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarServicioPredefinido({concepto:'${s.concepto}', descripcion:'${s.descripcion}', costoUnitario:${s.costoUnitario}})">+ Agregar</button></div>`).join('');
-        document.getElementById('listaPisoTecho').innerHTML = preciosPisoTecho.map(s => `<div class="servicio-item"><div class="servicio-info"><div class="servicio-nombre">${s.concepto}</div><div class="servicio-desc">${s.descripcion}</div></div><div class="servicio-precio">$${s.costoUnitario.toFixed(2)}</div><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarServicioPredefinido({concepto:'${s.concepto}', descripcion:'${s.descripcion}', costoUnitario:${s.costoUnitario}})">+ Agregar</button></div>`).join('');
-        document.getElementById('listaOtros').innerHTML = preciosOtros.map(s => `<div class="servicio-item"><div class="servicio-info"><div class="servicio-nombre">${s.concepto}</div><div class="servicio-desc">${s.descripcion}</div></div><div class="servicio-precio">$${s.costoUnitario.toFixed(2)}</div><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarServicioPredefinido({concepto:'${s.concepto}', descripcion:'${s.descripcion}', costoUnitario:${s.costoUnitario}})">+ Agregar</button></div>`).join('');
+ // CARGAR SERVICIOS DESDE API 
+function cargarListasServicios() {
+    if (!serviciosGlobales || serviciosGlobales.length === 0) {
+        showToast("Cargando servicios...");
+        setTimeout(() => cargarListasServicios(), 500);
+        return;
     }
+    
+    const container = document.getElementById('categoriasServicios');
+    if (!container) return;
+    
+    // Filtrar por categoría
+    const miniSplit = serviciosGlobales.filter(s => s.categoria === "MiniSplit");
+    const pisoTecho = serviciosGlobales.filter(s => s.categoria === "PisoTecho");
+    const otros = serviciosGlobales.filter(s => s.categoria === "Otros");
+    
+    container.innerHTML = `
+        <div class="categoria-servicios">
+            <div class="categoria-titulo">📦 MiniSplit</div>
+            <div id="listaMiniSplit"></div>
+        </div>
+        <div class="categoria-servicios">
+            <div class="categoria-titulo">🏢 Piso Techo / Fan & Coil</div>
+            <div id="listaPisoTecho"></div>
+        </div>
+        <div class="categoria-servicios">
+            <div class="categoria-titulo">🔧 Otros Servicios</div>
+            <div id="listaOtros"></div>
+        </div>
+    `;
+    
+    document.getElementById('listaMiniSplit').innerHTML = miniSplit.map(s => `
+        <div class="servicio-item">
+            <div class="servicio-info">
+                <div class="servicio-nombre">${escapeHtml(s.concepto)}</div>
+                <div class="servicio-desc">${escapeHtml(s.descripcion || '')}</div>
+            </div>
+            <div class="servicio-precio">$${Number(s.costoUnitario).toFixed(2)}</div>
+            <button class="btn-secondary" style="padding:4px 12px;" onclick="agregarServicioPredefinido({concepto:'${escapeHtml(s.concepto).replace(/'/g, "\\'")}', descripcion:'${escapeHtml(s.descripcion || s.concepto).replace(/'/g, "\\'")}', costoUnitario:${Number(s.costoUnitario)}})">+ Agregar</button>
+        </div>
+    `).join('');
+    
+    document.getElementById('listaPisoTecho').innerHTML = pisoTecho.map(s => `
+        <div class="servicio-item">
+            <div class="servicio-info">
+                <div class="servicio-nombre">${escapeHtml(s.concepto)}</div>
+                <div class="servicio-desc">${escapeHtml(s.descripcion || '')}</div>
+            </div>
+            <div class="servicio-precio">$${Number(s.costoUnitario).toFixed(2)}</div>
+            <button class="btn-secondary" style="padding:4px 12px;" onclick="agregarServicioPredefinido({concepto:'${escapeHtml(s.concepto).replace(/'/g, "\\'")}', descripcion:'${escapeHtml(s.descripcion || s.concepto).replace(/'/g, "\\'")}', costoUnitario:${Number(s.costoUnitario)}})">+ Agregar</button>
+        </div>
+    `).join('');
+    
+    document.getElementById('listaOtros').innerHTML = otros.map(s => `
+        <div class="servicio-item">
+            <div class="servicio-info">
+                <div class="servicio-nombre">${escapeHtml(s.concepto)}</div>
+                <div class="servicio-desc">${escapeHtml(s.descripcion || '')}</div>
+            </div>
+            <div class="servicio-precio">$${Number(s.costoUnitario).toFixed(2)}</div>
+            <button class="btn-secondary" style="padding:4px 12px;" onclick="agregarServicioPredefinido({concepto:'${escapeHtml(s.concepto).replace(/'/g, "\\'")}', descripcion:'${escapeHtml(s.descripcion || s.concepto).replace(/'/g, "\\'")}', costoUnitario:${Number(s.costoUnitario)}})">+ Agregar</button>
+        </div>
+    `).join('');
+}
+
+
     
 function exportToPDF() {
     let cliente = document.getElementById('clienteName').value;
@@ -4441,6 +4505,7 @@ setTimeout(() => {
     configurarFiltroFecha();
     renderizarGrafico(30);  // Inicializa gráfico con 30 días
     configurarPeriodosGrafico();
+    cargarCatalogoDesdeAPI();
 }, 500);
 
 </script>
