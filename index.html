@@ -3239,6 +3239,22 @@ function actualizarBotonesPeriodo(btn7, btn15, btn30) {
     }
 }
 
+function agregarServicioPredefinido(servicio) {
+    let cantidad = prompt("Ingrese la cantidad:", "1");
+    if (cantidad !== null && !isNaN(parseFloat(cantidad))) {
+        let cantidadNum = parseFloat(cantidad);
+        instalaciones.push({ 
+            id: nextId++, 
+            concepto: servicio.concepto, 
+            descripcion: servicio.descripcion || servicio.concepto, 
+            cantidad: cantidadNum, 
+            costoUnitario: servicio.costoUnitario 
+        });
+        renderAll();
+        showToast(`✓ ${servicio.concepto} agregado`);
+        document.getElementById('modalServicio').style.display = 'none';
+    }
+}
 
 
 
@@ -4247,10 +4263,12 @@ function renderEquipos() {
 }
     
     function renderAll() { renderEquipos(); renderInstalaciones(); calcularTotales(); }
+
     
 window.agregarEquipoDirecto = function(marca, modelo, capacidad, precio, tecnologiaCompleta) {
     // Determinar si es TRANE o YORK (precios en USD)
     const esTraneYork = (marca === 'TRANE' || marca === 'YORK');
+
     
     // Guardar el precio en su moneda original
     let precioOriginal = precio;
@@ -4293,8 +4311,6 @@ window.agregarEquipoDirecto = function(marca, modelo, capacidad, precio, tecnolo
         showToast(`✓ ${marca} ${modelo} agregado - $${precioMXN.toFixed(2)} MXN`);
     }
 };
-
-
 
  // CARGAR SERVICIOS DESDE API 
 function cargarListasServicios() {
