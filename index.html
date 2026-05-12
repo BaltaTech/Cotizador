@@ -861,50 +861,129 @@
             </div>
         </div>
 
-                      <!-- CATÁLOGO DE EQUIPOS -->
-        <div id="catalogoModule" style="display:none;">
-            <div class="card-premium">
-                <div class="card-header"><h2><i class="fas fa-warehouse"></i> Catálogo de Equipos HVAC <button id="agregarEquipoCatalogoBtn" style="margin-left:15px; background:#ffc107; border:none; padding:6px 15px; border-radius:20px;"><i class="fas fa-plus"></i> Agregar Nuevo Equipo</button></h2></div>
-                <div class="card-body">
-                    <div class="tab-catalogo">
-                        <button class="tab-catalogo-btn active" data-tab="trane">🇺🇸 TRANE</button>
-                        <button class="tab-catalogo-btn" data-tab="hisense">🇯🇵 HISENSE</button>
-                        <button class="tab-catalogo-btn" data-tab="york">🇺🇸 YORK</button>
-                        <button class="tab-catalogo-btn" data-tab="carrier">🇺🇸 CARRIER</button>
-                        <button class="tab-catalogo-btn" data-tab="duventus">🇲🇽 DUVENTUS</button>
-                        <button class="tab-catalogo-btn" data-tab="rheem">🇺🇸 RHEEM</button>
-                    </div>
-                    
-                    <div id="tabTrane" class="tab-content">
-                        <input type="text" id="searchTrane" placeholder="Buscar por modelo, capacidad..." style="width:100%; padding:12px; border-radius:60px; margin-bottom:20px;">
-                        <div class="table-wrapper"><table style="min-width: 900px;"><thead><tr><th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th><th>Costo Base (USD)</th><th>Precio Venta (MXN)</th><th></th></tr></thead><tbody id="catalogoTraneBody"></tbody></table></div>
-                    </div>
-                    
-                    <div id="tabHisense" class="tab-content" style="display:none;">
-                        <input type="text" id="searchHisense" placeholder="Buscar por modelo, capacidad..." style="width:100%; padding:12px; border-radius:60px; margin-bottom:20px;">
-                        <div class="table-wrapper"><table style="min-width: 900px;"><thead><tr><th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th><th>Precio Venta (MXN)</th><th></th></tr></thead><tbody id="catalogoHisenseBody"></tbody></table></div>
-                    </div>
-                    
-                    <div id="tabYork" class="tab-content" style="display:none;">
-                        <input type="text" id="searchYork" placeholder="Buscar por modelo, capacidad..." style="width:100%; padding:12px; border-radius:60px; margin-bottom:20px;">
-                        <div class="table-wrapper"><table style="min-width: 900px;"><thead><tr><th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th><th>Precio Venta (MXN)</th><th></th></tr></thead><tbody id="catalogoYorkBody"></tbody></table></div>
-                    </div>
-                    
-                    <div id="tabCarrier" class="tab-content" style="display:none;">
-                        <div class="table-wrapper"><table style="min-width: 900px;"><thead><tr><th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th><th>Precio Venta (MXN)</th><th></th></tr></thead><tbody id="catalogoCarrierBody"></tbody></table></div>
-                    </div>
-                    
-                    <div id="tabDuventus" class="tab-content" style="display:none;">
-                        <div class="table-wrapper"><table style="min-width: 900px;"><thead><tr><th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th><th>Precio Venta (MXN)</th><th></th></tr></thead><tbody id="catalogoDuventusBody"></tbody></table></div>
-                    </div>
-                    
-                    <div id="tabRheem" class="tab-content" style="display:none;">
-                        <div class="table-wrapper"><table style="min-width: 900px;"><thead><tr><th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th><th>Precio Venta (MXN)</th><th></th></tr></thead><tbody id="catalogoRheemBody"></tbody></table></div>
-                    </div>
-                    
+
+
+
+<!-- CATÁLOGO DE EQUIPOS -->
+
+<div id="catalogoModule" style="display:none;">
+    <div class="card-premium">
+        <div class="card-header"><h2><i class="fas fa-warehouse"></i> Catálogo de Equipos HVAC <button id="agregarEquipoCatalogoBtn" style="margin-left:15px; background:#ffc107; border:none; padding:6px 15px; border-radius:20px;"><i class="fas fa-plus"></i> Agregar Nuevo Equipo</button></h2></div>
+        <div class="card-body">
+            <div class="tab-catalogo">
+                <button class="tab-catalogo-btn active" data-tab="trane">🇺🇸 TRANE</button>
+                <button class="tab-catalogo-btn" data-tab="hisense">🇯🇵 HISENSE</button>
+                <button class="tab-catalogo-btn" data-tab="york">🇺🇸 YORK</button>
+                <button class="tab-catalogo-btn" data-tab="carrier">🇺🇸 CARRIER</button>
+                <button class="tab-catalogo-btn" data-tab="duventus">🇲🇽 DUVENTUS</button>
+                <button class="tab-catalogo-btn" data-tab="rheem">🇺🇸 RHEEM</button>
+            </div>
+            
+            <!-- TAB TRANE - Mostrar en USD -->
+            <div id="tabTrane" class="tab-content">
+                <input type="text" id="searchTrane" placeholder="Buscar por modelo, capacidad..." style="width:100%; padding:12px; border-radius:60px; margin-bottom:20px;">
+                <div class="table-wrapper">
+                    <table style="min-width: 900px;">
+                        <thead>
+                            <tr>
+                                <th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th>
+                                <th>Precio (USD)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="catalogoTraneBody"></tbody>
+                    </table>
                 </div>
             </div>
+            
+            <!-- TAB HISENSE - Mostrar en MXN -->
+            <div id="tabHisense" class="tab-content" style="display:none;">
+                <input type="text" id="searchHisense" placeholder="Buscar por modelo, capacidad..." style="width:100%; padding:12px; border-radius:60px; margin-bottom:20px;">
+                <div class="table-wrapper">
+                    <table style="min-width: 900px;">
+                        <thead>
+                            <tr>
+                                <th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th>
+                                <th>Precio (MXN)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="catalogoHisenseBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- TAB YORK - Mostrar en USD -->
+            <div id="tabYork" class="tab-content" style="display:none;">
+                <input type="text" id="searchYork" placeholder="Buscar por modelo, capacidad..." style="width:100%; padding:12px; border-radius:60px; margin-bottom:20px;">
+                <div class="table-wrapper">
+                    <table style="min-width: 900px;">
+                        <thead>
+                            <tr>
+                                <th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th>
+                                <th>Precio (USD)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="catalogoYorkBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- TAB CARRIER - Mostrar en MXN -->
+            <div id="tabCarrier" class="tab-content" style="display:none;">
+                <div class="table-wrapper">
+                    <table style="min-width: 900px;">
+                        <thead>
+                            <tr>
+                                <th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th>
+                                <th>Precio (MXN)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="catalogoCarrierBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- TAB DUVENTUS - Mostrar en MXN -->
+            <div id="tabDuventus" class="tab-content" style="display:none;">
+                <div class="table-wrapper">
+                    <table style="min-width: 900px;">
+                        <thead>
+                            <tr>
+                                <th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th>
+                                <th>Precio (MXN)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="catalogoDuventusBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- TAB RHEEM - Mostrar en MXN -->
+            <div id="tabRheem" class="tab-content" style="display:none;">
+                <div class="table-wrapper">
+                    <table style="min-width: 900px;">
+                        <thead>
+                            <tr>
+                                <th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th>
+                                <th>Precio (MXN)</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="catalogoRheemBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
         </div>
+    </div>
+</div>
+
+
+
 
         <!-- CALCULADORA DE CARGA TÉRMICA -->
         <div id="calculadoraModule" style="display:none;">
@@ -1457,6 +1536,8 @@
     let historial = [];
     let cargaCalculadaBTU = 0;
     let cargaCalculadaTR = 0;
+    let equipos = [];
+    let instalaciones = [];
 
     // ========== FUNCIÓN PARA MIGRAR DATOS ANTIGUOS ==========
     function migrarDatosAntiguos() {
@@ -2195,6 +2276,11 @@ document.getElementById('cargarCotizacionActualBtn')?.addEventListener('click', 
         actualizarBadgeRecordatorios();
     }
 
+function actualizarTablaHistorica() {
+    // Función placeholder - se implementará después
+    console.log("Tabla histórica actualizada");
+}
+
     // ========== EXPORTAR A EXCEL ==========
     function exportToExcel(data, filename, columns) {
         let csvRows = [columns.join(',')];
@@ -2610,10 +2696,15 @@ function convertirFechaParaComparar(fechaStr) {
     return null;
 }
 
-// Obtener métricas para una fecha específica
+ // FUNCION OBTENER METRICAS 
+
 function obtenerMetricasPorFecha(fechaSeleccionada) {
     const vendedorActual = document.getElementById('vendedorNombre').value;
     const fechaComparar = convertirFechaParaComparar(fechaSeleccionada);
+    
+    console.log("=== DEBUG obtenerMetricasPorFecha ===");
+    console.log("Fecha seleccionada:", fechaSeleccionada, "-> Comparar:", fechaComparar);
+    console.log("Vendedor actual:", vendedorActual);
     
     // Filtrar cotizaciones del vendedor y de la fecha
     const cotizacionesDelDia = historialCotizaciones.filter(c => {
@@ -2622,22 +2713,34 @@ function obtenerMetricasPorFecha(fechaSeleccionada) {
         return fechaCotizacion === fechaComparar;
     });
     
-    // Calcular monto vendido (solo cotizaciones cerradas)
+    console.log("Cotizaciones del día:", cotizacionesDelDia.length);
+    
+    // Calcular monto vendido (solo cotizaciones que tienen seguimiento CERRADO en esa fecha)
     let montoVendido = 0;
-    const cotizacionesCerradas = cotizacionesDelDia.filter(c => {
-        const tieneSeguimientoCerrado = seguimientosList.some(s => 
-            s.cotizacionId === c.id && s.estado === 'Cerrado'
+    
+    cotizacionesDelDia.forEach(cotizacion => {
+        // Buscar si existe un seguimiento CERRADO para esta cotización
+        const seguimientoCerrado = seguimientosList.find(s => 
+            s.cotizacionId === cotizacion.id && 
+            s.estado === 'Cerrado'
         );
-        if (tieneSeguimientoCerrado) {
-            montoVendido += c.importe || 0;
+        
+        if (seguimientoCerrado) {
+            // Convertir el importe a MXN si está en USD
+            let importeEnMXN = cotizacion.importe || 0;
+            if (cotizacion.moneda === 'USD') {
+                importeEnMXN = importeEnMXN * tipoCambioActual;
+            }
+            montoVendido += importeEnMXN;
+            console.log(`  + Cotización cerrada: $${importeEnMXN} MXN (ID: ${cotizacion.id})`);
         }
-        return tieneSeguimientoCerrado;
     });
     
-    // Seguimientos creados en esa fecha
+    // Seguimientos CREADOS en esa fecha
     const seguimientosCreados = seguimientosList.filter(s => {
         if (s.ejecutivo !== vendedorActual) return false;
-        const fechaCreacion = convertirFechaParaComparar(s.fechaCreacion);
+        // Usar fechaCreacion que guardamos cuando se creó el seguimiento
+        const fechaCreacion = convertirFechaParaComparar(s.fechaCreacion || s.fecha);
         return fechaCreacion === fechaComparar;
     });
     
@@ -2649,12 +2752,19 @@ function obtenerMetricasPorFecha(fechaSeleccionada) {
         return fechaLimite === fechaComparar;
     });
     
-    // Leads creados en esa fecha
+    // LEADS creados en esa fecha (CORREGIDO)
     const leadsCreados = leadsList.filter(l => {
         if (l.ejecutivo !== vendedorActual) return false;
+        // La fecha de los leads se guarda como DD/MM/YYYY
         const fechaLead = convertirFechaParaComparar(l.fecha);
+        console.log(`Lead: ${l.contacto}, fecha: ${l.fecha} -> convertida: ${fechaLead}, comparar con: ${fechaComparar}`);
         return fechaLead === fechaComparar;
     });
+    
+    console.log("  Monto Vendido:", montoVendido);
+    console.log("  Seguimientos Creados:", seguimientosCreados.length);
+    console.log("  Seguimientos por Vencer:", seguimientosPorVencer.length);
+    console.log("  Leads Creados:", leadsCreados.length);
     
     return {
         cotizaciones: cotizacionesDelDia.length,
@@ -2759,12 +2869,13 @@ function actualizarTablaHistorica() {
 // Actualizar métricas del día seleccionado
 function actualizarMetricasPorFecha(fecha) {
     if (!fecha) {
-        // Ocultar sección de métricas por día
         document.getElementById('fechaSeleccionadaInfo').style.display = 'none';
         return;
     }
     
     const metricas = obtenerMetricasPorFecha(fecha);
+    console.log("Mostrando métricas para fecha:", fecha, metricas);
+    
     document.getElementById('fechaSeleccionadaInfo').style.display = 'block';
     document.getElementById('fechaMostrada').innerText = fecha;
     document.getElementById('diaCotizaciones').innerText = metricas.cotizaciones;
@@ -2773,6 +2884,7 @@ function actualizarMetricasPorFecha(fecha) {
     document.getElementById('diaSeguimientosPorVencer').innerText = metricas.seguimientosPorVencer;
     document.getElementById('diaLeadsCreados').innerText = metricas.leadsCreados;
 }
+
 
 // Exportar tabla histórica a CSV
 function exportarHistoricoExcel() {
@@ -3154,7 +3266,7 @@ function actualizarBotonesPeriodo(btn7, btn15, btn30) {
 
 <script>
     
-    const API_URL = 'https://script.google.com/macros/s/AKfycbw05wKaTRhp1vBP-CAieJfB4IJrUsN-g0JiyxTtFCfRXGDTIbHIC4cr71uOPeE0yuPI/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwfgtT-D7VbHwSuVQYGplC5YDrIo1flSLJp0IU-D4gcnmOcuR9uEMsDxXYQxzCNhhhn/exec';
 
 // ========== DATOS PARA PDF SEGÚN MODO ==========
 const datosEmpresa = {
@@ -3329,7 +3441,7 @@ function verificarEquiposNoTrane() {
     }
     
     // Función de Carga Térmica Simplificada
- function calcularCargaTermica() {
+function calcularCargaTermica() {
     let area = parseFloat(document.getElementById('calcArea').value) || 0;
     let tipo = document.getElementById('calcTipo').value;
     
@@ -3341,23 +3453,25 @@ function verificarEquiposNoTrane() {
     switch(tipo) {
         case 'residencial': 
             tipoNombre = "Residencial"; 
-            factorAjuste = 1.0;
+            factorAjuste = 1.0;  // Correcto: 16m² = 1TR
             break;
         case 'oficina': 
             tipoNombre = "Oficina / Comercial Ligero"; 
-            factorAjuste = 1.1;
+            factorAjuste = 1.1;  // Oficinas: más personas, equipos
             break;
         case 'comercial': 
             tipoNombre = "Comercial (Tiendas)"; 
-            factorAjuste = 1.2;
+            factorAjuste = 1.2;  // Tiendas: más flujo de personas
             break;
         case 'restaurante': 
             tipoNombre = "Restaurante / Cocina"; 
-            factorAjuste = 1.35;
+            factorAjuste = 1.35; // Restaurantes: calor de cocinas
             break;
         case 'industrial': 
             tipoNombre = "Industrial / Bodega"; 
-            factorAjuste = 0.9;
+            // CORREGIDO: para bodega, puede usar 1.0 o incluso 0.9 si es solo almacenamiento
+            // Pero si tiene maquinaria, usar 1.1 o más
+            factorAjuste = 1.0;  // ← ESTA ES LA CORRECCIÓN
             break;
         default: 
             tipoNombre = "General";
@@ -3366,6 +3480,7 @@ function verificarEquiposNoTrane() {
     
     let trTotal = trBase * factorAjuste;
     let btuTotal = trTotal * 12000;
+    
     
     // Redondear a 1 decimal
     trTotal = Math.round(trTotal * 10) / 10;
@@ -3560,7 +3675,7 @@ function renderCatalogoTrane() {
     let tbody = document.getElementById('catalogoTraneBody');
     if(tbody) {
         if(filtered.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No hay equipos TRANE disponibles</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay equipos TRANE disponibles</td></tr>';
             return;
         }
         tbody.innerHTML = filtered.map(e => `
@@ -3570,34 +3685,8 @@ function renderCatalogoTrane() {
                 <td>${escapeHtml(e.capacidad || '')}</td>
                 <td>${escapeHtml(e.tension || '')}</td>
                 <td style="font-size:0.75rem;">${escapeHtml(e.tecnologia || '')}</td>
-                <td><strong>$${e.precioVenta.toFixed(2)}</strong> MXN</td>
+                <td><strong>$${e.precioVenta.toFixed(2)} USD</strong></td>
                 <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('TRANE','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">+ Cotizar</button></td>
-            </tr>
-        `).join('');
-    }
-}
-
-function renderCatalogoHisense() {
-    let search = document.getElementById('searchHisense')?.value.toLowerCase() || '';
-    let filtered = catalogoEquipos.filter(e => 
-        e.marca === 'HISENSE' && 
-        (e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search))
-    );
-    let tbody = document.getElementById('catalogoHisenseBody');
-    if(tbody) {
-        if(filtered.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay equipos HISENSE disponibles</td></tr>';
-            return;
-        }
-        tbody.innerHTML = filtered.map(e => `
-            <tr>
-                <td><strong>${escapeHtml(e.modelo)}</strong></td>
-                <td>${escapeHtml(e.tipo || '')}</td>
-                <td>${escapeHtml(e.capacidad || '')}</td>
-                <td>${escapeHtml(e.tension || '')}</td>
-                <td style="font-size:0.75rem;">${escapeHtml(e.tecnologia || '')}</td>
-                <td><strong>$${e.precioVenta.toFixed(2)}</strong> MXN</td>
-                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('HISENSE','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">+ Cotizar</button></td>
             </tr>
         `).join('');
     }
@@ -3622,8 +3711,34 @@ function renderCatalogoYork() {
                 <td>${escapeHtml(e.capacidad || '')}</td>
                 <td>${escapeHtml(e.tension || '')}</td>
                 <td style="font-size:0.75rem;">${escapeHtml(e.tecnologia || '')}</td>
-                <td><strong>$${e.precioVenta.toFixed(2)}</strong> MXN</td>
+                <td><strong>$${e.precioVenta.toFixed(2)} USD</strong></td>
                 <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('YORK','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">+ Cotizar</button></td>
+            </tr>
+        `).join('');
+    }
+}
+
+function renderCatalogoHisense() {
+    let search = document.getElementById('searchHisense')?.value.toLowerCase() || '';
+    let filtered = catalogoEquipos.filter(e => 
+        e.marca === 'HISENSE' && 
+        (e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search))
+    );
+    let tbody = document.getElementById('catalogoHisenseBody');
+    if(tbody) {
+        if(filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay equipos HISENSE disponibles</td></tr>';
+            return;
+        }
+        tbody.innerHTML = filtered.map(e => `
+            <tr>
+                <td><strong>${escapeHtml(e.modelo)}</strong></td>
+                <td>${escapeHtml(e.tipo || '')}</td>
+                <td>${escapeHtml(e.capacidad || '')}</td>
+                <td>${escapeHtml(e.tension || '')}</td>
+                <td style="font-size:0.75rem;">${escapeHtml(e.tecnologia || '')}</td>
+                <td><strong>$${e.precioVenta.toFixed(2)} MXN</strong></td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('HISENSE','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">+ Cotizar</button></td>
             </tr>
         `).join('');
     }
@@ -3875,6 +3990,7 @@ function verificarSesionGuardada() {
         }
     }
 }  
+
     window.editarPrecioEquipo = function(marca, index) {
         let nuevoPrecio = prompt("Ingrese el nuevo precio:");
         if (nuevoPrecio !== null && !isNaN(parseFloat(nuevoPrecio))) {
@@ -3890,54 +4006,114 @@ function verificarSesionGuardada() {
             showToast(`Precio actualizado`);
         }
     };
-    
+
+//FUNCION AGREGAR NUEVO EQUIPOS 
+
     function agregarNuevoEquipo() {
-        let marca = document.getElementById('nuevoEquipoMarca').value;
-        let modelo = document.getElementById('nuevoEquipoModelo').value;
-        let tipo = document.getElementById('nuevoEquipoTipo').value;
-        let capacidad = document.getElementById('nuevoEquipoCapacidad').value;
-        let tension = document.getElementById('nuevoEquipoTension').value;
-        let tecnologia = document.getElementById('nuevoEquipoTecnologia').value;
-        let precioBase = parseFloat(document.getElementById('nuevoEquipoPrecioBase').value);
-        if (!modelo || !precioBase) { showToast("Complete campos obligatorios"); return; }
-        if (marca === "TRANE") catalogoTrane.push({ modelo, tipo, capacidad, tension, tecnologia, costoUSD: precioBase });
-        else if (marca === "YORK") catalogoYork.push({ modelo, tipo, capacidad, tension, tecnologia, precioUSD: precioBase });
-        else if (marca === "HISENSE") catalogoHisense.push({ modelo, tipo, capacidad, tension, tecnologia, precioBase });
-        else if (marca === "CARRIER") catalogoCarrier.push({ modelo, tipo, capacidad, tension, tecnologia, precioBase });
-        else if (marca === "DUVENTUS") catalogoDuventus.push({ modelo, tipo, capacidad, tension, tecnologia, precioBase });
-        else if (marca === "RHEEM") catalogoRheem.push({ modelo, tipo, capacidad, tension, tecnologia, precioBase });
-        document.getElementById('modalNuevoEquipo').style.display = 'none';
-        showToast(`Equipo ${modelo} agregado`);
-        renderCatalogoTrane(); renderCatalogoHisense(); renderCatalogoYork(); 
-        renderCatalogoCarrier(); renderCatalogoDuventus(); renderCatalogoRheem();
+    let marca = document.getElementById('nuevoEquipoMarca').value;
+    let modelo = document.getElementById('nuevoEquipoModelo').value;
+    let tipo = document.getElementById('nuevoEquipoTipo').value;
+    let capacidad = document.getElementById('nuevoEquipoCapacidad').value;
+    let tension = document.getElementById('nuevoEquipoTension').value;
+    let tecnologia = document.getElementById('nuevoEquipoTecnologia').value;
+    let precioBase = parseFloat(document.getElementById('nuevoEquipoPrecioBase').value);
+    
+    if (!modelo || !precioBase) { 
+        showToast("Complete campos obligatorios"); 
+        return; 
     }
+    
+    // CORRECCIÓN: Guardar el precio EXACTAMENTE como lo ingresó el usuario
+
+    const nuevoEquipo = {
+        modelo: modelo,
+        tipo: tipo || 'No especificado',
+        capacidad: capacidad || 'No especificada',
+        tension: tension || 'No especificada',
+        tecnologia: tecnologia || 'Estándar',
+        precioVenta: precioBase  // PRECIO EXACTO, sin modificaciones
+    };
+    
+    // Agregar según marca
+    if (marca === "TRANE") {
+        nuevoEquipo.costoUSD = precioBase;
+        catalogoTrane.push(nuevoEquipo);
+    }
+    else if (marca === "YORK") {
+        nuevoEquipo.precioUSD = precioBase;
+        catalogoYork.push(nuevoEquipo);
+    }
+    else if (marca === "HISENSE") {
+        nuevoEquipo.precioBase = precioBase;
+        catalogoHisense.push(nuevoEquipo);
+    }
+    else if (marca === "CARRIER") {
+        nuevoEquipo.precioBase = precioBase;
+        catalogoCarrier.push(nuevoEquipo);
+    }
+    else if (marca === "DUVENTUS") {
+        nuevoEquipo.precioBase = precioBase;
+        catalogoDuventus.push(nuevoEquipo);
+    }
+    else if (marca === "RHEEM") {
+        nuevoEquipo.precioBase = precioBase;
+        catalogoRheem.push(nuevoEquipo);
+    }
+    
+    // Limpiar campos del modal
+    document.getElementById('nuevoEquipoModelo').value = '';
+    document.getElementById('nuevoEquipoTipo').value = '';
+    document.getElementById('nuevoEquipoCapacidad').value = '';
+    document.getElementById('nuevoEquipoTension').value = '';
+    document.getElementById('nuevoEquipoTecnologia').value = '';
+    document.getElementById('nuevoEquipoPrecioBase').value = '';
+    
+    document.getElementById('modalNuevoEquipo').style.display = 'none';
+    showToast(`✅ Equipo ${modelo} agregado con precio $${precioBase.toFixed(2)} MXN`);
+    
+    // Refrescar catálogos
+    renderCatalogoTrane(); 
+    renderCatalogoHisense(); 
+    renderCatalogoYork(); 
+    renderCatalogoCarrier(); 
+    renderCatalogoDuventus(); 
+    renderCatalogoRheem();
+}
+
 function renderEquipos() {
     let tbody = document.getElementById('equiposBody');
     if(!tbody) return;
     tbody.innerHTML = '';
     equipos.forEach((eq, idx) => {
-        // Recalcular precio de venta en base a utilidades actuales
-        let precioConUtilidadEmpresa = eq.precioBase * (1 + eq.utilidadEmpresa / 100);
-        let precioVentaFinal = precioConUtilidadEmpresa * (1 + eq.utilidadVendedor / 100);
+        // Determinar qué precio mostrar según el toggle
+        let precioActual;
+        let monedaActual;
+        let subtotal;
         
-        // Actualizar el precio de venta en el objeto (por si cambió)
-        eq.precioVenta = precioVentaFinal;
-        eq.precioVentaUSD = precioVentaFinal / tipoCambioActual;
-        
-        let subtotal = eq.cantidad * eq.precioVenta;
+        if (mostrarEnUSD) {
+            // Modo USD: mostrar todo en USD
+            if (eq.monedaOriginal === 'USD') {
+                precioActual = eq.precioOriginal;
+                monedaActual = 'USD';
+            } else {
+                precioActual = eq.precioOriginal / tipoCambioActual;
+                monedaActual = 'USD';
+            }
+            subtotal = eq.cantidad * precioActual;
+        } else {
+            // Modo MXN: mostrar todo en MXN
+            if (eq.monedaOriginal === 'USD') {
+                precioActual = eq.precioMXN;
+                monedaActual = 'MXN';
+            } else {
+                precioActual = eq.precioOriginal;
+                monedaActual = 'MXN';
+            }
+            subtotal = eq.cantidad * precioActual;
+        }
         
         let marcaClass = `badge-${eq.marca.toLowerCase()}`;
-        let precioDisplay = eq.precioVenta;
-        let subtotalDisplay = subtotal;
-        let monedaSimbolo = "MXN";
-        
-        if(mostrarEnUSD) {
-            let precioUSD = eq.precioVentaUSD;
-            let subtotalUSD = eq.cantidad * precioUSD;
-            precioDisplay = precioUSD;
-            subtotalDisplay = subtotalUSD;
-            monedaSimbolo = "USD";
-        }
+        let simbolo = monedaActual === 'USD' ? '$' : '$$';
         
         tbody.innerHTML += `
         <tr>
@@ -3946,24 +4122,16 @@ function renderEquipos() {
             <td>${eq.capacidad}</td>
             <td><input type="text" class="editDescripcion" data-idx="${idx}" value="${(eq.descripcion || '').replace(/"/g, '&quot;')}" style="width:200px;" placeholder="Descripción"></td>
             <td><input type="number" class="editCantidad" data-idx="${idx}" value="${eq.cantidad}" style="width:60px;"></td>
-            
-            <!-- PRECIO BASE (solo lectura) -->
-            <td style="background:#f5f5f5;"><small>Base: $${eq.precioBase.toFixed(4)} MXN</small></td>
-     <!-- UTILIDAD EMPRESA -->
-<td><input type="number" class="editUtilidadEmpresa" data-idx="${idx}" value="${eq.utilidadEmpresa}" style="width:70px;" min="0" step="1"> %</td>
-
-<!-- UTILIDAD VENDEDOR -->
-<td><input type="number" class="editUtilidadVendedor" data-idx="${idx}" value="${eq.utilidadVendedor}" style="width:70px;" min="0" step="1"> %</td>
-            
-            <!-- PRECIO FINAL (calculado automáticamente) -->
-            <td><strong>${monedaSimbolo === 'USD' ? '$' : '$$'}${precioDisplay.toFixed(2)} ${monedaSimbolo}</strong></td>
-            
-            <td class="subtotalEq"><strong>${monedaSimbolo === 'USD' ? '$' : '$$'}${subtotalDisplay.toLocaleString('es-MX', {minimumFractionDigits: 2})} ${monedaSimbolo}</strong></td>
+            <td style="background:#f5f5f5;"><small>Base: ${eq.monedaOriginal === 'USD' ? '$' : '$$'}${eq.precioOriginal.toFixed(4)} ${eq.monedaOriginal}</small></td>
+            <td><input type="number" class="editUtilidadEmpresa" data-idx="${idx}" value="${eq.utilidadEmpresa}" style="width:70px;" min="0" step="1"> %</td>
+            <td><input type="number" class="editUtilidadVendedor" data-idx="${idx}" value="${eq.utilidadVendedor}" style="width:70px;" min="0" step="1"> %</td>
+            <td><strong>${simbolo}${precioActual.toFixed(2)} ${monedaActual}</strong></td>
+            <td class="subtotalEq"><strong>${simbolo}${subtotal.toLocaleString('es-MX', {minimumFractionDigits: 2})} ${monedaActual}</strong></td>
             <td><button class="deleteEquipo" data-idx="${idx}" style="background:none; border:none; color:#B22234;"><i class="fas fa-trash"></i></button></td>
-        </tr>`;
+        <tr>`;
     });
     
-    // Event listeners nuevos
+    // ========== TODOS LOS EVENT LISTENERS DENTRO DE LA FUNCIÓN ==========
     document.querySelectorAll('.editDescripcion').forEach(i => i.addEventListener('change', (e) => { 
         equipos[e.target.dataset.idx].descripcion = e.target.value; 
         renderAll(); 
@@ -3974,40 +4142,48 @@ function renderEquipos() {
         renderAll(); 
     }));
     
-    // Event listener para utilidad empresa
-   // Event listener para utilidad empresa
-document.querySelectorAll('.editUtilidadEmpresa').forEach(i => i.addEventListener('change', (e) => { 
-    let idx = e.target.dataset.idx;
-    let val = parseFloat(e.target.value) || 0;
-    if (val < 0) {
-        showToast("❌ La utilidad no puede ser negativa. Se ha establecido en 0%");
-        val = 0;
-        e.target.value = 0;
-    }
-    equipos[idx].utilidadEmpresa = val;
-    renderAll();
-}));
-
-// Event listener para utilidad vendedor
-document.querySelectorAll('.editUtilidadVendedor').forEach(i => i.addEventListener('change', (e) => { 
-    let idx = e.target.dataset.idx;
-    let val = parseFloat(e.target.value) || 0;
-    if (val < 0) {
-        showToast("❌ La utilidad no puede ser negativa. Se ha establecido en 0%");
-        val = 0;
-        e.target.value = 0;
-    }
-    equipos[idx].utilidadVendedor = val;
-    renderAll();
-}));
+    document.querySelectorAll('.editUtilidadEmpresa').forEach(i => i.addEventListener('change', (e) => { 
+        let idx = e.target.dataset.idx;
+        let val = parseFloat(e.target.value) || 0;
+        if (val < 0) {
+            showToast("❌ La utilidad no puede ser negativa. Se ha establecido en 0%");
+            val = 0;
+            e.target.value = 0;
+        }
+        equipos[idx].utilidadEmpresa = val;
+        if (equipos[idx].monedaOriginal === 'USD') {
+            const precioEnMXN = equipos[idx].precioOriginal * tipoCambioActual;
+            const conUtilidadEmpresa = precioEnMXN * (1 + equipos[idx].utilidadEmpresa / 100);
+            equipos[idx].precioMXN = conUtilidadEmpresa * (1 + equipos[idx].utilidadVendedor / 100);
+            equipos[idx].precioVentaMXN = equipos[idx].precioMXN;
+        }
+        renderAll();
+    }));
     
+    document.querySelectorAll('.editUtilidadVendedor').forEach(i => i.addEventListener('change', (e) => { 
+        let idx = e.target.dataset.idx;
+        let val = parseFloat(e.target.value) || 0;
+        if (val < 0) {
+            showToast("❌ La utilidad no puede ser negativa. Se ha establecido en 0%");
+            val = 0;
+            e.target.value = 0;
+        }
+        equipos[idx].utilidadVendedor = val;
+        if (equipos[idx].monedaOriginal === 'USD') {
+            const precioEnMXN = equipos[idx].precioOriginal * tipoCambioActual;
+            const conUtilidadEmpresa = precioEnMXN * (1 + equipos[idx].utilidadEmpresa / 100);
+            equipos[idx].precioMXN = conUtilidadEmpresa * (1 + equipos[idx].utilidadVendedor / 100);
+            equipos[idx].precioVentaMXN = equipos[idx].precioMXN;
+        }
+        renderAll();
+    }));
     
     document.querySelectorAll('.deleteEquipo').forEach(b => b.addEventListener('click', (e) => { 
         let idx = parseInt(b.dataset.idx); 
         equipos.splice(idx, 1); 
         renderAll(); 
     }));
-}
+}  // <--- FIN DE LA FUNCIÓN renderEquipos()
 
     function renderInstalaciones() {
         let tbody = document.getElementById('instalacionBody');
@@ -4029,27 +4205,37 @@ document.querySelectorAll('.editUtilidadVendedor').forEach(i => i.addEventListen
         document.querySelectorAll('.deleteInst').forEach(b => b.addEventListener('click', (e) => { let idx = parseInt(b.dataset.idx); instalaciones.splice(idx, 1); renderAll(); }));
     }
     
-  function calcularTotales() {
-    let totalEquiposVenta = equipos.reduce((acc, e) => acc + (e.cantidad * e.precioVenta), 0);
+ function calcularTotales() {
+    // Para los totales, siempre usar el valor en MXN (para IVA y total final)
+    let totalEquiposMXN = equipos.reduce((acc, e) => {
+        if (e.monedaOriginal === 'USD') {
+            // Si es USD, usar el precio MXN calculado con utilidades
+            return acc + (e.cantidad * e.precioMXN);
+        } else {
+            // Si es MXN, usar el precio original
+            return acc + (e.cantidad * e.precioOriginal);
+        }
+    }, 0);
+    
     let costoInstalacion = instalaciones.reduce((acc, i) => acc + (i.cantidad * i.costoUnitario), 0);
-    let subtotalMXN = totalEquiposVenta + costoInstalacion;
+    let subtotalMXN = totalEquiposMXN + costoInstalacion;
     let ivaMXN = subtotalMXN * 0.16;
     let totalFinalMXN = subtotalMXN + ivaMXN;
     
-    // Calcular en USD si es necesario
+    // Calcular en USD si es necesario (para mostrar)
     let subtotalUSD = subtotalMXN / tipoCambioActual;
     let ivaUSD = subtotalUSD * 0.16;
     let totalFinalUSD = subtotalUSD + ivaUSD;
     
-    // Mostrar según la moneda seleccionada
+    // Mostrar según la moneda seleccionada en el toggle
     if(mostrarEnUSD) {
-        document.getElementById('totalEquiposVenta').innerHTML = `$${subtotalUSD.toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
+        document.getElementById('totalEquiposVenta').innerHTML = `$${(totalEquiposMXN / tipoCambioActual).toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
         document.getElementById('totalInstalacion').innerHTML = `$${(costoInstalacion / tipoCambioActual).toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
         document.getElementById('subtotalGeneral').innerHTML = `$${subtotalUSD.toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
         document.getElementById('ivaMonto').innerHTML = `$${ivaUSD.toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
         document.getElementById('totalFinalDisplay').innerHTML = `$${totalFinalUSD.toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
     } else {
-        document.getElementById('totalEquiposVenta').innerHTML = `$${totalEquiposVenta.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
+        document.getElementById('totalEquiposVenta').innerHTML = `$${totalEquiposMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
         document.getElementById('totalInstalacion').innerHTML = `$${costoInstalacion.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
         document.getElementById('subtotalGeneral').innerHTML = `$${subtotalMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
         document.getElementById('ivaMonto').innerHTML = `$${ivaMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
@@ -4062,37 +4248,54 @@ document.querySelectorAll('.editUtilidadVendedor').forEach(i => i.addEventListen
     
     function renderAll() { renderEquipos(); renderInstalaciones(); calcularTotales(); }
     
- window.agregarEquipoDirecto = function(marca, modelo, capacidad, precioVenta, tecnologiaCompleta) {
-    // precioVenta ya viene con utilidades aplicadas desde la API
-    let utilidadEmpresaPorDefecto = 0;  // Ya no aplicamos utilidad extra porque el precio ya la incluye
-    let utilidadVendedorPorDefecto = 0;
+window.agregarEquipoDirecto = function(marca, modelo, capacidad, precio, tecnologiaCompleta) {
+    // Determinar si es TRANE o YORK (precios en USD)
+    const esTraneYork = (marca === 'TRANE' || marca === 'YORK');
+    
+    // Guardar el precio en su moneda original
+    let precioOriginal = precio;
+    let monedaOriginal = esTraneYork ? 'USD' : 'MXN';
+    
+    // Para otras marcas, utilidades en 0 porque el precio ya es final MXN
+    let utilidadEmpresaPorDefecto = esTraneYork ? 20 : 0;
+    let utilidadVendedorPorDefecto = esTraneYork ? 10 : 0;
+    
+    // Calcular precio en MXN para conversiones futuras (solo si es USD)
+    let precioMXN = precioOriginal;
+    if (esTraneYork) {
+        const precioEnMXN = precioOriginal * tipoCambioActual;
+        const conUtilidadEmpresa = precioEnMXN * (1 + utilidadEmpresaPorDefecto / 100);
+        precioMXN = conUtilidadEmpresa * (1 + utilidadVendedorPorDefecto / 100);
+    }
     
     equipos.push({ 
         id: nextId++, 
-        marca, 
-        modelo, 
-        capacidad, 
-        cantidad: 1, 
-        precioBase: precioVenta,  // Este es el precio que el vendedor ve como base
+        marca: marca, 
+        modelo: modelo, 
+        capacidad: capacidad, 
+        cantidad: 1,
+        monedaOriginal: monedaOriginal,  // Guardamos la moneda original
+        precioOriginal: precioOriginal,  // Precio en su moneda original
+        precioMXN: precioMXN,            // Precio convertido a MXN (para cálculos)
         utilidadEmpresa: utilidadEmpresaPorDefecto,
         utilidadVendedor: utilidadVendedorPorDefecto,
-        precioVenta: precioVenta,
-        precioVentaUSD: precioVenta / tipoCambioActual, 
+        precioVenta: precioMXN,          // ← CAMBIADO: precioVenta ahora es el valor en MXN
+        precioVentaUSD: precioOriginal,  // Precio original en USD (para toggle)
         descripcion: tecnologiaCompleta || `Equipo ${marca} ${modelo} ${capacidad}` 
     });
+    
     renderAll();
     setActiveModule('cotizador');
-    showToast(`✓ ${marca} ${modelo} agregado - $${precioVenta.toFixed(2)} MXN`);
-};    function agregarServicioPredefinido(servicio) {
-        let cantidad = prompt("Ingrese la cantidad:", "1");
-        if (cantidad !== null && !isNaN(parseFloat(cantidad))) {
-            instalaciones.push({ id: nextId++, concepto: servicio.concepto, descripcion: servicio.descripcion, cantidad: parseFloat(cantidad), costoUnitario: servicio.costoUnitario });
-            renderAll();
-            showToast(`✓ ${servicio.concepto} agregado`);
-            document.getElementById('modalServicio').style.display = 'none';
-        }
-    }
     
+    if (esTraneYork) {
+        showToast(`✓ ${marca} ${modelo} agregado - $${precioMXN.toFixed(2)} MXN (desde $${precioOriginal} USD)`);
+    } else {
+        showToast(`✓ ${marca} ${modelo} agregado - $${precioMXN.toFixed(2)} MXN`);
+    }
+};
+
+
+
  // CARGAR SERVICIOS DESDE API 
 function cargarListasServicios() {
     if (!serviciosGlobales || serviciosGlobales.length === 0) {
@@ -4124,16 +4327,16 @@ function cargarListasServicios() {
         </div>
     `;
     
-    document.getElementById('listaMiniSplit').innerHTML = miniSplit.map(s => `
-        <div class="servicio-item">
-            <div class="servicio-info">
-                <div class="servicio-nombre">${escapeHtml(s.concepto)}</div>
-                <div class="servicio-desc">${escapeHtml(s.descripcion || '')}</div>
-            </div>
-            <div class="servicio-precio">$${Number(s.costoUnitario).toFixed(2)}</div>
-            <button class="btn-secondary" style="padding:4px 12px;" onclick="agregarServicioPredefinido({concepto:'${escapeHtml(s.concepto).replace(/'/g, "\\'")}', descripcion:'${escapeHtml(s.descripcion || s.concepto).replace(/'/g, "\\'")}', costoUnitario:${Number(s.costoUnitario)}})">+ Agregar</button>
+document.getElementById('listaMiniSplit').innerHTML = miniSplit.map(s => `
+    <div class="servicio-item">
+        <div class="servicio-info">
+            <div class="servicio-nombre">${escapeHtml(s.concepto)}</div>
+            <div class="servicio-desc">${escapeHtml(s.descripcion || '')}</div>
         </div>
-    `).join('');
+        <div class="servicio-precio">$${Number(s.costoUnitario).toFixed(2)}</div>
+        <button class="btn-secondary" style="padding:4px 12px;" onclick="agregarServicioPredefinido({concepto:'${escapeHtml(s.concepto).replace(/'/g, "\\'")}', descripcion:'${escapeHtml(s.descripcion || s.concepto).replace(/'/g, "\\'")}', costoUnitario:${Number(s.costoUnitario)}})">+ Agregar</button>
+    </div>
+`).join('');
     
     document.getElementById('listaPisoTecho').innerHTML = pisoTecho.map(s => `
         <div class="servicio-item">
