@@ -2911,9 +2911,9 @@ function obtenerHistorico30Dias() {
         // Calcular monto vendido
         let montoVendido = 0;
         cotizacionesDelDia.forEach(c => {
-            const tieneSeguimientoCerrado = seguimientosList.some(s => 
-                s.cotizacionId === c.id && s.estado === 'Cerrado'
-            );
+          const tieneSeguimientoCerrado = seguimientosList.some(s => 
+    s.cotizacionId === c.id && s.estado === '100'
+);
             if (tieneSeguimientoCerrado) {
                 montoVendido += c.importe || 0;
             }
@@ -3090,7 +3090,6 @@ function obtenerDatosGrafico(dias) {
         const fechaStr = `${dia}/${mes}/${año}`;
         const fechaComparar = `${año}-${mes}-${dia}`;
         
-        // Formato legible para mostrar en el gráfico
         const fechaFormateada = `${dia}/${mes}`;
         
         // Filtrar cotizaciones
@@ -3100,14 +3099,18 @@ function obtenerDatosGrafico(dias) {
             return fechaCotizacion === fechaComparar;
         });
         
-        // Calcular monto vendido (en miles para gráfico)
+        // ✅ CORREGIDO: Calcular monto vendido (estado '100' = Pagó anticipo)
         let montoVendido = 0;
         cotizacionesDelDia.forEach(c => {
             const tieneSeguimientoCerrado = seguimientosList.some(s => 
-                s.cotizacionId === c.id && s.estado === 'Cerrado'
+                s.cotizacionId === c.id && s.estado === '100'  // ← CAMBIADO A '100'
             );
             if (tieneSeguimientoCerrado) {
-                montoVendido += c.importe || 0;
+                let importeEnMXN = c.importe || 0;
+                if (c.moneda === 'USD') {
+                    importeEnMXN = importeEnMXN * tipoCambioActual;
+                }
+                montoVendido += importeEnMXN;
             }
         });
         
@@ -3118,10 +3121,12 @@ function obtenerDatosGrafico(dias) {
             return fechaCreacion === fechaComparar;
         });
         
-        // Seguimientos por vencer
+        // Seguimientos por vencer (estados menores a 100 y fecha límite alcanzada)
         const seguimientosPorVencer = seguimientosList.filter(s => {
             if (s.ejecutivo !== vendedorActual) return false;
-            if (s.estado !== 'Pendiente') return false;
+            const estadoNum = parseInt(s.estado);
+            if (isNaN(estadoNum)) return false;
+            if (estadoNum >= 100) return false;  // Excluir cerrados
             const fechaLimite = convertirFechaParaComparar(s.fecha);
             return fechaLimite === fechaComparar;
         });
@@ -3137,7 +3142,7 @@ function obtenerDatosGrafico(dias) {
             fecha: fechaFormateada,
             fechaCompleta: fechaStr,
             cotizaciones: cotizacionesDelDia.length,
-            montoVendido: Math.round(montoVendido / 1000), // Convertir a miles
+            montoVendido: Math.round(montoVendido / 1000), // Convertir a miles para el gráfico
             montoVendidoReal: montoVendido,
             seguimientosCreados: seguimientosCreados.length,
             seguimientosPorVencer: seguimientosPorVencer.length,
