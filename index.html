@@ -1814,10 +1814,20 @@ function guardarEdicionSeguimiento() {
     const nuevoEstado = document.getElementById('editSegEstado').value;
     const nuevaFecha = document.getElementById('editSegFecha').value;
     const nuevosComentarios = document.getElementById('editSegComentarios').value;
+    const nuevoImporte = parseFloat(document.getElementById('editSegImporte').value) || 0;
+    
+    // Verificar si el estado cambió a "Cerrado" y el importe es 0 (podría ser un error)
+    if (nuevoEstado === 'Cerrado' && nuevoImporte === 0) {
+        if (confirm('⚠️ El importe es $0. ¿Estás seguro de marcar como CERRADO con importe 0?')) {
+            // Continuar
+        } else {
+            return;
+        }
+    }
     
     // Actualizar el seguimiento
     seguimientosList[index].medio = document.getElementById('editSegMedio').value;
-    seguimientosList[index].importe = parseFloat(document.getElementById('editSegImporte').value) || 0;
+    seguimientosList[index].importe = nuevoImporte;
     seguimientosList[index].moneda = document.getElementById('editSegMoneda').value;
     seguimientosList[index].descEquipo = document.getElementById('editSegDescEquipo').value;
     seguimientosList[index].fecha = nuevaFecha;
@@ -1825,25 +1835,49 @@ function guardarEdicionSeguimiento() {
     seguimientosList[index].ejecutivo = document.getElementById('editSegEjecutivo').value;
     seguimientosList[index].comentarios = nuevosComentarios;
     
+    // ========== NUEVO: Sincronizar con Google Sheets ==========
+    // Buscar la cotización asociada para enviar datos completos
+    const cotizacionAsociada = historialCotizaciones.find(c => c.id === seguimientosList[index].cotizacionId);
+    
+    // Enviar actualización a la nube
+    guardarEnAPI('actualizarSeguimiento', {
+        id: id,
+        cliente: seguimientosList[index].nombre,
+        cotizacionId: seguimientosList[index].cotizacionId,
+        medio: seguimientosList[index].medio,
+        importe: seguimientosList[index].importe,
+        moneda: seguimientosList[index].moneda,
+        descEquipo: seguimientosList[index].descEquipo,
+        fecha: nuevaFecha,
+        estado: nuevoEstado,
+        comentarios: nuevosComentarios,
+        fechaCreacion: seguimientosList[index].fechaCreacion
+    });
+    
     // Guardar en localStorage
     localStorage.setItem('crm_seguimientos', JSON.stringify(seguimientosList));
     
     // Refrescar la tabla
     renderSeguimientos();
     
-    // Actualizar badge de recordatorios (por si cambió fecha o estado)
-    actualizarBadgeRecordatorios();
-    
-    // Si el módulo de estadísticas está visible, actualizarlo
+    // ========== SOLUCIÓN 1: FORZAR ACTUALIZACIÓN DE ESTADÍSTICAS ==========
     if (document.getElementById('estadisticasModule').style.display !== 'none') {
-        actualizarSemaforo();
+        actualizarSemaforo();           // Actualiza semáforo y tarjetas
+        actualizarMetricasPorFecha(document.getElementById('fechaSelector')?.value ? 
+            document.getElementById('fechaSelector').value.split('-').reverse().join('/') : null);
+        renderizarGrafico(periodoActual); // Actualiza el gráfico
+        actualizarTablaHistorica();      // Actualiza tabla histórica
     }
     
-    showToast(`✓ Seguimiento actualizado - Nuevo estado: ${nuevoEstado}`);
+    // Actualizar badge de recordatorios
+    actualizarBadgeRecordatorios();
+    
+    showToast(`✓ Seguimiento actualizado - Nuevo estado: ${nuevoEstado} - Importe: $${nuevoImporte.toLocaleString('es-MX')}`);
     
     // Cerrar modal
     cerrarModalEditarSeguimiento();
 }
+
 
 function cerrarModalEditarSeguimiento() {
     document.getElementById('modalEditarSeguimiento').style.display = 'none';
@@ -2322,43 +2356,45 @@ function actualizarTablaHistorica() {
     // ========== FUNCIONES PARA ESTADÍSTICAS ==========
     
     function obtenerEstadisticasVendedor() {
-        const vendedorActual = document.getElementById('vendedorNombre').value;
-        
-        // Filtrar cotizaciones del vendedor actual
-        const misCotizaciones = historialCotizaciones.filter(c => c.ejecutivo === vendedorActual);
-        const totalCotizaciones = misCotizaciones.length;
-        
-        // Contar seguimientos por estado
-        const misSeguimientos = seguimientosList.filter(s => s.ejecutivo === vendedorActual);
-        
-        const pendientes = misSeguimientos.filter(s => s.estado === 'Pendiente').length;
-        const contactados = misSeguimientos.filter(s => s.estado === 'Contactado').length;
-        const cotizados = misSeguimientos.filter(s => s.estado === 'Cotizado').length;
-        const cerrados = misSeguimientos.filter(s => s.estado === 'Cerrado').length;
-        const perdidos = misSeguimientos.filter(s => s.estado === 'Perdido').length;
-        
-        const enProceso = pendientes + contactados + cotizados;
-        const totalSeguimientos = pendientes + contactados + cotizados + cerrados + perdidos;
-        
-        // Calcular tasa de cierre
-        let tasaCierre = 0;
-        if (totalCotizaciones > 0) {
-            tasaCierre = (cerrados / totalCotizaciones) * 100;
-        }
-        
-        return {
-            vendedor: vendedorActual,
-            totalCotizaciones,
-            cerrados,
-            enProceso,
-            perdidos,
-            pendientes,
-            contactados,
-            cotizados,
-            totalSeguimientos,
-            tasaCierre: Math.round(tasaCierre)
-        };
+    const vendedorActual = document.getElementById('vendedorNombre').value;
+    
+    // Filtrar cotizaciones del vendedor actual
+    const misCotizaciones = historialCotizaciones.filter(c => c.ejecutivo === vendedorActual);
+    const totalCotizaciones = misCotizaciones.length;
+    
+    // Contar seguimientos por estado
+    const misSeguimientos = seguimientosList.filter(s => s.ejecutivo === vendedorActual);
+    
+    const pendientes = misSeguimientos.filter(s => s.estado === 'Pendiente').length;
+    const contactados = misSeguimientos.filter(s => s.estado === 'Contactado').length;
+    const cotizados = misSeguimientos.filter(s => s.estado === 'Cotizado').length;
+    const cerrados = misSeguimientos.filter(s => s.estado === 'Cerrado').length;
+    const perdidos = misSeguimientos.filter(s => s.estado === 'Perdido').length;
+    
+    const enProceso = pendientes + contactados + cotizados;
+    const totalSeguimientos = pendientes + contactados + cotizados + cerrados + perdidos;
+    
+    // Calcular tasa de cierre con restricción entre 0 y 100
+    let tasaCierre = 0;
+    if (totalCotizaciones > 0) {
+        tasaCierre = (cerrados / totalCotizaciones) * 100;
+        // ========== SOLUCIÓN 3: RESTRINGIR ENTRE 0 y 100 ==========
+        tasaCierre = Math.min(100, Math.max(0, tasaCierre));
     }
+    
+    return {
+        vendedor: vendedorActual,
+        totalCotizaciones,
+        cerrados,
+        enProceso,
+        perdidos,
+        pendientes,
+        contactados,
+        cotizados,
+        totalSeguimientos,
+        tasaCierre: Math.round(tasaCierre)
+    };
+}
     
     function obtenerRecomendacion(tasa, pendientes, perdidos, contactados) {
         if (tasa >= 30) {
