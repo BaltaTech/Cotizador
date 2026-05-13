@@ -1143,13 +1143,15 @@
                                 <input type="text" id="newSegDescEquipo" placeholder="Equipo">
                                 <input type="date" id="newSegFecha">
                                 <select id="newSegEstado">
-   			    	<option value="Pendiente">⏳ Pendiente</option>
-    				<option value="Contactado">📞 Contactado</option>
-    				<option value="Cotizado">📄 Cotizado</option>
-			         <option value="Cerrado">✅ Cerrado</option>
-    				<option value="Perdido">❌ Perdido</option>
-			</select>
-                                <input type="text" id="newSegEjecutivo" placeholder="Ejecutivo">
+                                <option value="10">🔵 10% - Me pidió información</option>
+                                <option value="20">🔵 20% - Recibió cotización</option>
+                                <option value="30">🔵 30% - Preguntó por instalación</option>
+                                <option value="50">🟡 50% - Negocia precio</option>
+                                <option value="70">🟡 70% - Dio fecha tentativa</option>
+                                <option value="90">🟢 90% - Firmó cotización</option>
+                                <option value="100">✅ 100% - Pagó anticipo (CERRADO)</option>
+                            </select>                         
+			       <input type="text" id="newSegEjecutivo" placeholder="Ejecutivo">
                                 <textarea id="newSegComentarios" placeholder="Comentarios..." rows="2"></textarea>
                             </div>
                             <button id="agregarSeguimientoBtn" class="btn-primary">Agregar Seguimiento</button>
@@ -1465,13 +1467,15 @@
             </div>
             <div class="field">
                 <label>Estado</label>
-                <select id="editSegEstado">
-                    <option value="Pendiente">⏳ Pendiente</option>
-                    <option value="Contactado">📞 Contactado</option>
-                    <option value="Cotizado">📄 Cotizado</option>
-                    <option value="Cerrado">✅ Cerrado</option>
-                    <option value="Perdido">❌ Perdido</option>
-                </select>
+              <select id="editSegEstado">
+  		    <option value="10">🔵 10% - Me pidió información</option>
+	            <option value="20">🔵 20% - Recibió cotización</option>
+		    <option value="30">🔵 30% - Preguntó por instalación</option>
+	            <option value="50">🟡 50% - Negocia precio</option>
+		    <option value="70">🟡 70% - Dio fecha tentativa</option>
+	   	    <option value="90">🟢 90% - Firmó cotización</option>
+  	            <option value="100">✅ 100% - Pagó anticipo (CERRADO)</option>
+</select>
             </div>
             <div class="field">
                 <label>Ejecutivo</label>
@@ -1723,15 +1727,42 @@
 }
 
 
-   function renderSeguimientos() {
+function renderSeguimientos() {
     let tbody = document.getElementById('seguimientosBody');
     if (!tbody) return;
     if (seguimientosList.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;">No hay seguimientos registrados<html教师';
+        tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;">No hay seguimientos registrados</td></tr>';
         return;
     }
+    
+    // Función para obtener color según porcentaje
+    function getEstadoColor(porcentaje) {
+        const p = parseInt(porcentaje);
+        if (p >= 90) return '#22c55e';      // Verde
+        if (p >= 50) return '#eab308';      // Amarillo
+        return '#3b82f6';                    // Azul
+    }
+    
+    // Función para obtener texto del estado
+    function getEstadoTexto(porcentaje) {
+        const p = parseInt(porcentaje);
+        switch(p) {
+            case 10: return '🔵 10% - Me pidió información';
+            case 20: return '🔵 20% - Recibió cotización';
+            case 30: return '🔵 30% - Preguntó por instalación';
+            case 50: return '🟡 50% - Negocia precio';
+            case 70: return '🟡 70% - Dio fecha tentativa';
+            case 90: return '🟢 90% - Firmó cotización';
+            case 100: return '✅ 100% - Pagó anticipo';
+            default: return `📊 ${p}% - En proceso`;
+        }
+    }
+    
     tbody.innerHTML = seguimientosList.map((item) => {
-        let estadoColor = item.estado === 'Cerrado' ? '#2e7d32' : (item.estado === 'Perdido' ? '#c62828' : '#ed6c02');
+        const porcentaje = item.estado || '10';
+        const estadoColor = getEstadoColor(porcentaje);
+        const estadoTexto = getEstadoTexto(porcentaje);
+        
         return `<tr>
             <td>${escapeHtml(item.nombre)}</td>
             <td>${escapeHtml(item.idCliente)}</td>
@@ -1740,7 +1771,7 @@
             <td>${item.moneda || 'MXN'}</td>
             <td>${escapeHtml(item.descEquipo || '')}</td>
             <td>${item.fecha || ''}</td>
-            <td><span style="background:${estadoColor}; color:white; padding:4px 12px; border-radius:20px;">${item.estado || 'Pendiente'}</span></td>
+            <td><span style="background:${estadoColor}; color:white; padding:4px 12px; border-radius:20px; font-size:0.7rem;">${estadoTexto}</span></td>
             <td><textarea readonly style="background:#f5f5f5; border:none; padding:4px; width:140px;" rows="2">${escapeHtml(item.comentarios || '')}</textarea></td>
             <td>${escapeHtml(item.ejecutivo)}</td>
             <td>
@@ -1750,7 +1781,7 @@
         </tr>`;
     }).join('');
     
-    // Evento para editar seguimiento
+    // Eventos (igual que antes)
     document.querySelectorAll('.editSeguimientoBtn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             let id = btn.dataset.id;
@@ -1758,7 +1789,6 @@
         });
     });
     
-    // Evento para eliminar seguimiento
     document.querySelectorAll('.deleteSeguimientoBtn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             let id = btn.dataset.id;
@@ -1918,27 +1948,40 @@ document.getElementById('agregarHistorialBtn')?.addEventListener('click', async 
     let area = parseFloat(document.getElementById('areaM2').value) || 0;
     let ejecutivo = document.getElementById('vendedorNombre').value;
     
+    // ========== TOMAR DATOS DEL FORMULARIO ==========
+    let idCliente = document.getElementById('newHistIdCliente').value.trim() || 'N/A';
+    let medio = document.getElementById('newHistMedio').value;
+    let categoria = document.getElementById('newHistCategoria').value;
+    let descEquipoManual = document.getElementById('newHistDescEquipo').value.trim();
+    let importeManual = parseFloat(document.getElementById('newHistImporte').value);
+    let monedaManual = document.getElementById('newHistMoneda').value;
+    
     if (!nombreCliente) {
         showToast("⚠️ El nombre del cliente es obligatorio");
         return;
     }
     
     let total = calcularTotales();
-    let importeTotal = total.totalFinal;
-    let moneda = mostrarEnUSD ? 'USD' : 'MXN';
     
-    let descEquipos = equipos.map(e => `${e.marca} ${e.modelo} (${e.cantidad})`).join(', ');
-    let descInstalaciones = instalaciones.map(i => `${i.concepto} (${i.cantidad})`).join(', ');
+    // Usar importe manual si está presente, si no usar el calculado
+    let importeTotal = !isNaN(importeManual) && importeManual > 0 ? importeManual : total.totalFinal;
+    let moneda = monedaManual || (mostrarEnUSD ? 'USD' : 'MXN');
     
-    let descripcionCompleta = '';
-    if (descEquipos) descripcionCompleta += `📦 EQUIPOS: ${descEquipos}`;
-    if (descInstalaciones) {
-        if (descripcionCompleta) descripcionCompleta += ' | ';
-        descripcionCompleta += `🔧 INSTALACIONES: ${descInstalaciones}`;
+    // Usar descripción manual si está presente
+    let descripcionCompleta = descEquipoManual;
+    if (!descripcionCompleta) {
+        let descEquipos = equipos.map(e => `${e.marca} ${e.modelo} (${e.cantidad})`).join(', ');
+        let descInstalaciones = instalaciones.map(i => `${i.concepto} (${i.cantidad})`).join(', ');
+        descripcionCompleta = '';
+        if (descEquipos) descripcionCompleta += `📦 EQUIPOS: ${descEquipos}`;
+        if (descInstalaciones) {
+            if (descripcionCompleta) descripcionCompleta += ' | ';
+            descripcionCompleta += `🔧 INSTALACIONES: ${descInstalaciones}`;
+        }
+        if (!descripcionCompleta) descripcionCompleta = 'Sin equipos ni instalaciones';
     }
-    if (!descripcionCompleta) descripcionCompleta = 'Sin equipos ni instalaciones';
     
-    // ========== 1. GENERAR NÚMERO DE COTIZACIÓN PRIMERO ==========
+    // ========== GENERAR NÚMERO DE COTIZACIÓN ==========
     const vendedorActual = document.getElementById('vendedorNombre').value;
     const prefijosVendedor = { 'Alexis Vázquez': 'ALX', 'Administrador': 'ADM', 'Equipo de Ventas': 'VTAS' };
     const prefijo = prefijosVendedor[vendedorActual] || vendedorActual.substring(0, 3).toUpperCase();
@@ -1948,16 +1991,19 @@ document.getElementById('agregarHistorialBtn')?.addEventListener('click', async 
     const numeroCotizacion = `${prefijo}-${String(ultimoNumero).padStart(3, '0')}`;
     localStorage.setItem(keyUltimoNumero, ultimoNumero);
     
-    // ========== 2. ENVIAR A GOOGLE SHEETS ==========
+    // ========== ENVIAR A GOOGLE SHEETS ==========
     await guardarEnAPI('guardarCotizacion', {
         cliente: nombreCliente,
         condicionesPago: condicionesPago,
         area: area,
         subtotal: total.subtotal,
         iva: total.iva,
-        total: total.totalFinal,
+        total: importeTotal,
         moneda: moneda,
-        numeroCotizacion: numeroCotizacion,  // ✅ AHORA SÍ ESTÁ DEFINIDO
+        numeroCotizacion: numeroCotizacion,
+        idCliente: idCliente,
+        medio: medio,
+        categoria: categoria,
         equipos: equipos.map(e => ({
             marca: e.marca,
             modelo: e.modelo,
@@ -1972,19 +2018,19 @@ document.getElementById('agregarHistorialBtn')?.addEventListener('click', async 
         descripcionEquipo: descripcionCompleta
     });
     
-    // ========== 3. GUARDAR EN LOCALSTORAGE ==========
+    // ========== GUARDAR EN LOCALSTORAGE CON LOS DATOS CORRECTOS ==========
     const nuevoId = generarIdUnico();
     
     let nuevo = {
         id: nuevoId,
         numeroCotizacion: numeroCotizacion,
         nombre: nombreCliente,
-        idCliente: 'N/A',
-        medio: 'No especificado',
+        idCliente: idCliente,        // ✅ AHORA USA EL VALOR DEL INPUT
+        medio: medio,                 // ✅ AHORA USA EL VALOR DEL SELECT
         importe: importeTotal,
         moneda: moneda,
         descEquipo: descripcionCompleta,
-        categoria: 'Nuevo',
+        categoria: categoria,         // ✅ AHORA USA EL VALOR DEL SELECT
         ejecutivo: ejecutivo,
         fecha: new Date().toLocaleDateString('es-MX'),
         vendedorQueCreo: ejecutivo,
@@ -1999,7 +2045,14 @@ document.getElementById('agregarHistorialBtn')?.addEventListener('click', async 
     renderHistorial();
     
     showToast(`✓ Cotización ${numeroCotizacion} guardada: $${importeTotal.toFixed(2)} ${moneda}`);
+    
+    // Limpiar campos del formulario después de guardar
+    document.getElementById('newHistNombre').value = '';
+    document.getElementById('newHistIdCliente').value = '';
+    document.getElementById('newHistImporte').value = '';
+    document.getElementById('newHistDescEquipo').value = '';
 });
+
 
 document.getElementById('agregarSeguimientoBtn')?.addEventListener('click', async () => {
     let fecha = document.getElementById('newSegFecha').value;
@@ -2197,38 +2250,65 @@ document.getElementById('cargarCotizacionActualBtn')?.addEventListener('click', 
         return fechaSeg <= hoy;
     }
 
-    function obtenerRecordatoriosPendientes() {
-        if (!seguimientosList || seguimientosList.length === 0) return [];
-        return seguimientosList.filter(item => {
-            if (item.estado !== 'Pendiente') return false;
-            if (!item.fecha) return false;
-            return esFechaPendiente(item.fecha);
-        });
-    }
+ function obtenerRecordatoriosPendientes() {
+    if (!seguimientosList || seguimientosList.length === 0) return [];
+    return seguimientosList.filter(item => {
+        const estadoNum = parseInt(item.estado);
+        if (isNaN(estadoNum)) return false;
+        if (estadoNum >= 100) return false;  // Excluir cerrados (100%)
+        if (!item.fecha) return false;
+        return esFechaPendiente(item.fecha);
+    });
+}
 
     function contarRecordatoriosPendientes() {
         return obtenerRecordatoriosPendientes().length;
     }
 
     function marcarRecordatorioCompletado(index) {
-        const pendientes = obtenerRecordatoriosPendientes();
-        if (pendientes[index]) {
-            const itemCompletar = pendientes[index];
-            const originalIndex = seguimientosList.findIndex(s => 
-                s.nombre === itemCompletar.nombre && 
-                s.fecha === itemCompletar.fecha &&
-                s.estado === 'Pendiente'
-            );
-            if (originalIndex !== -1) {
-                seguimientosList[originalIndex].estado = 'Contactado';
-                localStorage.setItem('crm_seguimientos', JSON.stringify(seguimientosList));
-                showToast(`✅ Seguimiento completado para: ${itemCompletar.nombre}`);
-                cargarRecordatoriosEnModal();
-                actualizarBadgeRecordatorios();
-                if (document.getElementById('seguimientosBody')) renderSeguimientos();
+    const pendientes = obtenerRecordatoriosPendientes();
+    if (pendientes[index]) {
+        const itemCompletar = pendientes[index];
+        const originalIndex = seguimientosList.findIndex(s => 
+            s.nombre === itemCompletar.nombre && 
+            s.fecha === itemCompletar.fecha
+        );
+        if (originalIndex !== -1) {
+            const estadoActual = parseInt(seguimientosList[originalIndex].estado);
+            let nuevoEstado;
+            
+            // Escalera de avance: 10 → 20 → 30 → 50 → 70 → 90 → 100
+            if (estadoActual === 10) nuevoEstado = '20';
+            else if (estadoActual === 20) nuevoEstado = '30';
+            else if (estadoActual === 30) nuevoEstado = '50';
+            else if (estadoActual === 50) nuevoEstado = '70';
+            else if (estadoActual === 70) nuevoEstado = '90';
+            else if (estadoActual === 90) nuevoEstado = '100';
+            else nuevoEstado = '20'; // Por defecto, subir al 20%
+            
+            seguimientosList[originalIndex].estado = nuevoEstado;
+            localStorage.setItem('crm_seguimientos', JSON.stringify(seguimientosList));
+            
+            const textoEstado = {
+                '10': 'Me pidió información',
+                '20': 'Recibió cotización',
+                '30': 'Preguntó por instalación',
+                '50': 'Negocia precio',
+                '70': 'Dio fecha tentativa',
+                '90': 'Firmó cotización',
+                '100': 'Pagó anticipo'
+            };
+            
+            showToast(`✅ Seguimiento avanzado a: ${textoEstado[nuevoEstado] || nuevoEstado + '%'}`);
+            cargarRecordatoriosEnModal();
+            actualizarBadgeRecordatorios();
+            if (document.getElementById('seguimientosBody')) renderSeguimientos();
+            if (document.getElementById('estadisticasModule').style.display !== 'none') {
+                actualizarSemaforo();
             }
         }
     }
+}
 
     function cargarRecordatoriosEnModal() {
     const container = document.getElementById('listaRecordatoriosContainer');
@@ -2355,30 +2435,39 @@ function actualizarTablaHistorica() {
 
     // ========== FUNCIONES PARA ESTADÍSTICAS ==========
     
-    function obtenerEstadisticasVendedor() {
+function obtenerEstadisticasVendedor() {
     const vendedorActual = document.getElementById('vendedorNombre').value;
     
     // Filtrar cotizaciones del vendedor actual
     const misCotizaciones = historialCotizaciones.filter(c => c.ejecutivo === vendedorActual);
     const totalCotizaciones = misCotizaciones.length;
     
-    // Contar seguimientos por estado
+    // Contar seguimientos por nivel de probabilidad
     const misSeguimientos = seguimientosList.filter(s => s.ejecutivo === vendedorActual);
     
-    const pendientes = misSeguimientos.filter(s => s.estado === 'Pendiente').length;
-    const contactados = misSeguimientos.filter(s => s.estado === 'Contactado').length;
-    const cotizados = misSeguimientos.filter(s => s.estado === 'Cotizado').length;
-    const cerrados = misSeguimientos.filter(s => s.estado === 'Cerrado').length;
-    const perdidos = misSeguimientos.filter(s => s.estado === 'Perdido').length;
+    // Niveles de probabilidad
+    const nivel10 = misSeguimientos.filter(s => s.estado === '10').length;
+    const nivel20 = misSeguimientos.filter(s => s.estado === '20').length;
+    const nivel30 = misSeguimientos.filter(s => s.estado === '30').length;
+    const nivel50 = misSeguimientos.filter(s => s.estado === '50').length;
+    const nivel70 = misSeguimientos.filter(s => s.estado === '70').length;
+    const nivel90 = misSeguimientos.filter(s => s.estado === '90').length;
+    const nivel100 = misSeguimientos.filter(s => s.estado === '100').length;
+    
+    // Para compatibilidad con las barras de progreso
+    const pendientes = nivel10 + nivel20 + nivel30;  // 10-30% = etapa inicial
+    const contactados = nivel50 + nivel70;            // 50-70% = negociación
+    const cotizados = nivel90;                        // 90% = cotización firmada
+    const cerrados = nivel100;                        // 100% = cerrado
+    const perdidos = 0; // Si quieres agregar estado "Perdido", añade un valor como '0'
     
     const enProceso = pendientes + contactados + cotizados;
-    const totalSeguimientos = pendientes + contactados + cotizados + cerrados + perdidos;
+    const totalSeguimientos = misSeguimientos.length;
     
-    // Calcular tasa de cierre con restricción entre 0 y 100
+    // Calcular tasa de cierre (solo los que pagaron anticipo)
     let tasaCierre = 0;
     if (totalCotizaciones > 0) {
         tasaCierre = (cerrados / totalCotizaciones) * 100;
-        // ========== SOLUCIÓN 3: RESTRINGIR ENTRE 0 y 100 ==========
         tasaCierre = Math.min(100, Math.max(0, tasaCierre));
     }
     
@@ -2738,10 +2827,6 @@ function obtenerMetricasPorFecha(fechaSeleccionada) {
     const vendedorActual = document.getElementById('vendedorNombre').value;
     const fechaComparar = convertirFechaParaComparar(fechaSeleccionada);
     
-    console.log("=== DEBUG obtenerMetricasPorFecha ===");
-    console.log("Fecha seleccionada:", fechaSeleccionada, "-> Comparar:", fechaComparar);
-    console.log("Vendedor actual:", vendedorActual);
-    
     // Filtrar cotizaciones del vendedor y de la fecha
     const cotizacionesDelDia = historialCotizaciones.filter(c => {
         if (c.ejecutivo !== vendedorActual) return false;
@@ -2749,58 +2834,47 @@ function obtenerMetricasPorFecha(fechaSeleccionada) {
         return fechaCotizacion === fechaComparar;
     });
     
-    console.log("Cotizaciones del día:", cotizacionesDelDia.length);
-    
-    // Calcular monto vendido (solo cotizaciones que tienen seguimiento CERRADO en esa fecha)
+    // Calcular monto vendido (solo seguimientos con estado 100 = Pagó anticipo)
     let montoVendido = 0;
     
     cotizacionesDelDia.forEach(cotizacion => {
-        // Buscar si existe un seguimiento CERRADO para esta cotización
         const seguimientoCerrado = seguimientosList.find(s => 
             s.cotizacionId === cotizacion.id && 
-            s.estado === 'Cerrado'
+            s.estado === '100'  // ← CAMBIADO: 100% = Pagó anticipo
         );
         
         if (seguimientoCerrado) {
-            // Convertir el importe a MXN si está en USD
             let importeEnMXN = cotizacion.importe || 0;
             if (cotizacion.moneda === 'USD') {
                 importeEnMXN = importeEnMXN * tipoCambioActual;
             }
             montoVendido += importeEnMXN;
-            console.log(`  + Cotización cerrada: $${importeEnMXN} MXN (ID: ${cotizacion.id})`);
         }
     });
     
     // Seguimientos CREADOS en esa fecha
     const seguimientosCreados = seguimientosList.filter(s => {
         if (s.ejecutivo !== vendedorActual) return false;
-        // Usar fechaCreacion que guardamos cuando se creó el seguimiento
         const fechaCreacion = convertirFechaParaComparar(s.fechaCreacion || s.fecha);
         return fechaCreacion === fechaComparar;
     });
     
-    // Seguimientos por vencer (fecha límite = fecha seleccionada, estado Pendiente)
+    // Seguimientos por vencer (fecha límite = fecha seleccionada, estados 10-90%)
     const seguimientosPorVencer = seguimientosList.filter(s => {
         if (s.ejecutivo !== vendedorActual) return false;
-        if (s.estado !== 'Pendiente') return false;
+        const estadoNum = parseInt(s.estado);
+        if (isNaN(estadoNum)) return false;
+        if (estadoNum >= 100) return false;  // Excluir los ya cerrados
         const fechaLimite = convertirFechaParaComparar(s.fecha);
         return fechaLimite === fechaComparar;
     });
     
-    // LEADS creados en esa fecha (CORREGIDO)
+    // LEADS creados en esa fecha
     const leadsCreados = leadsList.filter(l => {
         if (l.ejecutivo !== vendedorActual) return false;
-        // La fecha de los leads se guarda como DD/MM/YYYY
         const fechaLead = convertirFechaParaComparar(l.fecha);
-        console.log(`Lead: ${l.contacto}, fecha: ${l.fecha} -> convertida: ${fechaLead}, comparar con: ${fechaComparar}`);
         return fechaLead === fechaComparar;
     });
-    
-    console.log("  Monto Vendido:", montoVendido);
-    console.log("  Seguimientos Creados:", seguimientosCreados.length);
-    console.log("  Seguimientos por Vencer:", seguimientosPorVencer.length);
-    console.log("  Leads Creados:", leadsCreados.length);
     
     return {
         cotizaciones: cotizacionesDelDia.length,
@@ -2810,6 +2884,7 @@ function obtenerMetricasPorFecha(fechaSeleccionada) {
         leadsCreados: leadsCreados.length
     };
 }
+
 
 // Obtener histórico de últimos 30 días
 function obtenerHistorico30Dias() {
