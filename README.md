@@ -12,7 +12,7 @@
 
 ## 🚀 Demo en Vivo
 
-🔗 **[https://tu-usuario.github.io/MVP_AirCondition/](https://tu-usuario.github.io/MVP_AirCondition/)**
+🔗 **[https://tu-usuario.github.io/MVP_AirCondition/](https://baltatech.github.io/Cotizador/)**
 
 > **Credenciales de Prueba:**
 > - Usuario: `Alexis`
