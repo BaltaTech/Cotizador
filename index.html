@@ -88,7 +88,7 @@
         .badge-hisense { background: #c2410c; color: white; }
         .badge-york { background: #2c7a4b; color: white; }
         .badge-duventus { background: #6b21a5; color: white; }
-        .badge-rheem { background: #d97706; color: white; }
+        .badge-TCL { background: #d97706; color: white; }
         
         .toast { position: fixed; bottom: 30px; right: 30px; background: #1E293B; color: white; padding: 12px 24px; border-radius: 80px; z-index: 2100; animation: fadeInUp 0.25s ease; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -702,6 +702,333 @@
     border: none;
 }
 
+/* ========== ESTILOS PARA INDICADOR DE EMPRESA ========== */
+#empresaActualDisplay {
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+#empresaActualDisplay i {
+    transition: color 0.3s ease;
+}
+
+/* Transición suave para el header */
+.logo h1 {
+    transition: all 0.3s ease;
+}
+
+.logo p {
+    transition: color 0.3s ease;
+}
+
+.company-address {
+    transition: border-left-color 0.3s ease;
+}
+
+/* ========== ICONOS PROFESIONALES ========== */
+.empresa-icon {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 0.9rem;
+}
+
+.empresa-icon-multimarca {
+    background: rgba(64, 224, 208, 0.15);
+    color: #40E0D0;
+    border: 2px solid rgba(64, 224, 208, 0.3);
+}
+
+.empresa-icon-trane {
+    background: rgba(178, 34, 52, 0.15);
+    color: #B22234;
+    border: 2px solid rgba(178, 34, 52, 0.3);
+}
+
+.empresa-icon:hover {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+/* ========== BADGE DE EMPRESA MEJORADO ========== */
+#empresaActualDisplay {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 18px 6px 10px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.3px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    backdrop-filter: blur(4px);
+}
+
+#empresaActualDisplay i {
+    transition: transform 0.3s ease;
+}
+
+#empresaActualDisplay:hover i {
+    transform: scale(1.15) rotate(-5deg);
+}
+
+/* ========== HEADER CON BORDES REDONDEADOS ========== */
+.header-premium {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.5);
+}
+
+.header-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #40E0D0, #1E3A5F);
+    transition: all 0.5s ease;
+}
+
+.header-trane::before {
+    background: linear-gradient(90deg, #B22234, #8B1A2B) !important;
+}
+
+.header-multimarca::before {
+    background: linear-gradient(90deg, #40E0D0, #1E3A5F) !important;
+}
+
+/* ========== ICONO DEL COPO DE NIEVE ANIMADO ========== */
+.logo h1 i {
+    transition: all 0.5s ease;
+    display: inline-block;
+}
+
+.logo h1 i:hover {
+    transform: rotate(180deg) scale(1.1);
+}
+
+/* ========== BADGE DE MODO EN BOTONES ========== */
+.modo-selector-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.modo-selector-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: currentColor;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.modo-selector-btn:hover::after {
+    width: 60%;
+}
+
+.modo-selector-btn.active-multi::after,
+.modo-selector-btn.active-trane::after {
+    width: 80%;
+}
+
+/* ========== ICONOS EN TABLAS ========== */
+.badge-marca {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px 4px 8px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.65rem;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
+}
+
+.badge-marca:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.badge-marca::before {
+    content: '◆';
+    font-size: 0.5rem;
+    opacity: 0.7;
+}
+
+/* ========== ICONOS EN BOTONES ========== */
+.btn-primary i,
+.btn-secondary i {
+    transition: transform 0.3s ease;
+}
+
+.btn-primary:hover i {
+    transform: translateX(-3px) scale(1.1);
+}
+
+.btn-secondary:hover i {
+    transform: translateX(3px) scale(1.1);
+}
+
+/* ========== ICONOS EN TARJETAS ========== */
+.tip-card i {
+    transition: all 0.4s ease;
+    display: inline-block;
+}
+
+.tip-card:hover i {
+    transform: scale(1.2) rotate(-5deg);
+    color: #1E3A5F;
+}
+
+/* ========== ANIMACIÓN DE ENTRADA ========== */
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-premium {
+    animation: fadeInSlideUp 0.5s ease forwards;
+}
+
+.card-premium:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.card-premium:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+/* ========== SEPARADORES CON ICONOS ========== */
+.seccion-titulo::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 24px;
+    background: currentColor;
+    border-radius: 4px;
+    margin-right: 8px;
+    opacity: 0.5;
+}
+
+.seccion-titulo i {
+    transition: transform 0.3s ease;
+}
+
+.seccion-titulo:hover i {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+/* ========== TRANSICIONES PARA BOTONES ========== */
+.nav-btn,
+.btn-primary,
+.btn-secondary,
+.card-header,
+.seccion-titulo,
+.total-amount {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.nav-btn.active {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Hover efectos suaves */
+.nav-btn:not(.active):hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1) !important;
+}
+
+.btn-primary,
+.btn-secondary {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+
+/* ========== TRANSICIONES PARA TODOS LOS ELEMENTOS ========== */
+.nav-btn,
+.btn-primary,
+.btn-secondary,
+.card-header,
+.seccion-titulo,
+.total-amount,
+.tab-catalogo-btn,
+.factor-badge,
+.tipo-cambio-panel,
+.totals-panel,
+.company-address,
+input,
+select,
+th,
+.badge-marca,
+.deleteEquipo,
+.deleteInst,
+#autorizacionAlert {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* ========== MEJORAS PARA INPUTS ========== */
+input:focus, select:focus {
+    transition: all 0.3s ease;
+}
+
+/* ========== MEJORAS PARA BADGES ========== */
+.badge-marca {
+    transition: all 0.3s ease;
+}
+
+.badge-marca:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ========== MEJORAS PARA TABLAS ========== */
+td .btn-secondary {
+    padding: 4px 12px;
+    font-size: 0.7rem;
+}
+
+/* ========== HEADER CON GRADIENTE ANIMADO ========== */
+.header-premium {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.5);
+}
+
+.header-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #40E0D0, #1E3A5F);
+    transition: all 0.5s ease;
+}
+
+.header-trane::before {
+    background: linear-gradient(90deg, #B22234, #8B1A2B) !important;
+}
+
+.header-multimarca::before {
+    background: linear-gradient(90deg, #40E0D0, #1E3A5F) !important;
+}
+
+
 
     </style>
 </head>
@@ -733,14 +1060,24 @@
 </div>
 
 <!-- CONTENIDO PRINCIPAL -->
-<div id="appContent" class="app-content">
-  <div class="user-info-bar no-print">
+<div class="user-info-bar no-print">
     <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-        <div>
+        <!-- Usuario -->
+        <div style="display: flex; align-items: center; gap: 15px;">
             <i class="fas fa-user-circle"></i> 
             <strong id="userNameDisplay"></strong>
             <span id="userRoleDisplay" class="user-role-badge"></span>
+            
+            <!-- ===== NUEVO: INDICADOR DE EMPRESA ===== -->
+           <!-- ===== BADGE DE EMPRESA MEJORADO ===== -->
+<span id="empresaActualDisplay" style="display: inline-flex !important; align-items: center; gap: 10px; padding: 6px 18px 6px 10px; border-radius: 50px; font-weight: 700; font-size: 0.75rem; background: rgba(64, 224, 208, 0.15); color: #40E0D0; border: 2px solid rgba(64, 224, 208, 0.3);">
+    <span class="empresa-icon empresa-icon-multimarca" id="empresaIcono">
+        <i class="fas fa-building"></i>
+    </span>
+    <span id="empresaTexto">AIR AND WEATHER MÉXICO</span>
+</span>
         </div>
+        
         <!-- SELECTOR DE MODO TRANE EXCLUSIVO -->
         <div style="display: flex; gap: 8px; background: #f1f5f9; padding: 4px; border-radius: 40px;">
             <button id="btnModoMultimarca" class="modo-selector-btn" style="padding: 6px 20px; border-radius: 30px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s;">
@@ -775,11 +1112,12 @@
         <div class="nav-menu no-print">
             <button class="nav-btn active" data-module="cotizador"><i class="fas fa-calculator"></i> Cotizador</button>
             <button class="nav-btn" data-module="catalogo"><i class="fas fa-boxes"></i> Catálogo HVAC</button>
+            <button class="nav-btn" data-module="historial"><i class="fas fa-history"></i> Historial</button>
+            <button class="nav-btn" data-module="estadisticas"><i class="fas fa-chart-line"></i> 📊 Estadísticas</button>
             <button class="nav-btn" data-module="calculadora"><i class="fas fa-thermometer-half"></i> Carga Térmica</button>
             <button class="nav-btn" data-module="reglas"><i class="fas fa-balance-scale"></i> Reglas + Tecnologías</button>
-            <button class="nav-btn" data-module="tips"><i class="fas fa-lightbulb"></i> Tips Ventas</button>
-            <button class="nav-btn" data-module="historial"><i class="fas fa-history"></i> Historial</button>
-            <button class="nav-btn" data-module="estadisticas"><i class="fas fa-chart-line"></i> 📊 Estadísticas</button> 
+            <button class="nav-btn" data-module="tips"><i class="fas fa-lightbulb"></i> Tips Ventas</button>            
+             
         </div>
 
 <!-- PANEL DE RESPALDO -->
@@ -805,18 +1143,37 @@
                     </div>
 
                     <div class="tipo-cambio-panel no-print">
-                        <span><i class="fas fa-dollar-sign"></i> Tipo de cambio USD/MXN hoy: <strong id="tipoCambioDisplay">Cargando...</strong></span>
-                        <button id="actualizarTCBtn" class="btn-secondary btn-small"><i class="fas fa-sync-alt"></i> Actualizar TC</button>
-                        <button id="toggleCurrencyBtn" class="btn-secondary btn-small"><i class="fas fa-exchange-alt"></i> Mostrar Equipos en USD/MXN</button>
-                    </div>
+    <span><i class="fas fa-dollar-sign"></i> Tipo de cambio USD/MXN hoy: <strong id="tipoCambioDisplay">Cargando...</strong></span>
+    <button id="actualizarTCBtn" class="btn-secondary btn-small"><i class="fas fa-sync-alt"></i> Actualizar TC</button>
+    <button id="toggleCurrencyBtn" class="btn-secondary btn-small"><i class="fas fa-exchange-alt"></i> Mostrar Equipos en USD/MXN</button>
+    
+    <!-- 🔥 NUEVO: PORCENTAJE DE CIUDAD (MANUAL) -->
+    <div style="display: flex; align-items: center; gap: 8px; margin-left: 10px; background: #fff3cd; padding: 4px 16px 4px 12px; border-radius: 40px; border: 1px solid #ffc107;">
+        <i class="fas fa-map-marker-alt" style="color: #d97706;"></i>
+        <span style="font-weight: 700; font-size: 0.7rem; color: #92400e;">% Ciudad:</span>
+        <input type="number" id="porcentajeCiudadInput" value="0" min="0" max="100" step="any" 
+               style="width: 70px; padding: 4px 8px; border-radius: 20px; border: 1px solid #ffc107; font-weight: 600; font-size: 0.8rem; text-align: center; background: white;">
+        <span id="porcentajeCiudadDisplay" style="font-weight: 800; color: #B22234; font-size: 0.8rem; min-width: 40px;">+0%</span>
+    </div>
+</div>
 
                     <div class="seccion-cotizacion">
                         <div class="seccion-titulo"><i class="fas fa-microchip"></i> EQUIPOS PRINCIPALES</div>
                         <div class="table-wrapper">
                             <table style="min-width: 1050px;">
-                                <thead>
-                                    <tr><th>Marca</th><th>Modelo</th><th>Capacidad</th><th>Descripción</th><th>Cant</th><th>Costo Base</th><th>% Utilidad Empresa</th><th>% Utilidad Vendedor</th><th>Precio Venta</th><th>Subtotal</th><th></th></tr>
-                                </thead>
+                               <thead>
+    <tr>
+        <th>Marca</th>
+        <th>Modelo</th>
+        <th>Capacidad</th>
+        <th>Descripción</th>
+        <th>Cant</th>
+        <th>Ajuste</th>    <!-- ← ANTES era "Costo Base" -->
+        <th>Precio Venta</th>
+        <th>Subtotal</th>
+        <th></th>
+    </tr>
+</thead>
                                 <tbody id="equiposBody"></tbody>
                             </table>
                         </div>
@@ -866,7 +1223,7 @@
 
 <!-- CATÁLOGO DE EQUIPOS -->
 
-<div id="catalogoModule" style="display:none;">
+ <div id="catalogoModule" style="display:none;">
     <div class="card-premium">
         <div class="card-header"><h2><i class="fas fa-warehouse"></i> Catálogo de Equipos HVAC <button id="agregarEquipoCatalogoBtn" style="margin-left:15px; background:#ffc107; border:none; padding:6px 15px; border-radius:20px;"><i class="fas fa-plus"></i> Agregar Nuevo Equipo</button></h2></div>
         <div class="card-body">
@@ -876,25 +1233,38 @@
                 <button class="tab-catalogo-btn" data-tab="york">🇺🇸 YORK</button>
                 <button class="tab-catalogo-btn" data-tab="carrier">🇺🇸 CARRIER</button>
                 <button class="tab-catalogo-btn" data-tab="duventus">🇲🇽 DUVENTUS</button>
-                <button class="tab-catalogo-btn" data-tab="rheem">🇺🇸 RHEEM</button>
+                <button class="tab-catalogo-btn" data-tab="TCL">🇲🇽 TCL</button>
             </div>
             
             <!-- TAB TRANE - Mostrar en USD -->
-            <div id="tabTrane" class="tab-content">
-                <input type="text" id="searchTrane" placeholder="Buscar por modelo, capacidad..." style="width:100%; padding:12px; border-radius:60px; margin-bottom:20px;">
-                <div class="table-wrapper">
-                    <table style="min-width: 900px;">
-                        <thead>
-                            <tr>
-                                <th>Modelo</th><th>Tipo</th><th>Capacidad</th><th>Tensión</th><th>Tecnología</th>
-                                <th>Precio (USD)</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="catalogoTraneBody"></tbody>
-                    </table>
-                </div>
-            </div>
+<div id="tabTrane" class="tab-content">
+    <div style="display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap; align-items:center; background:#f8fafc; padding:12px 16px; border-radius:16px;">
+        <label style="font-weight:700; font-size:0.75rem; color:#1E3A5F; display:flex; align-items:center; gap:6px;">
+            <i class="fas fa-layer-group"></i> Sistema / Familia:
+        </label>
+        <select id="familiaTraneSelect" style="padding:8px 16px; border-radius:40px; border:2px solid #e2e8f0; font-weight:500; background:white; min-width:200px;">
+            <option value="todos">🌐 Todos los sistemas</option>
+        </select>
+        <input type="text" id="searchTrane" placeholder="🔍 Buscar por modelo, capacidad..." 
+            style="flex:1; min-width:200px; padding:10px 18px; border-radius:40px; border:2px solid #e2e8f0; background:white;">
+    </div>
+    <div class="table-wrapper">
+        <table style="min-width: 900px;">
+            <thead>
+                <tr>
+                    <th style="min-width:180px;">Modelo</th>
+                    <th style="min-width:220px;">Sistema</th>
+                    <th>Capacidad</th>
+                    <th>Tensión</th>
+                    <th>Tecnología</th>
+                    <th>Precio (USD)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="catalogoTraneBody"></tbody>
+        </table>
+    </div>
+</div>
             
             <!-- TAB HISENSE - Mostrar en MXN -->
             <div id="tabHisense" class="tab-content" style="display:none;">
@@ -962,8 +1332,8 @@
                 </div>
             </div>
             
-            <!-- TAB RHEEM - Mostrar en MXN -->
-            <div id="tabRheem" class="tab-content" style="display:none;">
+            <!-- TAB TCL - Mostrar en MXN -->
+            <div id="tabTCL" class="tab-content" style="display:none;">
                 <div class="table-wrapper">
                     <table style="min-width: 900px;">
                         <thead>
@@ -973,7 +1343,7 @@
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody id="catalogoRheemBody"></tbody>
+                        <tbody id="catalogoTCLBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -1077,108 +1447,180 @@
         </div>
 
         <!-- CRM - HISTORIAL -->
-        <div id="historialModule" style="display:none;">
-            <div class="card-premium">
-                <div class="card-header"><h2><i class="fas fa-database"></i> CRM - Gestión Comercial</h2></div>
-                <div class="card-body">
-                    <div class="tab-catalogo" style="margin-bottom: 20px;">
-                        <button class="crm-tab-btn active" data-crm="historial">📋 Historial Cotizaciones</button>
-                        <button class="crm-tab-btn" data-crm="seguimientos">⏰ Seguimientos</button>
-                        <button class="crm-tab-btn" data-crm="leads">🎯 Leads / Prospectos</button>
+      <!-- CRM - HISTORIAL -->
+<div id="historialModule" style="display:none;">
+    <div class="card-premium">
+        <div class="card-header"><h2><i class="fas fa-database"></i> CRM - Gestión Comercial</h2></div>
+        <div class="card-body">
+            <div class="tab-catalogo" style="margin-bottom: 20px;">
+                <button class="crm-tab-btn active" data-crm="historial">📋 Historial Cotizaciones</button>
+                <button class="crm-tab-btn" data-crm="seguimientos">⏰ Seguimientos</button>
+                <button class="crm-tab-btn" data-crm="leads">🎯 Leads / Prospectos</button>
+            </div>
+            
+            <!-- ==================== HISTORIAL ==================== -->
+            <div id="crmHistorial" class="crm-tab-content" style="display: block;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <h3 style="color: #1E3A5F;"><i class="fas fa-file-invoice"></i> Cotizaciones Registradas</h3>
+                    <button id="exportarHistorialExcelBtn" class="btn-primary" style="padding: 8px 16px;"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
+                </div>
+                
+                <!-- ✅ FORMULARIO ARRIBA -->
+                <div style="margin-bottom: 25px; background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%); padding: 20px; border-radius: 16px; border-left: 4px solid #B22234; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                    <h4 style="margin-bottom: 15px; color: #1E3A5F;"><i class="fas fa-plus-circle"></i> Registrar Nueva Cotización</h4>
+                    <div class="form-grid">
+                        <input type="text" id="newHistNombre" placeholder="Nombre Cliente">
+                        <input type="text" id="newHistIdCliente" placeholder="ID Cliente">
+                        <select id="newHistMedio">
+                            <option>Teléfono</option>
+                            <option>WhatsApp</option>
+                            <option>Correo</option>
+                        </select>
+                        <input type="number" id="newHistImporte" placeholder="Importe">
+                        <select id="newHistMoneda">
+                            <option>MXN</option>
+                            <option>USD</option>
+                        </select>
+                        <input type="text" id="newHistDescEquipo" placeholder="Descripción equipo">
+                        <select id="newHistCategoria">
+                            <option>Nuevo</option>
+                            <option>Potencial</option>
+                        </select>
+                        <input type="text" id="newHistEjecutivo" placeholder="Ejecutivo">
                     </div>
-                    <div id="crmHistorial" class="crm-tab-content" style="display: block;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                            <h3 style="color: #1E3A5F;"><i class="fas fa-file-invoice"></i> Cotizaciones Registradas</h3>
-                            <button id="exportarHistorialExcelBtn" class="btn-primary" style="padding: 8px 16px;"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
-                        </div>
-                        <div class="table-wrapper">
-                            <table><thead>
- 			   <tr>
-        			<th>N° Cotización</th>
-        			<th>Cliente</th>
-        			<th>ID Cliente</th>
-        			<th>Medio</th>
-        			<th>Importe</th>
-			        <th>Moneda</th>
-			        <th>Equipo</th>
-			        <th>Categoría</th>
-			        <th>Ejecutivo</th>
-			        <th>Fecha</th>
-			        <th>Acciones</th>
-			    </tr>
-</thead> <tbody id="historialBody"></tbody></table>
-                        </div>
-                        <div style="margin-top: 20px; background: #f0f9ff; padding: 15px; border-radius: 16px;">
-                            <h4><i class="fas fa-plus-circle"></i> Registrar Nueva Cotización</h4>
-                            <div class="form-grid">
-                                <input type="text" id="newHistNombre" placeholder="Nombre Cliente">
-                                <input type="text" id="newHistIdCliente" placeholder="ID Cliente">
-                                <select id="newHistMedio"><option>Teléfono</option><option>WhatsApp</option><option>Correo</option></select>
-                                <input type="number" id="newHistImporte" placeholder="Importe">
-                                <select id="newHistMoneda"><option>MXN</option><option>USD</option></select>
-                                <input type="text" id="newHistDescEquipo" placeholder="Descripción equipo">
-                                <select id="newHistCategoria"><option>Nuevo</option><option>Potencial</option></select>
-                                <input type="text" id="newHistEjecutivo" placeholder="Ejecutivo">
-                            </div>
-                            <button id="agregarHistorialBtn" class="btn-primary" style="margin-top: 10px;">Guardar Cotización</button>
-                            <button id="cargarCotizacionActualBtn" class="btn-secondary" style="margin-top: 10px; margin-left: 10px;">Cargar Cotización Actual</button>
-                        </div>
+                    <button id="agregarHistorialBtn" class="btn-primary" style="margin-top: 10px;">Guardar Cotización</button>
+                    <button id="cargarCotizacionActualBtn" class="btn-secondary" style="margin-top: 10px; margin-left: 10px;">Cargar Cotización Actual</button>
+                </div>
+                
+                <!-- ✅ TABLA DEBAJO -->
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>N° Cotización</th>
+                                <th>Cliente</th>
+                                <th>ID Cliente</th>
+                                <th>Medio</th>
+                                <th>Importe</th>
+                                <th>Moneda</th>
+                                <th>Equipo</th>
+                                <th>Categoría</th>
+                                <th>Ejecutivo</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historialBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- ==================== SEGUIMIENTOS ==================== -->
+            <div id="crmSeguimientos" class="crm-tab-content" style="display: none;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <h3 style="color: #1E3A5F;"><i class="fas fa-clock"></i> Seguimientos</h3>
+                    <button id="exportarSeguimientosExcelBtn" class="btn-primary" style="padding: 8px 16px;"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
+                </div>
+                
+                <!-- ✅ FORMULARIO ARRIBA -->
+                <div style="margin-bottom: 25px; background: linear-gradient(135deg, #fef9e6 0%, #fef3d6 100%); padding: 20px; border-radius: 16px; border-left: 4px solid #eab308; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                    <h4 style="margin-bottom: 15px; color: #1E3A5F;"><i class="fas fa-calendar-plus"></i> Agregar Seguimiento</h4>
+                    <div class="form-grid">
+                        <input type="text" id="newSegNombre" placeholder="Nombre Cliente">
+                        <input type="text" id="newSegIdCliente" placeholder="ID Cliente">
+                        <select id="newSegMedio">
+                            <option>Teléfono</option>
+                            <option>WhatsApp</option>
+                            <option>Correo</option>
+                        </select>
+                        <input type="number" id="newSegImporte" placeholder="Importe">
+                        <select id="newSegMoneda">
+                            <option>MXN</option>
+                            <option>USD</option>
+                        </select>
+                        <input type="text" id="newSegDescEquipo" placeholder="Equipo">
+                        <input type="date" id="newSegFecha">
+                        <select id="newSegEstado">
+                            <option value="10">🔵 10% - Me pidió información</option>
+                            <option value="20">🔵 20% - Recibió cotización</option>
+                            <option value="30">🔵 30% - Preguntó por instalación</option>
+                            <option value="50">🟡 50% - Negocia precio</option>
+                            <option value="70">🟡 70% - Dio fecha tentativa</option>
+                            <option value="90">🟢 90% - Firmó cotización</option>
+                            <option value="100">✅ 100% - Pagó anticipo (CERRADO)</option>
+                        </select>
+                        <input type="text" id="newSegEjecutivo" placeholder="Ejecutivo">
+                        <textarea id="newSegComentarios" placeholder="Comentarios..." rows="2"></textarea>
                     </div>
-                    <div id="crmSeguimientos" class="crm-tab-content" style="display: none;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                            <h3 style="color: #1E3A5F;"><i class="fas fa-clock"></i> Seguimientos</h3>
-                            <button id="exportarSeguimientosExcelBtn" class="btn-primary" style="padding: 8px 16px;"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
-                        </div>
-                        <div class="table-wrapper">
-                            <table><thead><tr><th>Cliente</th><th>ID</th><th>Medio</th><th>Importe</th><th>Moneda</th><th>Equipo</th><th>Fecha Seg.</th><th>Estado</th><th>Comentarios</th><th>Ejecutivo</th><th></th></tr></thead><tbody id="seguimientosBody"></tbody></table>
-                        </div>
-                        <div style="margin-top: 20px; background: #fef9e6; padding: 15px; border-radius: 16px;">
-                            <h4><i class="fas fa-calendar-plus"></i> Agregar Seguimiento</h4>
-                            <div class="form-grid">
-                                <input type="text" id="newSegNombre" placeholder="Nombre Cliente">
-                                <input type="text" id="newSegIdCliente" placeholder="ID Cliente">
-                                <select id="newSegMedio"><option>Teléfono</option><option>WhatsApp</option><option>Correo</option></select>
-                                <input type="number" id="newSegImporte" placeholder="Importe">
-                                <select id="newSegMoneda"><option>MXN</option><option>USD</option></select>
-                                <input type="text" id="newSegDescEquipo" placeholder="Equipo">
-                                <input type="date" id="newSegFecha">
-                                <select id="newSegEstado">
-                                <option value="10">🔵 10% - Me pidió información</option>
-                                <option value="20">🔵 20% - Recibió cotización</option>
-                                <option value="30">🔵 30% - Preguntó por instalación</option>
-                                <option value="50">🟡 50% - Negocia precio</option>
-                                <option value="70">🟡 70% - Dio fecha tentativa</option>
-                                <option value="90">🟢 90% - Firmó cotización</option>
-                                <option value="100">✅ 100% - Pagó anticipo (CERRADO)</option>
-                            </select>                         
-			       <input type="text" id="newSegEjecutivo" placeholder="Ejecutivo">
-                                <textarea id="newSegComentarios" placeholder="Comentarios..." rows="2"></textarea>
-                            </div>
-                            <button id="agregarSeguimientoBtn" class="btn-primary">Agregar Seguimiento</button>
-                            <button id="cargarCotizacionSegBtn" class="btn-secondary" style="margin-left: 10px;">Cargar Cotización Actual</button>
-                        </div>
+                    <button id="agregarSeguimientoBtn" class="btn-primary" style="margin-top: 10px;">Agregar Seguimiento</button>
+                    <button id="cargarCotizacionSegBtn" class="btn-secondary" style="margin-top: 10px; margin-left: 10px;">Cargar Cotización Actual</button>
+                </div>
+                
+                <!-- ✅ TABLA DEBAJO -->
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>ID</th>
+                                <th>Medio</th>
+                                <th>Importe</th>
+                                <th>Moneda</th>
+                                <th>Equipo</th>
+                                <th>Fecha Seg.</th>
+                                <th>Estado</th>
+                                <th>Comentarios</th>
+                                <th>Ejecutivo</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="seguimientosBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- ==================== LEADS ==================== -->
+            <div id="crmLeads" class="crm-tab-content" style="display: none;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <h3 style="color: #1E3A5F;"><i class="fas fa-users"></i> Leads / Prospectos</h3>
+                    <button id="exportarLeadsExcelBtn" class="btn-primary" style="padding: 8px 16px;"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
+                </div>
+                
+                <!-- ✅ FORMULARIO ARRIBA -->
+                <div style="margin-bottom: 25px; background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); padding: 20px; border-radius: 16px; border-left: 4px solid #22c55e; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                    <h4 style="margin-bottom: 15px; color: #1E3A5F;"><i class="fas fa-user-plus"></i> Registrar Nuevo Lead</h4>
+                    <div class="form-grid">
+                        <input type="tel" id="newLeadTelefono" placeholder="Teléfono">
+                        <input type="email" id="newLeadCorreo" placeholder="Correo">
+                        <input type="text" id="newLeadContacto" placeholder="Contacto">
+                        <input type="text" id="newLeadEmpresa" placeholder="Empresa">
+                        <select id="newLeadCategoria">
+                            <option>Frío</option>
+                            <option>Caliente</option>
+                            <option>Calificado</option>
+                        </select>
+                        <input type="text" id="newLeadEjecutivo" placeholder="Ejecutivo">
                     </div>
-                    <div id="crmLeads" class="crm-tab-content" style="display: none;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                            <h3 style="color: #1E3A5F;"><i class="fas fa-users"></i> Leads / Prospectos</h3>
-                            <button id="exportarLeadsExcelBtn" class="btn-primary" style="padding: 8px 16px;"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
-                        </div>
-                        <div class="table-wrapper">
-                            <table><thead><tr><th>Teléfono</th><th>Correo</th><th>Contacto</th><th>Empresa</th><th>Categoría</th><th>Ejecutivo</th><th>Fecha</th><th></th></tr></thead><tbody id="leadsBody"></tbody></table>
-                        </div>
-                        <div style="margin-top: 20px; background: #e8f5e9; padding: 15px; border-radius: 16px;">
-                            <h4><i class="fas fa-user-plus"></i> Registrar Nuevo Lead</h4>
-                            <div class="form-grid">
-                                <input type="tel" id="newLeadTelefono" placeholder="Teléfono">
-                                <input type="email" id="newLeadCorreo" placeholder="Correo">
-                                <input type="text" id="newLeadContacto" placeholder="Contacto">
-                                <input type="text" id="newLeadEmpresa" placeholder="Empresa">
-                                <select id="newLeadCategoria"><option>Frío</option><option>Caliente</option><option>Calificado</option></select>
-                                <input type="text" id="newLeadEjecutivo" placeholder="Ejecutivo">
-                            </div>
-                            <button id="agregarLeadBtn" class="btn-primary">Guardar Lead</button>
-                        </div>
-                    </div>
+                    <button id="agregarLeadBtn" class="btn-primary" style="margin-top: 10px;">Guardar Lead</button>
+                </div>
+                
+                <!-- ✅ TABLA DEBAJO -->
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Contacto</th>
+                                <th>Empresa</th>
+                                <th>Categoría</th>
+                                <th>Ejecutivo</th>
+                                <th>Fecha</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="leadsBody"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -1398,7 +1840,7 @@
     <div class="modal-content">
         <h3 style="color:#B22234; margin-bottom:20px;"><i class="fas fa-plus-circle"></i> Agregar Nuevo Equipo al Catálogo</h3>
         <div class="form-grid">
-            <div class="field"><label>Marca</label><select id="nuevoEquipoMarca"><option>TRANE</option><option>HISENSE</option><option>YORK</option><option>CARRIER</option><option>DUVENTUS</option><option>RHEEM</option></select></div>
+            <div class="field"><label>Marca</label><select id="nuevoEquipoMarca"><option>TRANE</option><option>HISENSE</option><option>YORK</option><option>CARRIER</option><option>DUVENTUS</option><option>TCL</option></select></div>
             <div class="field"><label>Modelo</label><input type="text" id="nuevoEquipoModelo" placeholder="Modelo"></div>
             <div class="field"><label>Tipo</label><input type="text" id="nuevoEquipoTipo" placeholder="Tipo"></div>
             <div class="field"><label>Capacidad</label><input type="text" id="nuevoEquipoCapacidad" placeholder="Capacidad"></div>
@@ -1499,9 +1941,10 @@
 
 <script>
     // ==================== CRM DATA ARRAYS ====================
-    let historialCotizaciones = JSON.parse(localStorage.getItem('crm_historial') || '[]');
-    let seguimientosList = JSON.parse(localStorage.getItem('crm_seguimientos') || '[]');
-    let leadsList = JSON.parse(localStorage.getItem('crm_leads') || '[]');
+ 
+    let historialCotizaciones = [];	
+    let seguimientosList = [];
+    let leadsList = [];
     let cotizacionEnEdicion = null;  // ID de la cotización que se está editando
 
     // ========== FUNCIÓN PARA GENERAR ID ÚNICO ==========
@@ -1536,6 +1979,7 @@
 
     let tipoCambioActual = 20.50;
     let mostrarEnUSD = false;
+    let porcentajeCiudad = 0; 
     let nextId = 1;
     let historial = [];
     let cargaCalculadaBTU = 0;
@@ -1940,118 +2384,6 @@ function cerrarModalEditarSeguimiento() {
 
     function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m) { if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m;}); }
 
-    // ========== AGREGAR REGISTROS ==========
-
-document.getElementById('agregarHistorialBtn')?.addEventListener('click', async () => {
-    let nombreCliente = document.getElementById('clienteName').value.trim();
-    let condicionesPago = document.getElementById('condicionesPago').value.trim();
-    let area = parseFloat(document.getElementById('areaM2').value) || 0;
-    let ejecutivo = document.getElementById('vendedorNombre').value;
-    
-    // ========== TOMAR DATOS DEL FORMULARIO ==========
-    let idCliente = document.getElementById('newHistIdCliente').value.trim() || 'N/A';
-    let medio = document.getElementById('newHistMedio').value;
-    let categoria = document.getElementById('newHistCategoria').value;
-    let descEquipoManual = document.getElementById('newHistDescEquipo').value.trim();
-    let importeManual = parseFloat(document.getElementById('newHistImporte').value);
-    let monedaManual = document.getElementById('newHistMoneda').value;
-    
-    if (!nombreCliente) {
-        showToast("⚠️ El nombre del cliente es obligatorio");
-        return;
-    }
-    
-    let total = calcularTotales();
-    
-    // Usar importe manual si está presente, si no usar el calculado
-    let importeTotal = !isNaN(importeManual) && importeManual > 0 ? importeManual : total.totalFinal;
-    let moneda = monedaManual || (mostrarEnUSD ? 'USD' : 'MXN');
-    
-    // Usar descripción manual si está presente
-    let descripcionCompleta = descEquipoManual;
-    if (!descripcionCompleta) {
-        let descEquipos = equipos.map(e => `${e.marca} ${e.modelo} (${e.cantidad})`).join(', ');
-        let descInstalaciones = instalaciones.map(i => `${i.concepto} (${i.cantidad})`).join(', ');
-        descripcionCompleta = '';
-        if (descEquipos) descripcionCompleta += `📦 EQUIPOS: ${descEquipos}`;
-        if (descInstalaciones) {
-            if (descripcionCompleta) descripcionCompleta += ' | ';
-            descripcionCompleta += `🔧 INSTALACIONES: ${descInstalaciones}`;
-        }
-        if (!descripcionCompleta) descripcionCompleta = 'Sin equipos ni instalaciones';
-    }
-    
-    // ========== GENERAR NÚMERO DE COTIZACIÓN ==========
-    const vendedorActual = document.getElementById('vendedorNombre').value;
-    const prefijosVendedor = { 'Alexis Vázquez': 'ALX', 'Administrador': 'ADM', 'Equipo de Ventas': 'VTAS' };
-    const prefijo = prefijosVendedor[vendedorActual] || vendedorActual.substring(0, 3).toUpperCase();
-    const keyUltimoNumero = `ultimoNumero_${prefijo}`;
-    let ultimoNumero = parseInt(localStorage.getItem(keyUltimoNumero) || '0');
-    ultimoNumero++;
-    const numeroCotizacion = `${prefijo}-${String(ultimoNumero).padStart(3, '0')}`;
-    localStorage.setItem(keyUltimoNumero, ultimoNumero);
-    
-    // ========== ENVIAR A GOOGLE SHEETS ==========
-    await guardarEnAPI('guardarCotizacion', {
-        cliente: nombreCliente,
-        condicionesPago: condicionesPago,
-        area: area,
-        subtotal: total.subtotal,
-        iva: total.iva,
-        total: importeTotal,
-        moneda: moneda,
-        numeroCotizacion: numeroCotizacion,
-        idCliente: idCliente,
-        medio: medio,
-        categoria: categoria,
-        equipos: equipos.map(e => ({
-            marca: e.marca,
-            modelo: e.modelo,
-            cantidad: e.cantidad,
-            precioUnitario: e.precioVenta
-        })),
-        instalaciones: instalaciones.map(i => ({
-            concepto: i.concepto,
-            cantidad: i.cantidad,
-            costoUnitario: i.costoUnitario
-        })),
-        descripcionEquipo: descripcionCompleta
-    });
-    
-    // ========== GUARDAR EN LOCALSTORAGE CON LOS DATOS CORRECTOS ==========
-    const nuevoId = generarIdUnico();
-    
-    let nuevo = {
-        id: nuevoId,
-        numeroCotizacion: numeroCotizacion,
-        nombre: nombreCliente,
-        idCliente: idCliente,        // ✅ AHORA USA EL VALOR DEL INPUT
-        medio: medio,                 // ✅ AHORA USA EL VALOR DEL SELECT
-        importe: importeTotal,
-        moneda: moneda,
-        descEquipo: descripcionCompleta,
-        categoria: categoria,         // ✅ AHORA USA EL VALOR DEL SELECT
-        ejecutivo: ejecutivo,
-        fecha: new Date().toLocaleDateString('es-MX'),
-        vendedorQueCreo: ejecutivo,
-        equipos: [...equipos],
-        instalaciones: [...instalaciones],
-        condicionesPago: condicionesPago,
-        areaM2: area
-    };
-    
-    historialCotizaciones.unshift(nuevo);
-    localStorage.setItem('crm_historial', JSON.stringify(historialCotizaciones));
-    renderHistorial();
-    
-    showToast(`✓ Cotización ${numeroCotizacion} guardada: $${importeTotal.toFixed(2)} ${moneda}`);
-    
-    // Limpiar campos del formulario después de guardar
-    document.getElementById('newHistNombre').value = '';
-    document.getElementById('newHistIdCliente').value = '';
-    document.getElementById('newHistImporte').value = '';
-    document.getElementById('newHistDescEquipo').value = '';
-});
 
 
 document.getElementById('agregarSeguimientoBtn')?.addEventListener('click', async () => {
@@ -2445,26 +2777,26 @@ function obtenerEstadisticasVendedor() {
     // Contar seguimientos por nivel de probabilidad
     const misSeguimientos = seguimientosList.filter(s => s.ejecutivo === vendedorActual);
     
-    // Niveles de probabilidad
-    const nivel10 = misSeguimientos.filter(s => s.estado === '10').length;
-    const nivel20 = misSeguimientos.filter(s => s.estado === '20').length;
-    const nivel30 = misSeguimientos.filter(s => s.estado === '30').length;
-    const nivel50 = misSeguimientos.filter(s => s.estado === '50').length;
-    const nivel70 = misSeguimientos.filter(s => s.estado === '70').length;
-    const nivel90 = misSeguimientos.filter(s => s.estado === '90').length;
-    const nivel100 = misSeguimientos.filter(s => s.estado === '100').length;
+    // ========== CORRECCIÓN: Usar parseInt para comparar estados ==========
+    const nivel10 = misSeguimientos.filter(s => parseInt(s.estado) === 10).length;
+    const nivel20 = misSeguimientos.filter(s => parseInt(s.estado) === 20).length;
+    const nivel30 = misSeguimientos.filter(s => parseInt(s.estado) === 30).length;
+    const nivel50 = misSeguimientos.filter(s => parseInt(s.estado) === 50).length;
+    const nivel70 = misSeguimientos.filter(s => parseInt(s.estado) === 70).length;
+    const nivel90 = misSeguimientos.filter(s => parseInt(s.estado) === 90).length;
+    const nivel100 = misSeguimientos.filter(s => parseInt(s.estado) === 100).length;
     
     // Para compatibilidad con las barras de progreso
-    const pendientes = nivel10 + nivel20 + nivel30;  // 10-30% = etapa inicial
-    const contactados = nivel50 + nivel70;            // 50-70% = negociación
-    const cotizados = nivel90;                        // 90% = cotización firmada
-    const cerrados = nivel100;                        // 100% = cerrado
-    const perdidos = 0; // Si quieres agregar estado "Perdido", añade un valor como '0'
+    const pendientes = nivel10 + nivel20 + nivel30;
+    const contactados = nivel50 + nivel70;
+    const cotizados = nivel90;
+    const cerrados = nivel100;
+    const perdidos = 0;
     
     const enProceso = pendientes + contactados + cotizados;
     const totalSeguimientos = misSeguimientos.length;
     
-    // Calcular tasa de cierre (solo los que pagaron anticipo)
+    // Calcular tasa de cierre
     let tasaCierre = 0;
     if (totalCotizaciones > 0) {
         tasaCierre = (cerrados / totalCotizaciones) * 100;
@@ -2483,8 +2815,7 @@ function obtenerEstadisticasVendedor() {
         totalSeguimientos,
         tasaCierre: Math.round(tasaCierre)
     };
-}
-    
+}    
     function obtenerRecomendacion(tasa, pendientes, perdidos, contactados) {
         if (tasa >= 30) {
             if (pendientes > 10) {
@@ -2607,7 +2938,7 @@ function respaldarDatos() {
             catalogoYork: catalogoYork,
             catalogoCarrier: catalogoCarrier,
             catalogoDuventus: catalogoDuventus,
-            catalogoRheem: catalogoRheem,
+            catalogoTCL: catalogoTCL,
             numerosCotizacion: {}
         }
     };
@@ -2661,7 +2992,7 @@ function restaurarDatos() {
                 if (respaldo.datos.catalogoYork) catalogoYork = respaldo.datos.catalogoYork;
                 if (respaldo.datos.catalogoCarrier) catalogoCarrier = respaldo.datos.catalogoCarrier;
                 if (respaldo.datos.catalogoDuventus) catalogoDuventus = respaldo.datos.catalogoDuventus;
-                if (respaldo.datos.catalogoRheem) catalogoRheem = respaldo.datos.catalogoRheem;
+                if (respaldo.datos.catalogoTCL) catalogoTCL = respaldo.datos.catalogoTCL;
                 
                 // Restaurar números de cotización
                 if (respaldo.datos.numerosCotizacion) {
@@ -2684,7 +3015,7 @@ function restaurarDatos() {
                 renderCatalogoYork();
                 renderCatalogoCarrier();
                 renderCatalogoDuventus();
-                renderCatalogoRheem();
+                renderCatalogoTCL();
                 renderAll();
                 actualizarBadgeRecordatorios();
                 
@@ -2834,21 +3165,28 @@ function obtenerMetricasPorFecha(fechaSeleccionada) {
         return fechaCotizacion === fechaComparar;
     });
     
-    // Calcular monto vendido (solo seguimientos con estado 100 = Pagó anticipo)
+    // ========== CORRECCIÓN: Calcular monto vendido ==========
     let montoVendido = 0;
     
     cotizacionesDelDia.forEach(cotizacion => {
-        const seguimientoCerrado = seguimientosList.find(s => 
-            s.cotizacionId === cotizacion.id && 
-            s.estado === '100'  // ← CAMBIADO: 100% = Pagó anticipo
-        );
+        // Buscar seguimiento CERRADO (estado 100) para esta cotización
+        const seguimientoCerrado = seguimientosList.find(s => {
+            const esMismaCotizacion = s.cotizacionId === cotizacion.id;
+            // Convertir estado a número para comparación segura
+            const estadoNum = parseInt(s.estado);
+            return esMismaCotizacion && estadoNum === 100;
+        });
         
         if (seguimientoCerrado) {
-            let importeEnMXN = cotizacion.importe || 0;
-            if (cotizacion.moneda === 'USD') {
-                importeEnMXN = importeEnMXN * tipoCambioActual;
+            // Usar el importe de la cotización o del seguimiento
+            let importe = cotizacion.importe || seguimientoCerrado.importe || 0;
+            
+            // Si está en USD, convertir a MXN
+            const moneda = cotizacion.moneda || seguimientoCerrado.moneda || 'MXN';
+            if (moneda === 'USD') {
+                importe = importe * tipoCambioActual;
             }
-            montoVendido += importeEnMXN;
+            montoVendido += importe;
         }
     });
     
@@ -2885,8 +3223,6 @@ function obtenerMetricasPorFecha(fechaSeleccionada) {
     };
 }
 
-
-// Obtener histórico de últimos 30 días
 function obtenerHistorico30Dias() {
     const vendedorActual = document.getElementById('vendedorNombre').value;
     const resultados = [];
@@ -2908,14 +3244,20 @@ function obtenerHistorico30Dias() {
             return fechaCotizacion === fechaComparar;
         });
         
-        // Calcular monto vendido
+        // ========== CORRECCIÓN: Calcular monto vendido ==========
         let montoVendido = 0;
         cotizacionesDelDia.forEach(c => {
-          const tieneSeguimientoCerrado = seguimientosList.some(s => 
-    s.cotizacionId === c.id && s.estado === '100'
-);
+            const tieneSeguimientoCerrado = seguimientosList.some(s => {
+                const esMismaCotizacion = s.cotizacionId === c.id;
+                const estadoNum = parseInt(s.estado);
+                return esMismaCotizacion && estadoNum === 100;
+            });
             if (tieneSeguimientoCerrado) {
-                montoVendido += c.importe || 0;
+                let importe = c.importe || 0;
+                if (c.moneda === 'USD') {
+                    importe = importe * tipoCambioActual;
+                }
+                montoVendido += importe;
             }
         });
         
@@ -2929,7 +3271,9 @@ function obtenerHistorico30Dias() {
         // Seguimientos por vencer
         const seguimientosPorVencer = seguimientosList.filter(s => {
             if (s.ejecutivo !== vendedorActual) return false;
-            if (s.estado !== 'Pendiente') return false;
+            const estadoNum = parseInt(s.estado);
+            if (isNaN(estadoNum)) return false;
+            if (estadoNum >= 100) return false;
             const fechaLimite = convertirFechaParaComparar(s.fecha);
             return fechaLimite === fechaComparar;
         });
@@ -3075,7 +3419,6 @@ function configurarFiltroFecha() {
 let chartActividad = null;
 let periodoActual = 30; // 7, 15 o 30 días
 
-// Obtener datos para el gráfico según período
 function obtenerDatosGrafico(dias) {
     const vendedorActual = document.getElementById('vendedorNombre').value;
     const resultados = [];
@@ -3099,18 +3442,20 @@ function obtenerDatosGrafico(dias) {
             return fechaCotizacion === fechaComparar;
         });
         
-        // ✅ CORREGIDO: Calcular monto vendido (estado '100' = Pagó anticipo)
+        // ========== CORRECCIÓN: Calcular monto vendido ==========
         let montoVendido = 0;
         cotizacionesDelDia.forEach(c => {
-            const tieneSeguimientoCerrado = seguimientosList.some(s => 
-                s.cotizacionId === c.id && s.estado === '100'  // ← CAMBIADO A '100'
-            );
+            const tieneSeguimientoCerrado = seguimientosList.some(s => {
+                const esMismaCotizacion = s.cotizacionId === c.id;
+                const estadoNum = parseInt(s.estado);
+                return esMismaCotizacion && estadoNum === 100;
+            });
             if (tieneSeguimientoCerrado) {
-                let importeEnMXN = c.importe || 0;
+                let importe = c.importe || 0;
                 if (c.moneda === 'USD') {
-                    importeEnMXN = importeEnMXN * tipoCambioActual;
+                    importe = importe * tipoCambioActual;
                 }
-                montoVendido += importeEnMXN;
+                montoVendido += importe;
             }
         });
         
@@ -3121,12 +3466,12 @@ function obtenerDatosGrafico(dias) {
             return fechaCreacion === fechaComparar;
         });
         
-        // Seguimientos por vencer (estados menores a 100 y fecha límite alcanzada)
+        // Seguimientos por vencer
         const seguimientosPorVencer = seguimientosList.filter(s => {
             if (s.ejecutivo !== vendedorActual) return false;
             const estadoNum = parseInt(s.estado);
             if (isNaN(estadoNum)) return false;
-            if (estadoNum >= 100) return false;  // Excluir cerrados
+            if (estadoNum >= 100) return false;
             const fechaLimite = convertirFechaParaComparar(s.fecha);
             return fechaLimite === fechaComparar;
         });
@@ -3381,7 +3726,7 @@ function agregarServicioPredefinido(servicio) {
     <div class="modal-content">
         <h3 style="color:#B22234; margin-bottom:20px;"><i class="fas fa-plus-circle"></i> Agregar Nuevo Equipo al Catálogo</h3>
         <div class="form-grid">
-            <div class="field"><label>Marca</label><select id="nuevoEquipoMarca"><option value="TRANE">TRANE</option><option value="HISENSE">HISENSE</option><option value="YORK">YORK</option><option value="CARRIER">CARRIER</option><option value="DUVENTUS">DUVENTUS</option><option value="RHEEM">RHEEM</option></select></div>
+            <div class="field"><label>Marca</label><select id="nuevoEquipoMarca"><option value="TRANE">TRANE</option><option value="HISENSE">HISENSE</option><option value="YORK">YORK</option><option value="CARRIER">CARRIER</option><option value="DUVENTUS">DUVENTUS</option><option value="TCL">TCL</option></select></div>
             <div class="field"><label>Modelo</label><input type="text" id="nuevoEquipoModelo" placeholder="Ej: 4MCW1512A9000AA"></div>
             <div class="field"><label>Tipo</label><input type="text" id="nuevoEquipoTipo" placeholder="Ej: EVAPORADOR, MINISPLIT"></div>
             <div class="field"><label>Capacidad</label><input type="text" id="nuevoEquipoCapacidad" placeholder="Ej: 1.0 TR"></div>
@@ -3398,7 +3743,7 @@ function agregarServicioPredefinido(servicio) {
 
 <script>
     
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwfgtT-D7VbHwSuVQYGplC5YDrIo1flSLJp0IU-D4gcnmOcuR9uEMsDxXYQxzCNhhhn/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbw1C8p9S1VbUeh4ls2lcthxbFpaQDjFxOu96nBxacfqpvA2qLIbDOLSGfBDk9qqE2qA/exec';
 
 // ========== DATOS PARA PDF SEGÚN MODO ==========
 const datosEmpresa = {
@@ -3430,33 +3775,273 @@ function cargarModoGuardado() {
     actualizarSelectorModo();
 }
 
-// Guardar modo
-function guardarModo(modo) {
-    modoTraneExclusivo = modo;
-    localStorage.setItem('modoTraneExclusivo', modo);
-    actualizarSelectorModo();
+// ========== EVENTOS PARA FILTROS TRANE ==========
+document.getElementById('familiaTraneSelect')?.addEventListener('change', function() {
+    renderCatalogoTrane();
+    const categoria = this.value;
+    const total = categoria === 'todos' 
+        ? catalogoEquipos.filter(e => e.marca === 'TRANE').length
+        : catalogoEquipos.filter(e => e.marca === 'TRANE' && e.tipo === categoria).length;
+    showToast(`📊 ${total} equipos encontrados ${categoria !== 'todos' ? 'en ' + categoria : ''}`);
+});
+
+document.getElementById('searchTrane')?.addEventListener('input', renderCatalogoTrane);
+
+  // ========== FUNCIÓN PARA ACTUALIZAR EL INDICADOR DE EMPRESA ==========
+   function actualizarIndicadorEmpresa() {
+    const display = document.getElementById('empresaActualDisplay');
+    const icono = document.getElementById('empresaIcono');
+    const texto = document.getElementById('empresaTexto');
+    if (!display || !icono || !texto) return;
     
-    // Refrescar catálogo para mostrar solo lo permitido
-    if (document.getElementById('catalogoModule') && document.getElementById('catalogoModule').style.display !== 'none') {
-        // Refrescar la pestaña activa del catálogo
-        const activeTab = document.querySelector('.tab-catalogo-btn.active');
-        if (activeTab) {
-            const tabName = activeTab.dataset.tab;
-            if (tabName === 'trane') renderCatalogoTrane();
-            else if (tabName === 'hisense') renderCatalogoHisense();
-            else if (tabName === 'york') renderCatalogoYork();
-            else if (tabName === 'carrier') renderCatalogoCarrier();
-            else if (tabName === 'duventus') renderCatalogoDuventus();
-            else if (tabName === 'rheem') renderCatalogoRheem();
-        }
+    if (modoTraneExclusivo) {
+        // Modo TRANE Exclusivo → Rojo
+        texto.textContent = 'AIRE Y CLIMA DIANCER';
+        texto.style.color = '#B22234';  // 👈 CAMBIA EL COLOR DEL TEXTO
+        display.style.background = 'rgba(178, 34, 52, 0.12)';
+        display.style.color = '#B22234';
+        display.style.border = '2px solid rgba(178, 34, 52, 0.3)';
+        icono.className = 'empresa-icon empresa-icon-trane';
+        icono.innerHTML = '<i class="fas fa-building"></i>';
+        
+        // Cambiar también el icono del copo de nieve
+        const snowIcon = document.querySelector('.logo h1 i');
+        if (snowIcon) snowIcon.style.color = '#B22234';
+        
+    } else {
+        // Multi-marca → Turquesa
+        texto.textContent = 'AIR AND WEATHER MÉXICO';
+        texto.style.color = '#40E0D0';  // 👈 CAMBIA EL COLOR DEL TEXTO
+        display.style.background = 'rgba(64, 224, 208, 0.12)';
+        display.style.color = '#40E0D0';
+        display.style.border = '2px solid rgba(64, 224, 208, 0.3)';
+        icono.className = 'empresa-icon empresa-icon-multimarca';
+        icono.innerHTML = '<i class="fas fa-building"></i>';
+        
+        const snowIcon = document.querySelector('.logo h1 i');
+        if (snowIcon) snowIcon.style.color = '#40E0D0';
     }
-    
-    // Mostrar advertencia si hay equipos no-Trane en modo exclusivo
-    verificarEquiposNoTrane();
-    
-    showToast(modo ? "🔷 Modo TRANE Exclusivo activado" : "🌐 Modo Multi-marca activado");
 }
 
+   // ========== FUNCIÓN PARA ACTUALIZAR COLORES DEL HEADER ==========
+ function actualizarColoresHeader(modo) {
+    const header = document.getElementById('headerPrincipal');
+    if (!header) return;
+    
+    // Definir colores según modo
+    let colorPrincipal, colorSecundario, colorGradiente;
+    
+    if (modo) {
+        // ===== TRANE Exclusivo → Rojo =====
+        colorPrincipal = '#B22234';
+        colorSecundario = '#8B1A2B';
+        colorGradiente = 'linear-gradient(135deg, #B22234, #8B1A2B)';
+    } else {
+        // ===== Multi-marca → Turquesa =====
+        colorPrincipal = '#40E0D0';
+        colorSecundario = '#1E3A5F';
+        colorGradiente = 'linear-gradient(135deg, #40E0D0, #1E3A5F)';
+    }
+    
+    // ===== 1. TÍTULO DEL HEADER =====
+    const titulo = document.querySelector('.logo h1');
+    if (titulo) {
+        titulo.style.background = colorGradiente;
+        titulo.style.webkitBackgroundClip = 'text';
+        titulo.style.backgroundClip = 'text';
+        titulo.style.color = 'transparent';
+        const icon = titulo.querySelector('i');
+        if (icon) icon.style.color = colorPrincipal;
+    }
+    
+    // ===== 2. SUBTÍTULO =====
+    const subtitulo = document.querySelector('.logo p');
+    if (subtitulo) {
+        subtitulo.style.color = modo ? colorPrincipal : colorSecundario;
+    }
+    
+    // ===== 3. BORDE DEL ADDRESS =====
+    const address = document.querySelector('.company-address');
+    if (address) {
+        address.style.borderLeftColor = colorPrincipal;
+    }
+    
+    // ===== 4. BORDE SUPERIOR DEL HEADER =====
+    header.style.borderTop = `4px solid ${colorPrincipal}`;
+    header.style.border = `1px solid ${colorPrincipal}30`;
+    
+    // ===== 5. BOTÓN NAV ACTIVO =====
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (btn.classList.contains('active')) {
+            btn.style.background = colorGradiente;
+            btn.style.color = 'white';
+            btn.style.boxShadow = `0 4px 12px ${colorPrincipal}40`;
+        } else {
+            btn.style.background = 'white';
+            btn.style.color = '#475569';
+            btn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)';
+        }
+    });
+    
+    // ===== 6. BOTÓN PRIMARY (Export PDF, Guardar, etc.) =====
+    document.querySelectorAll('.btn-primary').forEach(btn => {
+        btn.style.background = `linear-gradient(95deg, ${colorPrincipal}, ${colorSecundario})`;
+        btn.style.color = 'white';
+        btn.style.border = 'none';
+    });
+    
+    // ===== 7. BOTÓN SECONDARY =====
+    document.querySelectorAll('.btn-secondary').forEach(btn => {
+        btn.style.borderColor = colorPrincipal;
+        btn.style.color = colorPrincipal;
+        btn.style.background = 'white';
+    });
+    
+    // ===== 8. CARD HEADERS =====
+    document.querySelectorAll('.card-header').forEach(header => {
+        header.style.background = `linear-gradient(105deg, ${colorSecundario} 0%, ${colorPrincipal} 100%)`;
+        header.style.borderBottom = `3px solid ${colorPrincipal}`;
+    });
+    
+    // ===== 9. TÍTULOS DE SECCIÓN =====
+    document.querySelectorAll('.seccion-titulo').forEach(tituloSec => {
+        tituloSec.style.borderLeftColor = colorPrincipal;
+        tituloSec.style.color = colorSecundario;
+    });
+    
+    // ===== 10. TOTAL AMOUNT =====
+    const totalAmount = document.querySelector('.total-amount');
+    if (totalAmount) {
+        totalAmount.style.color = colorPrincipal;
+    }
+    
+    // ===== 11. PANEL DE TOTALES =====
+    const totalsPanel = document.querySelector('.totals-panel');
+    if (totalsPanel) {
+        totalsPanel.style.border = `2px solid ${colorPrincipal}30`;
+        totalsPanel.style.borderRadius = '28px';
+    }
+    
+    // ===== 12. TIPO DE CAMBIO PANEL =====
+    const tipoCambioPanel = document.querySelector('.tipo-cambio-panel');
+    if (tipoCambioPanel) {
+        tipoCambioPanel.style.background = modo ? '#ffebee' : '#e8f0fe';
+        tipoCambioPanel.style.border = `1px solid ${colorPrincipal}30`;
+        tipoCambioPanel.style.borderRadius = '16px';
+    }
+    
+    // ===== 13. LABELS =====
+    document.querySelectorAll('.field label').forEach(label => {
+        label.style.color = colorPrincipal;
+    });
+    
+    // ===== 14. TH DE TABLAS =====
+    document.querySelectorAll('th').forEach(th => {
+        th.style.color = colorSecundario;
+        th.style.background = modo ? '#fef2f2' : '#f1f5f9';
+    });
+    
+    // ===== 15. BADGE TRANE =====
+    const badgeTrane = document.querySelector('.badge-trane');
+    if (badgeTrane) {
+        badgeTrane.style.background = colorSecundario;
+    }
+    
+    // ===== 16. SECCIÓN COTIZACIÓN =====
+    document.querySelectorAll('.seccion-cotizacion').forEach(sec => {
+        sec.style.border = `1px solid ${colorPrincipal}20`;
+        sec.style.borderRadius = '24px';
+        sec.style.background = modo ? '#fef2f2' : '#f8fafc';
+    });
+    
+    // ===== 17. TABLE WRAPPER =====
+    document.querySelectorAll('.table-wrapper').forEach(tw => {
+        tw.style.border = `1px solid ${colorPrincipal}30`;
+        tw.style.borderRadius = '20px';
+    });
+    
+    // ===== 18. TIPO DE CAMBIO DISPLAY =====
+    const tcDisplay = document.getElementById('tipoCambioDisplay');
+    if (tcDisplay) {
+        tcDisplay.style.color = colorPrincipal;
+    }
+    
+    // ===== 19. TOGGLE CURRENCY BTN =====
+    const toggleBtn = document.getElementById('toggleCurrencyBtn');
+    if (toggleBtn) {
+        toggleBtn.style.borderColor = colorPrincipal;
+        toggleBtn.style.color = colorPrincipal;
+    }
+    
+    // ===== 20. ACTUALIZAR TC BTN =====
+    const tcBtn = document.getElementById('actualizarTCBtn');
+    if (tcBtn) {
+        tcBtn.style.borderColor = colorPrincipal;
+        tcBtn.style.color = colorPrincipal;
+    }
+    
+    // ===== 21. AGREGAR EQUIPO BTN =====
+    const agregarEquipoBtn = document.getElementById('agregarEquipoBtn');
+    if (agregarEquipoBtn) {
+        agregarEquipoBtn.style.borderColor = colorPrincipal;
+        agregarEquipoBtn.style.color = colorPrincipal;
+    }
+    
+    // ===== 22. AGREGAR INSTALACION BTN =====
+    const agregarInstalacionBtn = document.getElementById('agregarInstalacionBtn');
+    if (agregarInstalacionBtn) {
+        agregarInstalacionBtn.style.borderColor = colorPrincipal;
+        agregarInstalacionBtn.style.color = colorPrincipal;
+    }
+    
+    // ===== 23. AGREGAR SERVICIO BTN =====
+    const servicioBtn = document.getElementById('agregarServicioPredefinidoBtn');
+    if (servicioBtn) {
+        servicioBtn.style.background = `linear-gradient(95deg, ${colorPrincipal}, ${colorSecundario})`;
+        servicioBtn.style.color = 'white';
+    }
+    
+    // ===== 24. EXPORT PDF BTN =====
+    const exportBtn = document.getElementById('exportPdfBtn');
+    if (exportBtn) {
+        exportBtn.style.background = `linear-gradient(95deg, ${colorPrincipal}, ${colorSecundario})`;
+        exportBtn.style.color = 'white';
+    }
+}
+
+// ========== FUNCIÓN PARA ACTUALIZAR NOMBRE DE EMPRESA EN HEADER ==========
+function actualizarNombreEmpresa(modo) {
+    const titulo = document.querySelector('.logo h1');
+    if (!titulo) return;
+    
+    if (modo) {
+        // TRANE Exclusivo → Rojo
+        titulo.innerHTML = `<i class="fas fa-snowflake" style="color:#B22234;"></i> AIRE Y CLIMA ESPECIALIZADO DIANCER`;
+        // Quitar gradiente y usar color sólido
+        titulo.style.background = 'none';
+        titulo.style.webkitBackgroundClip = 'unset';
+        titulo.style.backgroundClip = 'unset';
+        titulo.style.color = '#B22234';
+    } else {
+        // Multi-marca → Turquesa
+        titulo.innerHTML = `<i class="fas fa-snowflake" style="color:#40E0D0;"></i> AIR AND WEATHER MÉXICO`;
+        titulo.style.background = 'none';
+        titulo.style.webkitBackgroundClip = 'unset';
+        titulo.style.backgroundClip = 'unset';
+        titulo.style.color = '#40E0D0';
+    }
+}
+function actualizarTabsCatalogo(modo) {
+    const colorPrincipal = modo ? '#B22234' : '#40E0D0';
+    const tabBtns = document.querySelectorAll('.tab-catalogo-btn');
+    
+    tabBtns.forEach(btn => {
+        if (btn.classList.contains('active')) {
+            btn.style.color = colorPrincipal;
+            btn.style.borderBottom = `3px solid ${colorPrincipal}`;
+        }
+    });
+}
 
 function guardarModo(modo) {
     modoTraneExclusivo = modo;
@@ -3473,14 +4058,25 @@ function guardarModo(modo) {
             else if (tabName === 'york') renderCatalogoYork();
             else if (tabName === 'carrier') renderCatalogoCarrier();
             else if (tabName === 'duventus') renderCatalogoDuventus();
-            else if (tabName === 'rheem') renderCatalogoRheem();
+            else if (tabName === 'TCL') renderCatalogoTCL();
         }
     }
     
-    // 👇 AGREGAR ESTA LÍNEA 👇
     actualizarVisibilidadTabsCatalogo();
-    
     verificarEquiposNoTrane();
+    
+    // ===== ACTUALIZAR TODOS LOS COLORES =====
+    actualizarIndicadorEmpresa();
+    actualizarColoresHeader(modo);   // ← Ahora actualiza TODO
+    actualizarNombreEmpresa(modo);
+    actualizarTabsCatalogo(modo);    // ← Nueva función
+    
+    // Actualizar clase del header para el borde superior
+    const header = document.getElementById('headerPrincipal');
+    if (header) {
+        header.classList.remove('header-multimarca', 'header-trane');
+        header.classList.add(modo ? 'header-trane' : 'header-multimarca');
+    }
     
     showToast(modo ? "🔷 Modo TRANE Exclusivo activado" : "🌐 Modo Multi-marca activado");
 }
@@ -3684,27 +4280,30 @@ function cargarCatalogoDesdeAPI() {
     console.log("2. Callback name:", callbackName);
     
     // Definir la función callback global
-    window[callbackName] = function(data) {
-        console.log("3. Callback ejecutado. Datos recibidos:", data);
-        // Limpiar el script después de usarlo
-        delete window[callbackName];
+   window[callbackName] = function(data) {
+    console.log("3. Callback ejecutado. Datos recibidos:", data);
+    delete window[callbackName];
+    
+    if (data.exito && data.equipos) {
+        catalogoEquipos = data.equipos;
+        console.log("4. Equipos cargados:", catalogoEquipos.length);
+        showToast(`✅ ${catalogoEquipos.length} equipos cargados`);
         
-        if (data.exito && data.equipos) {
-            catalogoEquipos = data.equipos;
-            console.log("4. Equipos cargados:", catalogoEquipos.length);
-            showToast(`✅ ${catalogoEquipos.length} equipos cargados`);
-            // Refrescar todas las pestañas del catálogo
-            renderCatalogoTrane();
-            renderCatalogoHisense();
-            renderCatalogoYork();
-            renderCatalogoCarrier();
-            renderCatalogoDuventus();
-            renderCatalogoRheem();
-        } else {
-            console.log("4. Error en datos:", data);
-            showToast("⚠️ Error al cargar catálogo: " + (data.error || "sin datos"));
-        }
-    };
+        // 🆕 Cargar las categorías/familias TRANE
+        cargarFamiliasTrane();
+        
+        // Refrescar todas las pestañas del catálogo
+        renderCatalogoTrane();
+        renderCatalogoHisense();
+        renderCatalogoYork();
+        renderCatalogoCarrier();
+        renderCatalogoDuventus();
+        renderCatalogoTCL();
+    } else {
+        console.log("4. Error en datos:", data);
+        showToast("⚠️ Error al cargar catálogo: " + (data.error || "sin datos"));
+    }
+};
     
     // Crear el script JSONP
     const script = document.createElement('script');
@@ -3793,35 +4392,148 @@ let catalogoHisense = [];
 let catalogoYork = [];
 let catalogoCarrier = [];
 let catalogoDuventus = [];
-let catalogoRheem = [];
+let catalogoTCL = [];
 let serviciosGlobales = [];  // Agregar esto con las otras variables globales
+
+
+// ========== CARGAR FAMILIAS/SISTEMAS TRANE ==========
+function cargarFamiliasTrane() {
+    const select = document.getElementById('familiaTraneSelect');
+    if (!select) return;
+    
+    // Obtener todas las categorías únicas del campo 'tipo' para equipos TRANE
+    const categorias = new Set();
+    catalogoEquipos.forEach(eq => {
+        if (eq.marca === 'TRANE' && eq.tipo) {
+            categorias.add(eq.tipo);
+        }
+    });
+    
+    // Orden personalizado según tus datos
+    const orden = [
+        'Voyager ll Phase Out',
+        'Impack * Phase Out*(1.5-5 T)',
+        'SplitSystem',
+        'MiniSplits',
+        'MiniSplits-UMatch',
+        'Split Systems *Phase Out*',
+        'Furnaces and Coild',
+        'VRF',
+        'Paquetes',
+        'Controles'
+    ];
+    
+    const categoriasOrdenadas = [...categorias].sort((a, b) => {
+        const idxA = orden.indexOf(a);
+        const idxB = orden.indexOf(b);
+        if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+        if (idxA === -1) return 1;
+        if (idxB === -1) return -1;
+        return idxA - idxB;
+    });
+    
+    // Guardar valor actual
+    const valorActual = select.value;
+    select.innerHTML = '<option value="todos">🌐 Todos los sistemas</option>';
+    
+    // Agregar opciones con contador
+    categoriasOrdenadas.forEach(cat => {
+        const count = catalogoEquipos.filter(e => e.marca === 'TRANE' && e.tipo === cat).length;
+        const icono = getIconoCategoria(cat);
+        select.innerHTML += `<option value="${cat}">${icono} ${cat} (${count})</option>`;
+    });
+    
+    // Restaurar valor seleccionado si existe
+    if (valorActual && categorias.has(valorActual)) {
+        select.value = valorActual;
+    }
+}
+
+// Función auxiliar para íconos
+function getIconoCategoria(categoria) {
+    if (categoria.includes('Voyager')) return '🏢';
+    if (categoria.includes('Impack')) return '📦';
+    if (categoria.includes('SplitSystem')) return '🔀';
+    if (categoria.includes('MiniSplits-UMatch')) return '⚡';
+    if (categoria.includes('MiniSplits')) return '❄️';
+    if (categoria.includes('Furnaces')) return '🔥';
+    if (categoria.includes('VRF')) return '🌀';
+    if (categoria.includes('Paquetes')) return '📦';
+    if (categoria.includes('Controles')) return '🎮';
+    return '🔷';
+}
 
 // ========== FUNCIONES DE RENDERIZADO DE CATÁLOGO ==========
 
 function renderCatalogoTrane() {
-    let search = document.getElementById('searchTrane')?.value.toLowerCase() || '';
-    let filtered = catalogoEquipos.filter(e => 
-        e.marca === 'TRANE' && 
-        (e.modelo.toLowerCase().includes(search) || e.capacidad.toLowerCase().includes(search))
-    );
-    let tbody = document.getElementById('catalogoTraneBody');
-    if(tbody) {
-        if(filtered.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay equipos TRANE disponibles</td></tr>';
-            return;
+    const categoriaSeleccionada = document.getElementById('familiaTraneSelect')?.value || 'todos';
+    const search = document.getElementById('searchTrane')?.value.toLowerCase() || '';
+    const tbody = document.getElementById('catalogoTraneBody');
+    if (!tbody) return;
+    
+    // Filtrar equipos TRANE
+    let filtered = catalogoEquipos.filter(e => {
+        if (e.marca !== 'TRANE') return false;
+        
+        // Filtrar por categoría (usando el campo 'tipo')
+        if (categoriaSeleccionada !== 'todos') {
+            const categoria = e.tipo || 'Otros';
+            if (categoria !== categoriaSeleccionada) return false;
         }
-        tbody.innerHTML = filtered.map(e => `
-            <tr>
-                <td><strong>${escapeHtml(e.modelo)}</strong></td>
-                <td>${escapeHtml(e.tipo || '')}</td>
-                <td>${escapeHtml(e.capacidad || '')}</td>
-                <td>${escapeHtml(e.tension || '')}</td>
-                <td style="font-size:0.75rem;">${escapeHtml(e.tecnologia || '')}</td>
-                <td><strong>$${e.precioVenta.toFixed(2)} USD</strong></td>
-                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('TRANE','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">+ Cotizar</button></td>
-            </tr>
-        `).join('');
+        
+        // Buscador por texto
+        if (search) {
+            const texto = (e.modelo + ' ' + e.capacidad + ' ' + e.tecnologia + ' ' + (e.tipo || '')).toLowerCase();
+            if (!texto.includes(search)) return false;
+        }
+        return true;
+    });
+    
+    // Ordenar por categoría primero
+    filtered.sort((a, b) => (a.tipo || 'Otros').localeCompare(b.tipo || 'Otros'));
+    
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px;">
+            <i class="fas fa-search" style="font-size:24px; color:#94a3b8;"></i><br>
+            No hay equipos TRANE para esta categoría
+        </td></tr>`;
+        return;
     }
+    
+    tbody.innerHTML = filtered.map(e => {
+        const categoria = e.tipo || 'Otros';
+        const badgeColor = getColorCategoria(categoria);
+        const badgeIcon = getIconoCategoria(categoria);
+        
+        return `<tr>
+            <td><strong>${escapeHtml(e.modelo)}</strong></td>
+            <td><span style="display:inline-block; background:${badgeColor}; color:white; padding:3px 12px; border-radius:20px; font-size:0.65rem; font-weight:700; white-space:nowrap;">${badgeIcon} ${escapeHtml(categoria)}</span></td>
+            <td>${escapeHtml(e.capacidad || 'No especificada')}</td>
+            <td>${escapeHtml(e.tension || 'No especificada')}</td>
+            <td style="font-size:0.75rem;">${escapeHtml(e.tecnologia || 'Estándar')}</td>
+            <td><strong>$${e.precioVenta.toFixed(2)} USD</strong></td>
+            <td>
+                <button class="btn-secondary" style="padding:4px 12px; font-size:0.7rem;" 
+                    onclick="agregarEquipoDirecto('TRANE','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">
+                    <i class="fas fa-plus"></i> Cotizar
+                </button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+// Función auxiliar para colores de categoría
+function getColorCategoria(categoria) {
+    if (categoria.includes('Voyager')) return '#1E3A5F';
+    if (categoria.includes('Impack')) return '#2c7a4b';
+    if (categoria.includes('SplitSystem')) return '#0284c7';
+    if (categoria.includes('MiniSplits-UMatch')) return '#d97706';
+    if (categoria.includes('MiniSplits')) return '#c2410c';
+    if (categoria.includes('Furnaces')) return '#6b21a5';
+    if (categoria.includes('VRF')) return '#B22234';
+    if (categoria.includes('Paquetes')) return '#0f766e';
+    if (categoria.includes('Controles')) return '#9333ea';
+    return '#64748b';
 }
 
 function renderCatalogoYork() {
@@ -3920,12 +4632,12 @@ function renderCatalogoDuventus() {
     }
 }
 
-function renderCatalogoRheem() {
-    let filtered = catalogoEquipos.filter(e => e.marca === 'RHEEM');
-    let tbody = document.getElementById('catalogoRheemBody');
+function renderCatalogoTCL() {
+    let filtered = catalogoEquipos.filter(e => e.marca === 'TCL');
+    let tbody = document.getElementById('catalogoTCLBody');
     if(tbody) {
         if(filtered.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay equipos RHEEM disponibles</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay equipos TCL disponibles</td></tr>';
             return;
         }
         tbody.innerHTML = filtered.map(e => `
@@ -3936,7 +4648,7 @@ function renderCatalogoRheem() {
                 <td>${escapeHtml(e.tension || '')}</td>
                 <td style="font-size:0.75rem;">${escapeHtml(e.tecnologia || '')}</td>
                 <td><strong>$${e.precioVenta.toFixed(2)}</strong> MXN</td>
-                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('RHEEM','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">+ Cotizar</button></td>
+                <td><button class="btn-secondary" style="padding:4px 12px;" onclick="agregarEquipoDirecto('TCL','${escapeHtml(e.modelo)}','${escapeHtml(e.capacidad)}', ${e.precioVenta}, '${escapeHtml(e.tecnologia)}')">+ Cotizar</button></td>
             </tr>
         `).join('');
     }
@@ -4044,10 +4756,14 @@ function verificarLogin() {
             catalogoYork: catalogoYork,
             catalogoCarrier: catalogoCarrier,
             catalogoDuventus: catalogoDuventus,
-            catalogoRheem: catalogoRheem,
+            catalogoTCL: catalogoTCL,
             numerosCotizacion: {}
         }
     };
+
+  
+// ========== MODIFICAR LA FUNCIÓN guardarModo() ==========
+// Busca la función guardarModo() y MODIFÍCALA agregando estas líneas al final:
     
     // Guardar contadores de números de cotización
     for (let key in localStorage) {
@@ -4132,9 +4848,9 @@ function verificarSesionGuardada() {
             else if (marca === "HISENSE") catalogoHisense[index].precioBase = precioNum;
             else if (marca === "CARRIER") catalogoCarrier[index].precioBase = precioNum;
             else if (marca === "DUVENTUS") catalogoDuventus[index].precioBase = precioNum;
-            else if (marca === "RHEEM") catalogoRheem[index].precioBase = precioNum;
+            else if (marca === "TCL") catalogoTCL[index].precioBase = precioNum;
             renderCatalogoTrane(); renderCatalogoHisense(); renderCatalogoYork(); 
-            renderCatalogoCarrier(); renderCatalogoDuventus(); renderCatalogoRheem();
+            renderCatalogoCarrier(); renderCatalogoDuventus(); renderCatalogoTCL();
             showToast(`Precio actualizado`);
         }
     };
@@ -4187,9 +4903,9 @@ function verificarSesionGuardada() {
         nuevoEquipo.precioBase = precioBase;
         catalogoDuventus.push(nuevoEquipo);
     }
-    else if (marca === "RHEEM") {
+    else if (marca === "TCL") {
         nuevoEquipo.precioBase = precioBase;
-        catalogoRheem.push(nuevoEquipo);
+        catalogoTCL.push(nuevoEquipo);
     }
     
     // Limpiar campos del modal
@@ -4209,113 +4925,470 @@ function verificarSesionGuardada() {
     renderCatalogoYork(); 
     renderCatalogoCarrier(); 
     renderCatalogoDuventus(); 
-    renderCatalogoRheem();
+    renderCatalogoTCL();
 }
+
+
+
+
+
+// ============================================================
+// ========== CORRECCIÓN: SISTEMA DE LOCALSTORAGE ==========
+// ============================================================
+
+// 1. Función para CARGAR datos desde LocalStorage al iniciar
+function cargarDatosDesdeLocalStorage() {
+    try {
+        const historialGuardado = localStorage.getItem('crm_historial');
+        if (historialGuardado) {
+            historialCotizaciones = JSON.parse(historialGuardado);
+            console.log(`✅ Cargadas ${historialCotizaciones.length} cotizaciones`);
+        } else {
+            historialCotizaciones = [];
+            console.log("ℹ️ No hay cotizaciones guardadas");
+        }
+
+        const seguimientosGuardados = localStorage.getItem('crm_seguimientos');
+        if (seguimientosGuardados) {
+            seguimientosList = JSON.parse(seguimientosGuardados);
+            console.log(`✅ Cargados ${seguimientosList.length} seguimientos`);
+        } else {
+            seguimientosList = [];
+        }
+
+        const leadsGuardados = localStorage.getItem('crm_leads');
+        if (leadsGuardados) {
+            leadsList = JSON.parse(leadsGuardados);
+            console.log(`✅ Cargados ${leadsList.length} leads`);
+        } else {
+            leadsList = [];
+        }
+
+        // Cargar tipo de cambio guardado
+        const tcGuardado = localStorage.getItem('tipoCambioActual');
+        if (tcGuardado) {
+            tipoCambioActual = parseFloat(tcGuardado);
+        }
+
+        // Cargar modo TRANE
+        const modoGuardado = localStorage.getItem('modoTraneExclusivo');
+        if (modoGuardado !== null) {
+            modoTraneExclusivo = modoGuardado === 'true';
+        }
+
+        const pcGuardado = localStorage.getItem('porcentajeCiudad');
+        if (pcGuardado) {
+           porcentajeCiudad = parseFloat(pcGuardado); 
+       }
+
+        return true;
+    } catch (error) {
+        console.error("❌ Error al cargar datos:", error);
+        return false;
+    }
+}
+
+// 2. Función para GUARDAR datos en LocalStorage
+function guardarTodosLosDatos() {
+    try {
+        localStorage.setItem('crm_historial', JSON.stringify(historialCotizaciones));
+        localStorage.setItem('crm_seguimientos', JSON.stringify(seguimientosList));
+        localStorage.setItem('crm_leads', JSON.stringify(leadsList));
+        localStorage.setItem('tipoCambioActual', String(tipoCambioActual));
+        localStorage.setItem('modoTraneExclusivo', String(modoTraneExclusivo));
+        localStorage.setItem('porcentajeCiudad', String(porcentajeCiudad));
+        
+        // También guardar números de cotización
+        const prefijosVendedor = { 'Alexis Vázquez': 'ALX', 'Administrador': 'ADM', 'Equipo de Ventas': 'VTAS' };
+        for (let [nombre, prefijo] of Object.entries(prefijosVendedor)) {
+            const key = `ultimoNumero_${prefijo}`;
+            const valor = localStorage.getItem(key);
+            if (valor) {
+                // Ya está guardado
+            } else {
+                localStorage.setItem(key, '0');
+            }
+        }
+        
+        console.log("💾 Datos guardados en LocalStorage");
+        return true;
+    } catch (error) {
+        console.error("❌ Error al guardar datos:", error);
+        return false;
+    }
+}
+
+// 3. SOBRESCRIBIR funciones de guardado para que SIEMPRE guarden en LocalStorage
+
+// Guardar función original de renderHistorial
+const renderHistorialOriginal = renderHistorial;
+
+// Nueva función que guarda antes de renderizar
+renderHistorial = function() {
+    guardarTodosLosDatos();
+    renderHistorialOriginal();
+};
+
+// Guardar función original de renderSeguimientos
+const renderSeguimientosOriginal = renderSeguimientos;
+
+renderSeguimientos = function() {
+    guardarTodosLosDatos();
+    renderSeguimientosOriginal();
+};
+
+// Guardar función original de renderLeads
+const renderLeadsOriginal = renderLeads;
+
+renderLeads = function() {
+    guardarTodosLosDatos();
+    renderLeadsOriginal();
+};
+
+// 4. Modificar el evento de agregar cotización para guardar
+const agregarHistorialBtn = document.getElementById('agregarHistorialBtn');
+if (agregarHistorialBtn) {
+    const listenerOriginal = agregarHistorialBtn._listeners ? agregarHistorialBtn._listeners[0] : null;
+    
+    // Reemplazar el evento
+    agregarHistorialBtn.removeEventListener('click', agregarHistorialBtn._listeners?.[0]);
+    
+    agregarHistorialBtn.addEventListener('click', async function() {
+        // Código original de guardado...
+        let nombreCliente = document.getElementById('clienteName').value.trim();
+        let condicionesPago = document.getElementById('condicionesPago').value.trim();
+        let area = parseFloat(document.getElementById('areaM2').value) || 0;
+        let ejecutivo = document.getElementById('vendedorNombre').value;
+        
+        let idCliente = document.getElementById('newHistIdCliente').value.trim() || 'N/A';
+        let medio = document.getElementById('newHistMedio').value;
+        let categoria = document.getElementById('newHistCategoria').value;
+        let descEquipoManual = document.getElementById('newHistDescEquipo').value.trim();
+        let importeManual = parseFloat(document.getElementById('newHistImporte').value);
+        let monedaManual = document.getElementById('newHistMoneda').value;
+        
+        if (!nombreCliente) {
+            showToast("⚠️ El nombre del cliente es obligatorio");
+            return;
+        }
+        
+        let total = calcularTotales();
+        let importeTotal = !isNaN(importeManual) && importeManual > 0 ? importeManual : total.totalFinal;
+        let moneda = monedaManual || (mostrarEnUSD ? 'USD' : 'MXN');
+        
+        let descripcionCompleta = descEquipoManual;
+        if (!descripcionCompleta) {
+            let descEquipos = equipos.map(e => `${e.marca} ${e.modelo} (${e.cantidad})`).join(', ');
+            let descInstalaciones = instalaciones.map(i => `${i.concepto} (${i.cantidad})`).join(', ');
+            descripcionCompleta = '';
+            if (descEquipos) descripcionCompleta += `📦 EQUIPOS: ${descEquipos}`;
+            if (descInstalaciones) {
+                if (descripcionCompleta) descripcionCompleta += ' | ';
+                descripcionCompleta += `🔧 INSTALACIONES: ${descInstalaciones}`;
+            }
+            if (!descripcionCompleta) descripcionCompleta = 'Sin equipos ni instalaciones';
+        }
+        
+        const vendedorActual = document.getElementById('vendedorNombre').value;
+        const prefijosVendedor = { 'Alexis Vázquez': 'ALX', 'Administrador': 'ADM', 'Equipo de Ventas': 'VTAS' };
+        const prefijo = prefijosVendedor[vendedorActual] || vendedorActual.substring(0, 3).toUpperCase();
+        const keyUltimoNumero = `ultimoNumero_${prefijo}`;
+        let ultimoNumero = parseInt(localStorage.getItem(keyUltimoNumero) || '0');
+        ultimoNumero++;
+        const numeroCotizacion = `${prefijo}-${String(ultimoNumero).padStart(3, '0')}`;
+        localStorage.setItem(keyUltimoNumero, ultimoNumero);
+        
+        await guardarEnAPI('guardarCotizacion', {
+            cliente: nombreCliente,
+            condicionesPago: condicionesPago,
+            area: area,
+            subtotal: total.subtotal,
+            iva: total.iva,
+            total: importeTotal,
+            moneda: moneda,
+            numeroCotizacion: numeroCotizacion,
+            idCliente: idCliente,
+            medio: medio,
+            categoria: categoria,
+            equipos: equipos.map(e => ({
+                marca: e.marca,
+                modelo: e.modelo,
+                cantidad: e.cantidad,
+                precioUnitario: e.precioVenta
+            })),
+            instalaciones: instalaciones.map(i => ({
+                concepto: i.concepto,
+                cantidad: i.cantidad,
+                costoUnitario: i.costoUnitario
+            })),
+            descripcionEquipo: descripcionCompleta
+        });
+        
+        const nuevoId = generarIdUnico();
+        
+        let nuevo = {
+            id: nuevoId,
+            numeroCotizacion: numeroCotizacion,
+            nombre: nombreCliente,
+            idCliente: idCliente,
+            medio: medio,
+            importe: importeTotal,
+            moneda: moneda,
+            descEquipo: descripcionCompleta,
+            categoria: categoria,
+            ejecutivo: ejecutivo,
+            fecha: new Date().toLocaleDateString('es-MX'),
+            vendedorQueCreo: ejecutivo,
+            equipos: [...equipos],
+            instalaciones: [...instalaciones],
+            condicionesPago: condicionesPago,
+            areaM2: area
+        };
+        
+        historialCotizaciones.unshift(nuevo);
+        
+        // 🔥 GUARDAR EN LOCALSTORAGE 🔥
+        guardarTodosLosDatos();
+        
+        renderHistorial();
+        
+        showToast(`✓ Cotización ${numeroCotizacion} guardada: $${importeTotal.toFixed(2)} ${moneda}`);
+        
+        document.getElementById('newHistNombre').value = '';
+        document.getElementById('newHistIdCliente').value = '';
+        document.getElementById('newHistImporte').value = '';
+        document.getElementById('newHistDescEquipo').value = '';
+    });
+}
+
+// 5. INICIALIZACIÓN AL CARGAR LA PÁGINA
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("🔄 Iniciando sistema...");
+    
+    // Cargar datos desde LocalStorage
+    const cargado = cargarDatosDesdeLocalStorage();
+    
+    if (cargado) {
+        console.log("✅ Datos cargados correctamente");
+    } else {
+        console.log("⚠️ No se pudieron cargar los datos, usando valores por defecto");
+    }
+    
+    // Renderizar todas las tablas
+    renderHistorial();
+    renderSeguimientos();
+    renderLeads();
+    renderEquipos();
+    renderInstalaciones();
+    
+    // Actualizar badge de recordatorios
+    actualizarBadgeRecordatorios();
+    
+    // Verificar sesión guardada
+    verificarSesionGuardada();
+    
+    // ===== NUEVO: INICIALIZAR INDICADOR DE EMPRESA =====
+    // Cargar el modo guardado y actualizar el indicador
+    const modoGuardado = localStorage.getItem('modoTraneExclusivo') === 'true';
+    modoTraneExclusivo = modoGuardado;
+    actualizarIndicadorEmpresa();
+    actualizarColoresHeader(modoGuardado);
+    actualizarNombreEmpresa(modoGuardado);
+    actualizarTabsCatalogo(modoGuardado);
+    // ====================================================
+    
+    // Inicializar otros módulos
+    inicializarFechaSelector();
+    configurarFiltroFecha();
+    renderizarGrafico(30);
+    configurarPeriodosGrafico();
+    cargarCatalogoDesdeAPI();
+    
+    console.log("🚀 Sistema inicializado correctamente");
+});
+
+// 6. GUARDAR AUTOMÁTICAMENTE CADA 30 SEGUNDOS
+setInterval(() => {
+    guardarTodosLosDatos();
+    console.log("💾 Auto-guardado cada 30 segundos");
+}, 30000);
+
+// 7. GUARDAR ANTES DE CERRAR LA PÁGINA
+window.addEventListener('beforeunload', function() {
+    guardarTodosLosDatos();
+    console.log("💾 Datos guardados antes de cerrar");
+});
+
+// 8. Función de RESCATE: si el LocalStorage se corrompe, restaurar datos de respaldo
+function recuperarRespaldoLocal() {
+    const respaldo = localStorage.getItem('respaldo_emergencia_auto');
+    if (respaldo) {
+        try {
+            const datos = JSON.parse(respaldo);
+            if (datos.datos) {
+                historialCotizaciones = datos.datos.historialCotizaciones || [];
+                seguimientosList = datos.datos.seguimientosList || [];
+                leadsList = datos.datos.leadsList || [];
+                guardarTodosLosDatos();
+                renderHistorial();
+                renderSeguimientos();
+                renderLeads();
+                showToast("🔄 Respaldo de emergencia restaurado");
+                return true;
+            }
+        } catch (e) {
+            console.error("❌ Error al recuperar respaldo:", e);
+        }
+    }
+    return false;
+}
+
+// Intentar recuperar respaldo si no hay datos
+setTimeout(() => {
+    if (historialCotizaciones.length === 0 && seguimientosList.length === 0) {
+        recuperarRespaldoLocal();
+    }
+}, 1000);
+
+console.log("✅ Sistema de LocalStorage corregido y funcionando");
 
 function renderEquipos() {
     let tbody = document.getElementById('equiposBody');
     if(!tbody) return;
     tbody.innerHTML = '';
+    
     equipos.forEach((eq, idx) => {
-        // Determinar qué precio mostrar según el toggle
+        // ===== CALCULAR PRECIO SEGÚN TOGGLE =====
         let precioActual;
         let monedaActual;
         let subtotal;
         
         if (mostrarEnUSD) {
-            // Modo USD: mostrar todo en USD
-            if (eq.monedaOriginal === 'USD') {
-                precioActual = eq.precioOriginal;
-                monedaActual = 'USD';
-            } else {
-                precioActual = eq.precioOriginal / tipoCambioActual;
-                monedaActual = 'USD';
-            }
-            subtotal = eq.cantidad * precioActual;
+            precioActual = eq.precioUSD || (eq.precioMXN / tipoCambioActual);
+            monedaActual = 'USD';
         } else {
-            // Modo MXN: mostrar todo en MXN
-            if (eq.monedaOriginal === 'USD') {
-                precioActual = eq.precioMXN;
-                monedaActual = 'MXN';
-            } else {
-                precioActual = eq.precioOriginal;
-                monedaActual = 'MXN';
-            }
-            subtotal = eq.cantidad * precioActual;
+            precioActual = eq.precioMXN;
+            monedaActual = 'MXN';
         }
         
+        subtotal = eq.cantidad * precioActual;
         let marcaClass = `badge-${eq.marca.toLowerCase()}`;
-        let simbolo = monedaActual === 'USD' ? '$' : '$$';
+        let simbolo = monedaActual === 'USD' ? '$' : '$';
+        
+        // ===== CONTROLES SEGÚN MARCA =====
+        let controlesAjuste;
+        let infoBase;
+        
+        if (eq.esTrane) {
+            // ===== TRANE: Factores A y B =====
+            controlesAjuste = `
+                <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap; font-size:0.65rem;">
+                    <span>Factor A:</span>
+                    <input type="number" class="editFactorA" data-idx="${idx}" value="${eq.factorA}" style="width:80px;" step="0.01" min="0.01">
+                    <span>× B:</span>
+                    <input type="number" class="editFactorB" data-idx="${idx}" value="${eq.factorB}" style="width:80px;" step="0.01" min="0.01">
+                </div>
+            `;
+            infoBase = `<small style="color:#64748b;">Base: $${eq.precioBase.toFixed(2)} USD</small>`;
+            
+        } else if (eq.esYork) {
+            // ===== YORK: Solo porcentaje extra =====
+            controlesAjuste = `
+                <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap; font-size:0.65rem;">
+                    <span>+ %:</span>
+                    <input type="number" class="editPorcentajeExtra" data-idx="${idx}" value="${eq.porcentajeExtra}" style="width:80px;" step="1" min="0">
+                </div>
+            `;
+            infoBase = `<small style="color:#64748b;">Base: $${eq.precioBase.toFixed(2)} USD</small>`;
+            
+        } else {
+            // ===== OTRAS MARCAS (HISENSE, CARRIER, DUVENTUS, TCL): solo porcentaje =====
+            controlesAjuste = `
+                <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap; font-size:0.65rem;">
+                    <span>+ %:</span>
+                    <input type="number" class="editPorcentajeExtra" data-idx="${idx}" value="${eq.porcentajeExtra}" style="width:80px;" step="1" min="0">
+                </div>
+            `;
+            infoBase = `<small style="color:#64748b;">Base: $${eq.precioBaseMXN.toFixed(2)} MXN</small>`;
+        }
         
         tbody.innerHTML += `
         <tr>
-            <td><span class="badge-marca ${marcaClass}">${eq.marca}</span></td>
+            <td><span class="badge-marca ${marcaClass}">${eq.marca} ${eq.esTrane ? '🔷' : ''}</span></td>
             <td>${eq.modelo}</td>
             <td>${eq.capacidad}</td>
-            <td><input type="text" class="editDescripcion" data-idx="${idx}" value="${(eq.descripcion || '').replace(/"/g, '&quot;')}" style="width:200px;" placeholder="Descripción"></td>
-            <td><input type="number" class="editCantidad" data-idx="${idx}" value="${eq.cantidad}" style="width:60px;"></td>
-            <td style="background:#f5f5f5;"><small>Base: ${eq.monedaOriginal === 'USD' ? '$' : '$$'}${eq.precioOriginal.toFixed(4)} ${eq.monedaOriginal}</small></td>
-            <td><input type="number" class="editUtilidadEmpresa" data-idx="${idx}" value="${eq.utilidadEmpresa}" style="width:70px;" min="0" step="1"> %</td>
-            <td><input type="number" class="editUtilidadVendedor" data-idx="${idx}" value="${eq.utilidadVendedor}" style="width:70px;" min="0" step="1"> %</td>
+            <td><input type="text" class="editDescripcion" data-idx="${idx}" value="${(eq.descripcion || '').replace(/"/g, '&quot;')}" style="width:160px;"></td>
+            <td><input type="number" class="editCantidad" data-idx="${idx}" value="${eq.cantidad}" style="width:80px;" min="1"></td>
+            <td style="background:#f5f5f5; font-size:0.7rem; min-width:200px;">
+                ${controlesAjuste}
+                ${infoBase}
+            </td>
             <td><strong>${simbolo}${precioActual.toFixed(2)} ${monedaActual}</strong></td>
             <td class="subtotalEq"><strong>${simbolo}${subtotal.toLocaleString('es-MX', {minimumFractionDigits: 2})} ${monedaActual}</strong></td>
             <td><button class="deleteEquipo" data-idx="${idx}" style="background:none; border:none; color:#B22234;"><i class="fas fa-trash"></i></button></td>
-        <tr>`;
+        </tr>`;
     });
     
-    // ========== TODOS LOS EVENT LISTENERS DENTRO DE LA FUNCIÓN ==========
-    document.querySelectorAll('.editDescripcion').forEach(i => i.addEventListener('change', (e) => { 
-        equipos[e.target.dataset.idx].descripcion = e.target.value; 
-        renderAll(); 
-    }));
+    // ===== EVENTOS =====
     
-    document.querySelectorAll('.editCantidad').forEach(i => i.addEventListener('change', (e) => { 
-        equipos[e.target.dataset.idx].cantidad = parseFloat(e.target.value) || 1; 
-        renderAll(); 
-    }));
+    // Factor A (TRANE)
+    document.querySelectorAll('.editFactorA').forEach(i => {
+        i.addEventListener('change', (e) => {
+            let idx = e.target.dataset.idx;
+            let eq = equipos[idx];
+            eq.factorA = parseFloat(e.target.value) || 0.01;
+            recalcularPrecioEquipo(idx);
+            renderAll();
+        });
+    });
     
-    document.querySelectorAll('.editUtilidadEmpresa').forEach(i => i.addEventListener('change', (e) => { 
-        let idx = e.target.dataset.idx;
-        let val = parseFloat(e.target.value) || 0;
-        if (val < 0) {
-            showToast("❌ La utilidad no puede ser negativa. Se ha establecido en 0%");
-            val = 0;
-            e.target.value = 0;
-        }
-        equipos[idx].utilidadEmpresa = val;
-        if (equipos[idx].monedaOriginal === 'USD') {
-            const precioEnMXN = equipos[idx].precioOriginal * tipoCambioActual;
-            const conUtilidadEmpresa = precioEnMXN * (1 + equipos[idx].utilidadEmpresa / 100);
-            equipos[idx].precioMXN = conUtilidadEmpresa * (1 + equipos[idx].utilidadVendedor / 100);
-            equipos[idx].precioVentaMXN = equipos[idx].precioMXN;
-        }
-        renderAll();
-    }));
+    // Factor B (TRANE)
+    document.querySelectorAll('.editFactorB').forEach(i => {
+        i.addEventListener('change', (e) => {
+            let idx = e.target.dataset.idx;
+            let eq = equipos[idx];
+            eq.factorB = parseFloat(e.target.value) || 0.01;
+            recalcularPrecioEquipo(idx);
+            renderAll();
+        });
+    });
     
-    document.querySelectorAll('.editUtilidadVendedor').forEach(i => i.addEventListener('change', (e) => { 
-        let idx = e.target.dataset.idx;
-        let val = parseFloat(e.target.value) || 0;
-        if (val < 0) {
-            showToast("❌ La utilidad no puede ser negativa. Se ha establecido en 0%");
-            val = 0;
-            e.target.value = 0;
-        }
-        equipos[idx].utilidadVendedor = val;
-        if (equipos[idx].monedaOriginal === 'USD') {
-            const precioEnMXN = equipos[idx].precioOriginal * tipoCambioActual;
-            const conUtilidadEmpresa = precioEnMXN * (1 + equipos[idx].utilidadEmpresa / 100);
-            equipos[idx].precioMXN = conUtilidadEmpresa * (1 + equipos[idx].utilidadVendedor / 100);
-            equipos[idx].precioVentaMXN = equipos[idx].precioMXN;
-        }
-        renderAll();
-    }));
+    // Porcentaje Extra (TODAS las marcas)
+    document.querySelectorAll('.editPorcentajeExtra').forEach(i => {
+        i.addEventListener('change', (e) => {
+            let idx = e.target.dataset.idx;
+            let eq = equipos[idx];
+            eq.porcentajeExtra = parseFloat(e.target.value) || 0;
+            recalcularPrecioEquipo(idx);
+            renderAll();
+        });
+    });
     
-    document.querySelectorAll('.deleteEquipo').forEach(b => b.addEventListener('click', (e) => { 
-        let idx = parseInt(b.dataset.idx); 
-        equipos.splice(idx, 1); 
-        renderAll(); 
-    }));
-}  // <--- FIN DE LA FUNCIÓN renderEquipos()
+    // Descripción
+    document.querySelectorAll('.editDescripcion').forEach(i => {
+        i.addEventListener('change', (e) => { 
+            equipos[e.target.dataset.idx].descripcion = e.target.value; 
+            renderAll(); 
+        });
+    });
+    
+    // Cantidad
+    document.querySelectorAll('.editCantidad').forEach(i => {
+        i.addEventListener('change', (e) => { 
+            equipos[e.target.dataset.idx].cantidad = parseFloat(e.target.value) || 1; 
+            renderAll(); 
+        });
+    });
+    
+    // Eliminar equipo
+    document.querySelectorAll('.deleteEquipo').forEach(b => {
+        b.addEventListener('click', (e) => { 
+            let idx = parseInt(b.dataset.idx); 
+            equipos.splice(idx, 1); 
+            renderAll(); 
+        });
+    });
+}
 
     function renderInstalaciones() {
         let tbody = document.getElementById('instalacionBody');
@@ -4338,36 +5411,38 @@ function renderEquipos() {
     }
     
  function calcularTotales() {
-    // Para los totales, siempre usar el valor en MXN (para IVA y total final)
+    // ========== CALCULAR TOTAL EQUIPOS EN MXN ==========
     let totalEquiposMXN = equipos.reduce((acc, e) => {
-        if (e.monedaOriginal === 'USD') {
-            // Si es USD, usar el precio MXN calculado con utilidades
-            return acc + (e.cantidad * e.precioMXN);
-        } else {
-            // Si es MXN, usar el precio original
-            return acc + (e.cantidad * e.precioOriginal);
-        }
+        return acc + (e.cantidad * e.precioMXN);
     }, 0);
     
-    let costoInstalacion = instalaciones.reduce((acc, i) => acc + (i.cantidad * i.costoUnitario), 0);
-    let subtotalMXN = totalEquiposMXN + costoInstalacion;
+    // ========== APLICAR PORCENTAJE DE CIUDAD (MANUAL) ==========
+    let recargoCiudad = totalEquiposMXN * (porcentajeCiudad / 100);
+    let totalEquiposConRecargo = totalEquiposMXN + recargoCiudad;
+    
+    // ========== INSTALACIONES (siempre en MXN) ==========
+    let costoInstalacion = instalaciones.reduce((acc, i) => {
+        return acc + (i.cantidad * i.costoUnitario);
+    }, 0);
+    
+    let subtotalMXN = totalEquiposConRecargo + costoInstalacion;
     let ivaMXN = subtotalMXN * 0.16;
     let totalFinalMXN = subtotalMXN + ivaMXN;
     
-    // Calcular en USD si es necesario (para mostrar)
+    // ========== CALCULAR EN USD ==========
     let subtotalUSD = subtotalMXN / tipoCambioActual;
     let ivaUSD = subtotalUSD * 0.16;
     let totalFinalUSD = subtotalUSD + ivaUSD;
     
-    // Mostrar según la moneda seleccionada en el toggle
+    // ========== MOSTRAR SEGÚN TOGGLE ==========
     if(mostrarEnUSD) {
-        document.getElementById('totalEquiposVenta').innerHTML = `$${(totalEquiposMXN / tipoCambioActual).toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
+        document.getElementById('totalEquiposVenta').innerHTML = `$${(totalEquiposConRecargo / tipoCambioActual).toLocaleString('es-MX', {minimumFractionDigits: 2})} USD <small style="color:#d97706; font-size:0.6rem;">(+${porcentajeCiudad}%)</small>`;
         document.getElementById('totalInstalacion').innerHTML = `$${(costoInstalacion / tipoCambioActual).toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
         document.getElementById('subtotalGeneral').innerHTML = `$${subtotalUSD.toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
         document.getElementById('ivaMonto').innerHTML = `$${ivaUSD.toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
         document.getElementById('totalFinalDisplay').innerHTML = `$${totalFinalUSD.toLocaleString('es-MX', {minimumFractionDigits: 2})} USD`;
     } else {
-        document.getElementById('totalEquiposVenta').innerHTML = `$${totalEquiposMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
+        document.getElementById('totalEquiposVenta').innerHTML = `$${totalEquiposConRecargo.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN <small style="color:#d97706; font-size:0.6rem;">(+${porcentajeCiudad}%)</small>`;
         document.getElementById('totalInstalacion').innerHTML = `$${costoInstalacion.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
         document.getElementById('subtotalGeneral').innerHTML = `$${subtotalMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
         document.getElementById('ivaMonto').innerHTML = `$${ivaMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
@@ -4375,31 +5450,91 @@ function renderEquipos() {
     }
     
     document.getElementById('autorizacionAlert').style.display = totalFinalMXN > 500000 ? 'block' : 'none';
-    return { subtotal: mostrarEnUSD ? subtotalUSD : subtotalMXN, iva: mostrarEnUSD ? ivaUSD : ivaMXN, totalFinal: mostrarEnUSD ? totalFinalUSD : totalFinalMXN };
+    
+    return { 
+        subtotal: mostrarEnUSD ? subtotalUSD : subtotalMXN, 
+        iva: mostrarEnUSD ? ivaUSD : ivaMXN, 
+        totalFinal: mostrarEnUSD ? totalFinalUSD : totalFinalMXN 
+    };
 }
     
     function renderAll() { renderEquipos(); renderInstalaciones(); calcularTotales(); }
 
-    
-window.agregarEquipoDirecto = function(marca, modelo, capacidad, precio, tecnologiaCompleta) {
-    // Determinar si es TRANE o YORK (precios en USD)
-    const esTraneYork = (marca === 'TRANE' || marca === 'YORK');
+
+    // ============================================================
+// ========== EVENTO PARA PORCENTAJE DE CIUDAD (MANUAL) ==========
+// ============================================================
+
+document.getElementById('porcentajeCiudadInput')?.addEventListener('input', function() {
+    let valor = parseFloat(this.value);
+    if (isNaN(valor) || valor < 0) {
+        valor = 0;
+        this.value = 0;
+    }
+    porcentajeCiudad = valor;
+    document.getElementById('porcentajeCiudadDisplay').textContent = `+${porcentajeCiudad}%`;
+    renderAll();
+});
+
+document.getElementById('porcentajeCiudadInput')?.addEventListener('blur', function() {
+    let valor = parseFloat(this.value);
+    if (isNaN(valor) || valor < 0) {
+        valor = 0;
+        this.value = 0;
+    }
+    porcentajeCiudad = valor;
+    document.getElementById('porcentajeCiudadDisplay').textContent = `+${porcentajeCiudad}%`;
+    renderAll();
+});
+
+// Cargar porcentaje guardado al iniciar
+const pcGuardado = localStorage.getItem('porcentajeCiudad');
+if (pcGuardado) {
+    porcentajeCiudad = parseFloat(pcGuardado);
+    const input = document.getElementById('porcentajeCiudadInput');
+    if (input) {
+        input.value = porcentajeCiudad;
+    }
+    document.getElementById('porcentajeCiudadDisplay').textContent = `+${porcentajeCiudad}%`;
+}
 
     
-    // Guardar el precio en su moneda original
+window.agregarEquipoDirecto = function(marca, modelo, capacidad, precio, tecnologiaCompleta) {
+    // ===== DETERMINAR MONEDA SEGÚN MARCA =====
+    const marcasUSD = ['TRANE', 'YORK'];
+    const esUSD = marcasUSD.includes(marca);
+    const esTrane = (marca === 'TRANE');
+    const esYork = (marca === 'YORK');
+    
     let precioOriginal = precio;
-    let monedaOriginal = esTraneYork ? 'USD' : 'MXN';
+    let monedaOriginal = esUSD ? 'USD' : 'MXN';
     
-    // Para otras marcas, utilidades en 0 porque el precio ya es final MXN
-    let utilidadEmpresaPorDefecto = esTraneYork ? 20 : 0;
-    let utilidadVendedorPorDefecto = esTraneYork ? 10 : 0;
+    // ===== GUARDAR PRECIO BASE =====
+    let precioBase = precioOriginal;           // Siempre en su moneda original
+    let precioBaseMXN = esUSD ? precioOriginal * tipoCambioActual : precioOriginal;
     
-    // Calcular precio en MXN para conversiones futuras (solo si es USD)
-    let precioMXN = precioOriginal;
-    if (esTraneYork) {
-        const precioEnMXN = precioOriginal * tipoCambioActual;
-        const conUtilidadEmpresa = precioEnMXN * (1 + utilidadEmpresaPorDefecto / 100);
-        precioMXN = conUtilidadEmpresa * (1 + utilidadVendedorPorDefecto / 100);
+    // ===== FACTORES POR DEFECTO =====
+    let factorA = 0.31;        // Solo para TRANE
+    let factorB = 1.18;        // Solo para TRANE
+    let porcentajeExtra = 0;   // Para YORK y otras marcas (0% = precio de lista)
+    
+    let precioVentaMXN;
+    let precioVentaUSD;
+    
+    if (esTrane) {
+        // ===== TRANE: precioBase USD * factorA * factorB =====
+        let precioCalculadoUSD = precioBase * factorA * factorB;
+        precioVentaUSD = precioCalculadoUSD;
+        precioVentaMXN = precioCalculadoUSD * tipoCambioActual;
+    } else if (esYork) {
+        // ===== YORK: precioBase USD + porcentajeExtra =====
+        let precioCalculadoUSD = precioBase * (1 + porcentajeExtra / 100);
+        precioVentaUSD = precioCalculadoUSD;
+        precioVentaMXN = precioCalculadoUSD * tipoCambioActual;
+    } else {
+        // ===== OTRAS MARCAS (HISENSE, CARRIER, DUVENTUS, TCL): precio en MXN =====
+        precioVentaMXN = precioBase * (1 + porcentajeExtra / 100);
+        precioVentaUSD = precioVentaMXN / tipoCambioActual;
     }
     
     equipos.push({ 
@@ -4408,24 +5543,37 @@ window.agregarEquipoDirecto = function(marca, modelo, capacidad, precio, tecnolo
         modelo: modelo, 
         capacidad: capacidad, 
         cantidad: 1,
-        monedaOriginal: monedaOriginal,  // Guardamos la moneda original
-        precioOriginal: precioOriginal,  // Precio en su moneda original
-        precioMXN: precioMXN,            // Precio convertido a MXN (para cálculos)
-        utilidadEmpresa: utilidadEmpresaPorDefecto,
-        utilidadVendedor: utilidadVendedorPorDefecto,
-        precioVenta: precioMXN,          // ← CAMBIADO: precioVenta ahora es el valor en MXN
-        precioVentaUSD: precioOriginal,  // Precio original en USD (para toggle)
-        descripcion: tecnologiaCompleta || `Equipo ${marca} ${modelo} ${capacidad}` 
+        monedaOriginal: monedaOriginal,
+        precioOriginal: precioOriginal,
+        
+        // ===== DATOS PARA AJUSTE =====
+        esTrane: esTrane,
+        esYork: esYork,
+        esUSD: esUSD,
+        precioBase: precioBase,
+        precioBaseMXN: precioBaseMXN,
+        factorA: factorA,              // EDITABLE (solo TRANE)
+        factorB: factorB,              // EDITABLE (solo TRANE)
+        porcentajeExtra: porcentajeExtra, // EDITABLE (YORK y otras marcas)
+        
+        precioMXN: precioVentaMXN,
+        precioUSD: precioVentaUSD,
+        precioVenta: precioVentaMXN,
+        descripcion: tecnologiaCompleta || `Equipo ${marca} ${modelo} ${capacidad}`
     });
     
     renderAll();
     setActiveModule('cotizador');
     
-    if (esTraneYork) {
-        showToast(`✓ ${marca} ${modelo} agregado - $${precioMXN.toFixed(2)} MXN (desde $${precioOriginal} USD)`);
+    let mensaje = `✓ ${marca} ${modelo} agregado - `;
+    if (esTrane) {
+        mensaje += `$${precioVentaMXN.toFixed(2)} MXN ($${precioVentaUSD.toFixed(2)} USD) [A: ${factorA} × B: ${factorB}]`;
+    } else if (esYork) {
+        mensaje += `$${precioVentaUSD.toFixed(2)} USD ($${precioVentaMXN.toFixed(2)} MXN)`;
     } else {
-        showToast(`✓ ${marca} ${modelo} agregado - $${precioMXN.toFixed(2)} MXN`);
+        mensaje += `$${precioVentaMXN.toFixed(2)} MXN`;
     }
+    showToast(mensaje);
 };
 
  // CARGAR SERVICIOS DESDE API 
@@ -4493,6 +5641,24 @@ document.getElementById('listaMiniSplit').innerHTML = miniSplit.map(s => `
     `).join('');
 }
 
+function recalcularPrecioEquipo(idx) {
+    let eq = equipos[idx];
+    if (!eq) return;
+    
+    if (eq.esTrane) {
+        // ===== TRANE: precioBase * factorA * factorB =====
+        let precioCalculadoUSD = eq.precioBase * eq.factorA * eq.factorB;
+        eq.precioUSD = precioCalculadoUSD;
+        eq.precioMXN = precioCalculadoUSD * tipoCambioActual;
+    } else {
+        // ===== OTRAS MARCAS: precioBaseMXN + porcentaje =====
+        eq.precioMXN = eq.precioBaseMXN * (1 + eq.porcentajeExtra / 100);
+        eq.precioUSD = eq.precioMXN / tipoCambioActual;
+    }
+    
+    eq.precioVenta = eq.precioMXN;
+}
+
 
     
 function exportToPDF() {
@@ -4500,7 +5666,9 @@ function exportToPDF() {
     let vendedor = document.getElementById('vendedorNombre').value;
     let condiciones = document.getElementById('condicionesPago').value;
     let fecha = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
-    let { subtotal, iva, totalFinal } = calcularTotales();
+    
+    // Obtenemos los totales originales para el historial
+    let { totalFinal } = calcularTotales();
     
     // Determinar la moneda actual
     let mostrarEnUSDpdf = mostrarEnUSD;
@@ -4516,11 +5684,9 @@ function exportToPDF() {
     // Determinar qué logo mostrar
     let logoHTML = '';
     if (modoTraneExclusivo) {
-        // Modo TRANE Exclusivo: mostrar logo de AireyClima
-        logoHTML = `<img src="${datosEmpresa.traneExclusivo.logo}" style="width:70px; height:70px; object-fit:contain;" onerror="this.style.display='none'; this.parentElement.innerHTML='<svg viewBox=\'0 0 100 100\' style=\'width:70px;height:70px\'><rect width=\'100\' height=\'100\' fill=\'#1E6650\' rx=\'12\'/><text x=\'50\' y=\'67\' text-anchor=\'middle\' fill=\'white\' font-size=\'40\' font-weight=\'bold\'>❄️</text></svg>'">`;
+        logoHTML = `<img src="${datosEmpresa.traneExclusivo.logo}" style="width:75px; height:75px; object-fit:contain;" onerror="this.style.display='none'; this.parentElement.innerHTML='<svg viewBox=\'0 0 100 100\' style=\'width:75px;height:75px\'><rect width=\'100\' height=\'100\' fill=\'#1E6650\' rx=\'12\'/><text x=\'50\' y=\'67\' text-anchor=\'middle\' fill=\'white\' font-size=\'40\' font-weight=\'bold\'>❄️</text></svg>'">`;
     } else {
-        // Modo Multi-marca: mostrar SVG original
-        logoHTML = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="ayc-svg-icon">
+        logoHTML = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="ayc-svg-icon" style="width:75px; height:75px;">
                         <defs><linearGradient id="bladeGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#00b5a6"/><stop offset="100%" style="stop-color:#007a7a"/></linearGradient></defs>
                         <g transform="translate(50,50)">
                             <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(0)" rx="1"/>
@@ -4540,164 +5706,247 @@ function exportToPDF() {
                     </svg>`;
     }
     
+    // ===== RECALCULAR TOTALES EXACTOS PARA EL PDF =====
+    let pdfSubtotal = 0;
+
+    const equiposConPrecio = equipos.map(eq => {
+        let precioMXNConRecargo = eq.precioMXN * (1 + porcentajeCiudad / 100);
+        let precioUSDConRecargo = precioMXNConRecargo / tipoCambioActual;
+        
+        let precioUnitario = mostrarEnUSDpdf ? precioUSDConRecargo : precioMXNConRecargo;
+        let subtotalEq = eq.cantidad * precioUnitario;
+        
+        pdfSubtotal += subtotalEq; 
+
+        return { ...eq, precioUnitario, subtotalEq };
+    });
+
+    const instalacionesConPrecio = instalaciones.map(i => {
+        let costoUnitario = mostrarEnUSDpdf ? (i.costoUnitario / tipoCambioActual) : i.costoUnitario;
+        let subtotalInst = i.cantidad * costoUnitario;
+        
+        pdfSubtotal += subtotalInst; 
+
+        return { ...i, costoUnitario, subtotalInst };
+    });
+
+    let pdfIva = pdfSubtotal * 0.16; 
+    let pdfTotalFinal = pdfSubtotal + pdfIva; 
+    
+    // Definir colores corporativos basados en la marca seleccionada
+    const brandPrimary = modoTraneExclusivo ? '#1E6650' : '#00b5a6'; // Verde Trane o Turquesa AYCE
+    const brandAccent = modoTraneExclusivo ? '#B22234' : '#007a7a'; // Rojo o Turquesa oscuro
+    
     win.document.write(`
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Propuesta_Técnica_${modoTraneExclusivo ? 'AireyClima' : 'Grupo_AYCE'}_${cliente.replace(/\s+/g, '_')}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --ayce-red: #B22234; --ayce-dark: #1e293b; --text-main: #334155; --text-light: #64748b; --bg-light: #f8fafc; --border: #e2e8f0; }
+        :root { 
+            --brand-primary: ${brandPrimary}; 
+            --brand-accent: ${brandAccent};
+            --text-dark: #0f172a; 
+            --text-main: #334155; 
+            --text-muted: #64748b; 
+            --bg-light: #f8fafc; 
+            --border-color: #e2e8f0; 
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        @page { margin: 0; }
+        @page { size: Letter; margin: 0; }
         @media print {
             @page { margin: 0; }
-            body { margin: 1.5cm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            body { margin: 1.5cm 2cm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .page-break { page-break-inside: avoid; }
         }
-        body { font-family: 'Inter', sans-serif; color: var(--text-main); background: #fff; font-size: 11px; line-height: 1.4; padding: 40px; }
-        .invoice-container { max-width: 900px; margin: auto; }
-        .data-panel { display: grid; grid-template-columns: 1.6fr 1.3fr; gap: 25px; background: var(--bg-light); padding: 20px 25px; border-radius: 10px; margin-bottom: 35px; border: 1px solid var(--border); }
-        .data-card h4 { font-size: 9px; color: var(--text-light); font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 5px;}
-        .data-card p { font-size: 13px; font-weight: 600; color: var(--ayce-dark); }
-        .condiciones-text { color: var(--ayce-red) !important; font-weight: 700 !important; }
-        .seccion-title { font-size: 11px; font-weight: 700; color: var(--ayce-dark); text-transform: uppercase; letter-spacing: 1px; border-left: 3px solid var(--ayce-red); padding-left: 10px; margin-bottom: 12px; }
-        .table-wrapper { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f1f5f9; padding: 12px; font-size: 10px; text-transform: uppercase; color: var(--text-main); font-weight: 700; text-align: left; border-bottom: 2px solid var(--border); }
-        td { padding: 12px; font-size: 11px; border-bottom: 1px solid var(--border); color: var(--text-main); vertical-align: top; }
-        .row-alt td { background: #fafbfc; }
-        .col-qty { width: 70px; text-align: center; font-weight: 700; }
-        .col-price { width: 130px; text-align: right; }
-        .col-total { width: 140px; text-align: right; font-weight: 700; color: var(--ayce-red); background: #fff8f8; }
-        .col-desc { width: auto; font-weight: 500;}
-        .summary-container { display: flex; justify-content: flex-end; margin-top: 10px; margin-bottom: 45px; }
-        .summary-box { width: 320px; border: 2px solid var(--ayce-dark); border-radius: 8px; overflow: hidden; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .summary-row { display: flex; justify-content: space-between; padding: 10px 15px; font-size: 13px; border-bottom: 1px solid var(--border); }
-        .summary-row:last-child { border-bottom: none; }
-        .total-final-row { background: var(--ayce-dark); color: white; font-size: 20px; font-weight: 800; padding: 15px; display: flex; justify-content: space-between; }
-        .total-final-row span:last-child { font-size: 20px; color: white;}
-        .conditions-panel { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #fff8f8; border: 1px solid #fee2e2; padding: 20px; border-radius: 8px; font-size: 10px; color: #7f1d1d; line-height: 1.5; }
-        .conditions-panel strong { color: var(--ayce-red); }
-        .footer { margin-top: 50px; text-align: center; font-size: 9px; color: var(--text-light); border-top: 1px solid var(--border); padding-top: 20px; }
-        @media print { body { padding: 0; background: white; } .summary-box { box-shadow: none; border: 2px solid var(--ayce-dark) !important;} .total-final-row { background: var(--ayce-dark) !important; color: white !important;} }
+        body { font-family: 'Inter', sans-serif; color: var(--text-main); background: #fff; font-size: 11px; line-height: 1.5; padding: 40px; }
         
-        .ayc-brand-header { background: #ffffff; padding: 0; margin-bottom: 40px; }
-        .ayc-top-bar { height: 6px; background: linear-gradient(90deg, ${modoTraneExclusivo ? '#B22234, #8B1A2B' : '#00b5a6, #007a7a'}); width: 100%; }
-        .ayc-main-content { display: flex; justify-content: space-between; align-items: center; padding: 35px 50px; }
-        .ayc-logo-section { display: flex; align-items: center; gap: 25px; }
-        .ayc-emblem-container { width: 70px; height: 70px; }
-        .ayc-svg-icon { width: 100%; height: 100%; }
-        .ayc-text-stack { border-left: 1px solid #e2e8f0; padding-left: 25px; }
-        .ayc-brand-title { font-size: 26px; color: var(--ayce-dark); letter-spacing: -0.5px; }
-        .ayc-brand-title strong { color: ${modoTraneExclusivo ? '#B22234' : '#00b5a6'}; font-weight: 800; }
-        .ayc-brand-subtitle { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: #64748b; }
-        .ayc-meta-section { text-align: right; }
-        .ayc-doc-label { font-size: 18px; font-weight: 700; text-transform: uppercase; color: var(--ayce-dark); }
-        .ayc-date-badge { display: inline-block; margin-top: 10px; padding: 6px 16px; background-color: #f8fafc; border-radius: 4px; border-right: 3px solid ${modoTraneExclusivo ? '#1E6650' : '#b91c1c'}; }
-        .ayc-bottom-divider { height: 1px; background: #e2e8f0; margin: 0 50px; }
+        .invoice-container { max-width: 850px; margin: auto; }
+        
+        /* HEADER CORPORATIVO */
+        .header { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 30px; border-bottom: 2px solid var(--text-dark); margin-bottom: 30px; }
+        .brand-section { display: flex; align-items: center; gap: 20px; }
+        .brand-text h1 { font-family: 'Montserrat', sans-serif; font-size: 22px; color: var(--text-dark); font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+        .brand-text h1 strong { color: var(--brand-primary); }
+        .brand-text p { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 600; }
+        
+        .doc-meta { text-align: right; }
+        .doc-meta h2 { font-family: 'Montserrat', sans-serif; font-size: 19px; color: var(--text-dark); font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .doc-meta h2 span { color: var(--brand-primary); }
+        .doc-meta p { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+        .doc-meta strong { color: var(--text-dark); font-weight: 600; }
+
+        /* GRID DE DATOS RE-DISEÑADO EN UN SOLO RENGLÓN */
+        .info-grid { display: grid; grid-template-columns: 1.3fr 1.1fr 1.6fr; gap: 30px; margin-bottom: 40px; border-bottom: 1px solid var(--border-color); padding-bottom: 25px; }
+        .info-block h4 { font-family: 'Montserrat', sans-serif; font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; }
+        .info-block p { font-size: 13px; font-weight: 500; color: var(--text-dark); line-height: 1.4; }
+        .info-block .highlight { color: var(--brand-primary); font-weight: 700; }
+
+        /* TABLAS MINIMALISTAS */
+        .section-title { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 800; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; margin-top: 30px; display: flex; align-items: center; gap: 10px; }
+        .section-title::before { content: ""; display: block; width: 6px; height: 18px; background-color: var(--brand-primary); border-radius: 2px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th { padding: 12px 10px; font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; text-align: left; border-bottom: 1px solid var(--text-dark); }
+        td { padding: 14px 10px; font-size: 11px; border-bottom: 1px solid var(--border-color); color: var(--text-main); vertical-align: top; }
+        
+        .col-qty { width: 60px; text-align: center; font-weight: 600; }
+        .col-price { width: 120px; text-align: right; font-variant-numeric: tabular-nums; }
+        .col-total { width: 130px; text-align: right; font-weight: 600; color: var(--text-dark); font-variant-numeric: tabular-nums; }
+        .col-desc { width: auto; }
+        .col-desc strong { color: var(--text-dark); font-size: 12px; }
+        .col-desc small { display: block; margin-top: 4px; color: var(--text-muted); font-size: 10px; line-height: 1.4; }
+
+        /* RESUMEN FINANCIERO ALINEADO A LA DERECHA */
+        .totals-wrapper { display: flex; justify-content: flex-end; margin-top: 20px; margin-bottom: 50px; page-break-inside: avoid; }
+        .totals-box { width: 350px; }
+        .total-row { display: flex; justify-content: space-between; padding: 8px 10px; font-size: 12px; color: var(--text-main); }
+        .total-row span:last-child { font-weight: 600; font-variant-numeric: tabular-nums; }
+        .total-final { margin-top: 10px; padding: 15px 10px; background-color: var(--bg-light); border-top: 2px solid var(--text-dark); border-bottom: 2px solid var(--text-dark); }
+        .total-final span:first-child { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 14px; text-transform: uppercase; color: var(--text-dark); }
+        .total-final span:last-child { font-size: 16px; font-weight: 800; color: var(--brand-primary); }
+
+        /* TÉRMINOS Y CONDICIONES */
+        .conditions-panel { background: var(--bg-light); border-left: 3px solid var(--brand-accent); padding: 25px; border-radius: 0 8px 8px 0; margin-top: 20px; page-break-inside: avoid; }
+        .conditions-panel h4 { font-family: 'Montserrat', sans-serif; font-size: 10px; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .conditions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 30px; }
+        .condition-item p { font-size: 10px; color: var(--text-muted); line-height: 1.6; }
+        .condition-item strong { color: var(--text-dark); display: block; margin-bottom: 2px; font-size: 10.5px; }
+
+        /* FOOTER */
+        .footer { margin-top: 60px; text-align: center; font-size: 9px; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 20px; page-break-inside: avoid; }
+        .footer strong { color: var(--text-dark); letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
     <div class="invoice-container">
-        <div class="ayc-brand-header">
-            <div class="ayc-top-bar"></div>
-            <div class="ayc-main-content">
-                <div class="ayc-logo-section">
-                    <div class="ayc-emblem-container">
-                        ${logoHTML}
-                    </div>
-                    <div class="ayc-text-stack">
-                        <span class="ayc-brand-title">${modoTraneExclusivo ? 'Aire y Clima' : 'Grupo'} <strong>${modoTraneExclusivo ? 'Especializado' : 'AYCE'}</strong> México</span>
-                        <span class="ayc-brand-subtitle">${modoTraneExclusivo ? 'Distribuidor Autorizado TRANE · Soluciones en Climatización' : 'Ingeniería Térmica & Soluciones HVAC Corporativas'}</span>
-                    </div>
-                </div>
-                <div class="ayc-meta-section">
-                    <h2 class="ayc-doc-label">Propuesta Técnica - Comercial</h2>
-                    <div class="ayc-date-badge">
-                        <span class="ayc-date-text">Emisión: <strong>${fecha}</strong></span>
-                    </div>
+        
+        <header class="header">
+            <div class="brand-section">
+                ${logoHTML}
+                <div class="brand-text">
+                    <h1>${modoTraneExclusivo ? 'Aire y Clima' : 'Grupo'} <strong>${modoTraneExclusivo ? 'Especializado' : 'AYCE'}</strong></h1>
+                    <p>${modoTraneExclusivo ? 'Distribuidor Autorizado TRANE' : 'Ingeniería Térmica & Soluciones HVAC'}</p>
                 </div>
             </div>
-            <div class="ayc-bottom-divider"></div>
-        </div>
-        <div class="data-panel">
-            <div class="data-card"><h4>CLIENTE / RAZÓN SOCIAL</h4><p>${cliente}</p></div>
-            <div class="data-card" style="text-align: right;"><h4>INGENIERO RESPONSABLE</h4><p>${vendedor}</p></div>
-            <div class="data-card"><h4>CONDICIONES DE PAGO</h4><p class="condiciones-text">${condiciones}</p></div>
-            <div class="data-card" style="text-align: right;"><h4>VALIDEZ DE LA OFERTA</h4><p>15 Días Naturales</p></div>
-        </div>
-        
-        <div class="seccion-title">Suministro de Equipamiento HVAC </div>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th class="col-desc">Descripción Técnica del Sistema</th>
-                        <th class="col-qty">Cant.</th>
-                        <th class="col-price">P. Unitario</th>
-                        <th class="col-total">Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${equipos.map((eq, index) => {
-                        let precioUnitario = mostrarEnUSDpdf ? (eq.precioVenta / tipoCambioActual) : eq.precioVenta;
-                        let subtotalEq = mostrarEnUSDpdf ? ((eq.cantidad * eq.precioVenta) / tipoCambioActual) : (eq.cantidad * eq.precioVenta);
-                        return `<tr class="${index % 2 === 0 ? '' : 'row-alt'}">
-                            <td class="col-desc"><strong>${eq.marca.toUpperCase()}</strong> - ${eq.modelo}<br><small style="color:var(--text-light); font-size:9px">${eq.descripcion || 'Suministro de equipo principal certificado'}</small></td>
-                            <td class="col-qty">${eq.cantidad}</td>
-                            <td class="col-price">${simboloMoneda}${precioUnitario.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</td>
-                            <td class="col-total">${simboloMoneda}${subtotalEq.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</td>
-                        </tr>`;
-                    }).join('')}
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="seccion-title">Servicios Especializados de Instalación & Puesta en Marcha</div>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th class="col-desc">Concepto</th>
-                        <th class="col-qty">Cant.</th>
-                        <th class="col-price">Costo Unitario</th>
-                        <th class="col-total">Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${instalaciones.map((i, index) => {
-                        let costoUnitario = mostrarEnUSDpdf ? (i.costoUnitario / tipoCambioActual) : i.costoUnitario;
-                        let subtotalInst = mostrarEnUSDpdf ? ((i.cantidad * i.costoUnitario) / tipoCambioActual) : (i.cantidad * i.costoUnitario);
-                        return `<tr class="${index % 2 === 0 ? '' : 'row-alt'}">
-                            <td class="col-desc">${i.concepto}<br><small style="color:var(--text-light); font-size:9px">${i.descripcion}</small></td>
-                            <td class="col-qty">${i.cantidad}</td>
-                            <td class="col-price">${simboloMoneda}${costoUnitario.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</td>
-                            <td class="col-total">${simboloMoneda}${subtotalInst.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</td>
-                        </tr>`;
-                    }).join('')}
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="summary-container">
-            <div class="summary-box">
-                <div class="summary-row"><span>Subtotal Neto</span><strong>${simboloMoneda}${(mostrarEnUSDpdf ? (subtotal / tipoCambioActual) : subtotal).toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</strong></div>
-                <div class="summary-row"><span>I.V.A. Trasladado (16%)</span><strong>${simboloMoneda}${(mostrarEnUSDpdf ? (iva / tipoCambioActual) : iva).toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</strong></div>
-                <div class="total-final-row"><span>Inversión Total</span><span>${simboloMoneda}${(mostrarEnUSDpdf ? (totalFinal / tipoCambioActual) : totalFinal).toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</span></div>
+            <div class="doc-meta">
+                <h2>Propuesta <span>Técnica</span></h2>
+                <p>Fecha de Emisión: <strong>${fecha}</strong></p>
+                <p>Validez de la Oferta: <strong>15 Días Naturales</strong></p>
+            </div>
+        </header>
+
+        <div class="info-grid">
+            <div class="info-block">
+                <h4>Cliente</h4>
+                <p>${cliente}</p>
+            </div>
+            <div class="info-block">
+                <h4>Ejecutivo de Ventas</h4>
+                <p>${vendedor}</p>
+            </div>
+            <div class="info-block">
+                <h4>Condiciones de Pago</h4>
+                <p class="highlight">${condiciones}</p>
             </div>
         </div>
         
-        <div class="seccion-title">Condiciones de Venta </div>
+        <div class="section-title">Equipamiento Principal</div>
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-desc">Descripción Técnica</th>
+                    <th class="col-qty">Cant.</th>
+                    <th class="col-price">P. Unitario</th>
+                    <th class="col-total">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${equiposConPrecio.map(eq => `
+                    <tr class="page-break">
+                        <td class="col-desc">
+                            <strong>${eq.marca.toUpperCase()} - ${eq.modelo}</strong>
+                            <small>${eq.descripcion || 'Suministro de equipo principal certificado.'}</small>
+                        </td>
+                        <td class="col-qty">${eq.cantidad}</td>
+                        <td class="col-price">${simboloMoneda}${eq.precioUnitario.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})}</td>
+                        <td class="col-total">${simboloMoneda}${eq.subtotalEq.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        
+        ${instalacionesConPrecio.length > 0 ? `
+        <div class="section-title" style="margin-top: 40px;">Servicios Especializados e Instalación</div>
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-desc">Concepto de Servicio</th>
+                    <th class="col-qty">Cant.</th>
+                    <th class="col-price">Costo Unitario</th>
+                    <th class="col-total">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${instalacionesConPrecio.map(i => `
+                    <tr class="page-break">
+                        <td class="col-desc">
+                            <strong>${i.concepto}</strong>
+                            <small>${i.descripcion}</small>
+                        </td>
+                        <td class="col-qty">${i.cantidad}</td>
+                        <td class="col-price">${simboloMoneda}${i.costoUnitario.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})}</td>
+                        <td class="col-total">${simboloMoneda}${i.subtotalInst.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        ` : ''}
+        
+        <div class="totals-wrapper">
+            <div class="totals-box">
+                <div class="total-row">
+                    <span>Subtotal Neto</span>
+                    <span>${simboloMoneda}${pdfSubtotal.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})}</span>
+                </div>
+                <div class="total-row">
+                    <span>I.V.A. (16%)</span>
+                    <span>${simboloMoneda}${pdfIva.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})}</span>
+                </div>
+                <div class="total-row total-final">
+                    <span>Inversión Total</span>
+                    <span>${simboloMoneda}${pdfTotalFinal.toLocaleString(mostrarEnUSDpdf ? 'en-US' : 'es-MX', {minimumFractionDigits: 2})} ${codigoMoneda}</span>
+                </div>
+            </div>
+        </div>
+        
         <div class="conditions-panel">
-            <p><strong>Logística:</strong> Horario de entrega de Lunes a Viernes de 8:30 a 6:30 pm. Programación en 3 a 5 días hábiles post-validación de depósito.</p>
-            <p><strong>Devoluciones:</strong> No se aceptan devoluciones de mercancía ni reembolsos monetarios. Cargo excepcional del 20% sobre valor neto autorizado.</p>
-            <p><strong>Finanzas:</strong> Favor de enviar comprobante de pago para habilitar programación del servicio. No se maneja ningún tipo de crédito comercial.</p>
-            <p><strong>Garantía:</strong> Un (01) año en partes eléctricas y componentes generales. Cinco (05) años en compresor principal (sujeto a plan de mantenimiento corporativo).</p>
+            <h4>Términos y Condiciones Comerciales</h4>
+            <div class="conditions-grid">
+                <div class="condition-item">
+                    <strong>Logística y Entregas</strong>
+                    <p>Horario de entrega de Lunes a Viernes de 8:30 a 18:30 hrs. La programación se realiza de 3 a 5 días hábiles post-validación bancaria.</p>
+                </div>
+                <div class="condition-item">
+                    <strong>Políticas de Devolución</strong>
+                    <p>No se aceptan devoluciones de mercancía ni reembolsos monetarios. Aplica cargo excepcional del 20% sobre valor neto únicamente con autorización previa.</p>
+                </div>
+                <div class="condition-item">
+                    <strong>Gestión Financiera</strong>
+                    <p>Favor de enviar comprobante de pago oficial para habilitar la programación del servicio. La empresa no maneja líneas de crédito comercial.</p>
+                </div>
+                <div class="condition-item">
+                    <strong>Garantía Extendida</strong>
+                    <p>Cobertura de un (1) año en partes eléctricas y componentes generales. Cinco (5) años en el compresor principal (estrictamente sujeto a póliza de mantenimiento).</p>
+                </div>
+            </div>
         </div>
+
         <footer class="footer">
-            <p>${modoTraneExclusivo ? 'Aire y Clima Especializado' : 'Grupo AYCE México'} | Periférico Adolfo López Mateos No. 4293 Int P3-300, Tlalpan, CDMX 14210 | www.grupoayce.com.mx</p>
-            <p style="margin-top:5px; font-weight:700; text-transform:uppercase; color:var(--ayce-dark); letter-spacing:0.5px">${modoTraneExclusivo ? 'Distribuidor Autorizado TRANE' : 'Asesoría de Ingeniería para un Rendimiento Superior'}</p>
+            <p><strong>${modoTraneExclusivo ? 'Aire y Clima Especializado' : 'Grupo AYCE México'}</strong> | Periférico Adolfo López Mateos No. 4293 Int P3-300, Tlalpan, CDMX 14210</p>
+            <p>www.grupoayce.com.mx</p>
         </footer>
     </div>
     <script>window.onload = function() { setTimeout(function() { window.print(); setTimeout(function() { window.close(); }, 500); }, 300); };<\/script>
@@ -4719,7 +5968,7 @@ function exportToPDF() {
     document.querySelector(`.nav-btn[data-module="${m}"]`).classList.add('active');
     if(m === 'catalogo') { 
         renderCatalogoTrane(); renderCatalogoHisense(); renderCatalogoYork(); 
-        renderCatalogoCarrier(); renderCatalogoDuventus(); renderCatalogoRheem(); 
+        renderCatalogoCarrier(); renderCatalogoDuventus(); renderCatalogoTCL(); 
     }
     if(m === 'estadisticas') {
         actualizarSemaforo();
@@ -4773,13 +6022,13 @@ document.getElementById('agregarInstalacionBtn')?.addEventListener('click', () =
             document.getElementById('tabYork').style.display = this.dataset.tab === 'york' ? 'block' : 'none';
             document.getElementById('tabCarrier').style.display = this.dataset.tab === 'carrier' ? 'block' : 'none';
             document.getElementById('tabDuventus').style.display = this.dataset.tab === 'duventus' ? 'block' : 'none';
-            document.getElementById('tabRheem').style.display = this.dataset.tab === 'rheem' ? 'block' : 'none';
+            document.getElementById('tabTCL').style.display = this.dataset.tab === 'TCL' ? 'block' : 'none';
             if(this.dataset.tab === 'trane') renderCatalogoTrane();
             else if(this.dataset.tab === 'hisense') renderCatalogoHisense();
             else if(this.dataset.tab === 'york') renderCatalogoYork();
             else if(this.dataset.tab === 'carrier') renderCatalogoCarrier();
             else if(this.dataset.tab === 'duventus') renderCatalogoDuventus();
-            else if(this.dataset.tab === 'rheem') renderCatalogoRheem();
+            else if(this.dataset.tab === 'TCL') renderCatalogoTCL();
         });
     });
 
