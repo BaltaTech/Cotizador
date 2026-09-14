@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Grupo Aire Acondicionado AYCE | Sistema Profesional de Cotización HVAC</title>
+    <title>Grupo Alecram | Sistema Profesional de Cotización HVAC</title>
     <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="shortcut icon" href="favicon.ico" />
@@ -1038,7 +1038,7 @@ td .btn-secondary {
 <div id="loginOverlay" class="login-overlay">
     <div class="login-container">
         <div class="login-header">
-            <h2><i class="fas fa-snowflake"></i> GRUPO AYCE</h2>
+            <h2><i class="fas fa-snowflake"></i> AlECRAM </h2>
             <p>Acceso al Sistema de Cotización Profesional</p>
         </div>
         <div class="login-field">
@@ -1098,8 +1098,8 @@ td .btn-secondary {
     <div class="app-container">
         <div class="header-premium no-print">
             <div style="display: flex; align-items: center; gap: 20px;">
-                <img src="file:///C:/Users/Airey/Desktop/logo.png" alt="Logo AYCE" class="logo-img" onerror="this.style.display='none'">
-                <div class="logo"><h1><i class="fas fa-snowflake" style="color:#B22234;"></i> GRUPO AIRE ACONDICIONADO AYCE</h1><p>Ingeniería Térmica · Distribución Autorizada TRANE · HISENSE · YORK</p></div>
+                <img src="Images/logo.jpg" alt="Logo ALECRAM" class="logo-img" onerror="this.style.display='none'">
+                <div class="logo"><h1><i class="fas fa-snowflake" style="color:#B22234;"></i> ALECRAM </h1><p>Ingeniería Térmica · Distribución Autorizada TRANE · HISENSE · YORK</p></div>
             </div>
             <div class="company-address">
                 <span><i class="fas fa-map-pin"></i> Periférico Adolfo Lopez Mateos No. 4293 Int P3-300, Jardines en la Montaña, Tlalpan, CDMX 14210</span>
@@ -2039,7 +2039,8 @@ td .btn-secondary {
     let tbody = document.getElementById('historialBody');
     if (!tbody) return;
     if (historialCotizaciones.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;">No hay cotizaciones registradas<html教师';
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;">No hay cotizaciones registradas</td></tr>';
+
         return;
     }
     tbody.innerHTML = historialCotizaciones.map((item, idx) => {
@@ -3748,14 +3749,14 @@ function agregarServicioPredefinido(servicio) {
 // ========== DATOS PARA PDF SEGÚN MODO ==========
 const datosEmpresa = {
     multimarca: {
-        nombre: "Grupo Aire Acondicionado AYCE",
-        logo: "file:///C:/Users/Airey/Desktop/logo.png",
-        razonSocial: "Grupo Aire Acondicionado AYCE",
+        nombre: "ALECRAM",
+        logo: "Images/logo.jpg",
+        razonSocial: "ALECRAM",
         eslogan: "Ingeniería Térmica · Distribución Autorizada TRANE · HISENSE · YORK"
     },
     traneExclusivo: {
         nombre: "Aire y Clima Especializado",
-        logo: "file:///C:/Users/Airey/Desktop/Cotizador/AireyClima.jpeg",
+        logo: "Images/logo.jpg",
         razonSocial: "Aire y Clima Especializado",
         eslogan: "Distribuidor Autorizado TRANE · Especialistas en Climatización"
     }
@@ -5679,33 +5680,12 @@ function exportToPDF() {
     let historialBody = document.getElementById('historialBody');
     if(historialBody) historialBody.innerHTML = historial.slice(0,10).map(h => `<tr><td>${h.cliente}</td><td>${h.fecha}</td><td>$${h.total}</td>`).join('');
 
-    let win = window.open('', '_blank');
-    
-    // Determinar qué logo mostrar
-    let logoHTML = '';
-    if (modoTraneExclusivo) {
-        logoHTML = `<img src="${datosEmpresa.traneExclusivo.logo}" style="width:75px; height:75px; object-fit:contain;" onerror="this.style.display='none'; this.parentElement.innerHTML='<svg viewBox=\'0 0 100 100\' style=\'width:75px;height:75px\'><rect width=\'100\' height=\'100\' fill=\'#1E6650\' rx=\'12\'/><text x=\'50\' y=\'67\' text-anchor=\'middle\' fill=\'white\' font-size=\'40\' font-weight=\'bold\'>❄️</text></svg>'">`;
-    } else {
-        logoHTML = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="ayc-svg-icon" style="width:75px; height:75px;">
-                        <defs><linearGradient id="bladeGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#00b5a6"/><stop offset="100%" style="stop-color:#007a7a"/></linearGradient></defs>
-                        <g transform="translate(50,50)">
-                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(0)" rx="1"/>
-                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(30)" rx="1"/>
-                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(60)" rx="1"/>
-                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(90)" rx="1"/>
-                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(120)" rx="1"/>
-                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(150)" rx="1"/>
-                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(180)" rx="1"/>
-                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(210)" rx="1"/>
-                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(240)" rx="1"/>
-                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(270)" rx="1"/>
-                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(300)" rx="1"/>
-                            <rect x="-7.5" y="-37.5" width="22.5" height="32.5" fill="url(#bladeGrad)" transform="rotate(330)" rx="1"/>
-                            <circle cx="0" cy="0" r="11" fill="#00b5a6"/>
-                        </g>
-                    </svg>`;
-    }
-    
+   let win = window.open('', '_blank');
+
+// URL base absoluta (funciona en local y en GitHub Pages)
+const urlBase = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+
+let logoHTML = `<img src="${urlBase}Images/logo.jpg" alt="ALECRAM" style="width:75px; height:75px; object-fit:contain;" onerror="this.style.display='none'">`;
     // ===== RECALCULAR TOTALES EXACTOS PARA EL PDF =====
     let pdfSubtotal = 0;
 
@@ -5742,8 +5722,7 @@ function exportToPDF() {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Propuesta_Técnica_${modoTraneExclusivo ? 'AireyClima' : 'Grupo_AYCE'}_${cliente.replace(/\s+/g, '_')}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>Propuesta_Tecnica_ALECRAM_${cliente.replace(/\s+/g, '_')}</title>    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --brand-primary: ${brandPrimary}; 
@@ -5827,7 +5806,7 @@ function exportToPDF() {
             <div class="brand-section">
                 ${logoHTML}
                 <div class="brand-text">
-                    <h1>${modoTraneExclusivo ? 'Aire y Clima' : 'Grupo'} <strong>${modoTraneExclusivo ? 'Especializado' : 'AYCE'}</strong></h1>
+			<h1>${modoTraneExclusivo ? 'Aire y Clima' : 'ALECRAM'} <strong>${modoTraneExclusivo ? 'Especializado' : ''}</strong></h1>
                     <p>${modoTraneExclusivo ? 'Distribuidor Autorizado TRANE' : 'Ingeniería Térmica & Soluciones HVAC'}</p>
                 </div>
             </div>
@@ -5945,8 +5924,8 @@ function exportToPDF() {
         </div>
 
         <footer class="footer">
-            <p><strong>${modoTraneExclusivo ? 'Aire y Clima Especializado' : 'Grupo AYCE México'}</strong> | Periférico Adolfo López Mateos No. 4293 Int P3-300, Tlalpan, CDMX 14210</p>
-            <p>www.grupoayce.com.mx</p>
+           <p><strong>ALECRAM</strong> | PRIMAVERA MZ 3 INT. LT 6 Lomas de Totolco Tlatelco, Chimalhuacan, México 56337</p>
+            
         </footer>
     </div>
     <script>window.onload = function() { setTimeout(function() { window.print(); setTimeout(function() { window.close(); }, 500); }, 300); };<\/script>
@@ -5977,7 +5956,7 @@ function exportToPDF() {
 }
     
     document.getElementById('agregarEquipoBtn')?.addEventListener('click', () => { setActiveModule('catalogo'); showToast("Use el Catálogo HVAC"); });
-    document.getElementById('agregarServicioPredefinidoBtn')?.addEventListener('click', () => { cargarListasServicios(); document.getElementById('modalServicio').style.display = 'flex'; });
+    document.getElementById('agregarServicioPredefinidoBtn')?.addEventListener('click', () => { cargarListasServicios();                   document.getElementById('modalServicio').style.display = 'flex'; });
 document.getElementById('agregarInstalacionBtn')?.addEventListener('click', () => { 
     let concepto = prompt("Concepto del servicio:"); 
     if(concepto){ 
